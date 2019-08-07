@@ -1,0 +1,82 @@
+@import './reset.less';
+@import './type.less';
+
+/* React wrapping root element children in div */
+html,
+body,
+#root,
+#root > div {
+  height: 100%;
+}
+
+#root {
+  overflow: hidden;
+}
+
+#main-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 50px;
+
+  .left {
+    display: flex;
+    .logo {
+      display: inline-block;
+      max-width: 150px;
+      margin: 15px 0 0 20px;
+
+      img {
+        width: 100%;
+      }
+    }
+    #main-nav {
+      display: flex;
+      align-items: flex-end;
+      margin: 0 10px;
+
+      a {
+        margin: 0 8px 3px;
+        padding-bottom: 1px;
+        font-size: 1.2rem;
+        font-family: sans-serif;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: @charcoal;
+        border-bottom: 3px solid transparent;
+
+        &:hover {
+          border-bottom-color: @charcoal;
+        }
+      }
+    }
+  }
+  .search {
+    height: 40px;
+    width: 300px;
+    align-self: flex-end;
+    border: none;
+    background: rgba(0, 0, 0, 0.6);
+    outline: none;
+    color: @faded_white;
+    padding: 5px 10px;
+    font-size: 1.2rem;
+    font-family: sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04),
+      -6px 8px 15px rgba(0, 0, 0, 0.04), 6px 8px 15px rgba(0, 0, 0, 0.04);
+    &::placeholder {
+      color: @faded_white;
+    }
+  }
+}
+
+//App Views
+h1 {
+  margin: 0 auto 35px;
+
+  span {
+    padding: 0 15px;
+    border-right: 1px solid @charcoal;
+  }
+}
