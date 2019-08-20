@@ -1,9 +1,7 @@
 const Models = require('../models');
 
 module.exports = router => {
-  router.get('/posts', async ctx => {
-    const allPosts = await Models.Post.findAll();
-
-    ctx.body = allPosts;
-  });
+  require('./posts')(Models, router);
+  require('./tags')(Models, router);
+  require('./users')(Models, router);
 };
