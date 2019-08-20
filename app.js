@@ -1,7 +1,7 @@
 const fs = require('fs');
 const Koa = require('koa');
 const send = require('koa-send');
-const Router = require('koa-router');
+const Router = require('@koa/router');
 const logger = require('koa-logger');
 const routes = require('./routes');
 const app = new Koa();
