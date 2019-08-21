@@ -23,6 +23,12 @@ module.exports = {
       bio: {
         type: Sequelize.STRING
       },
+      token: {
+        type: Sequelize.STRING
+      },
+      tokenDate: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
