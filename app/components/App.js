@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import Splash from './Splash';
-import Account from './Account';
+import Account from './Account/index';
 import About from './About';
 import Logo from '../assets/images/logo.svg';
 class App extends React.Component {

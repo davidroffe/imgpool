@@ -1,5 +1,7 @@
 import React from 'react';
 import axios from 'axios';
+import Dashboard from './Dashboard';
+import Login from './Login';
 
 class Account extends React.Component {
   constructor(props) {
@@ -28,13 +30,14 @@ class Account extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
 
+    const thisComponent = this;
     let form = this.state.form;
     let errorMessage = [];
     let email = this.state.email;
     let password = this.state.password;
     let passwordConfirm = this.state.passwordConfirm;
     let splashClass = this;
-    const url = form === 'login' ? '/api/login' : '/api/signup';
+    const url = form === 'login' ? '/api/user/login' : '/api/user/signup';
 
     if (email === undefined || email === '') {
       errorMessage.push('Please enter an email.');
@@ -55,16 +58,22 @@ class Account extends React.Component {
         errorMessage
       });
     } else {
-      axios
-        .post(url, {
+      axios({
+        url: url,
+        method: 'post',
+        params: {
           email: email,
           password: password
-        })
+        }
+      })
         .then(() => {
           splashClass.props.history.push('/account/dashboard');
         })
         .catch(error => {
-          errorMessage = [error.message];
+          errorMessage.push(error.response.data);
+          thisComponent.setState({
+            errorMessage
+          });
         });
     }
   }
@@ -80,55 +89,20 @@ class Account extends React.Component {
   render() {
     return (
       <section id="account">
-        <div id="account-center">
-          <div id="center-box">
-            <form onSubmit={this.handleSubmit}>
-              <input
-                id="email"
-                placeholder="EMAIL"
-                type="text"
-                autoComplete="off"
-                value={this.state.email}
-                onChange={this.handleChange}
-              />
-              <input
-                id="password"
-                placeholder="PASSWORD"
-                type="password"
-                autoComplete="off"
-                value={this.state.password}
-                onChange={this.handleChange}
-              />
-              {this.state.form === 'signUp' ? (
-                <input
-                  id="passwordConfirm"
-                  placeholder="CONFIRM PASSWORD"
-                  type="password"
-                  autoComplete="off"
-                  value={this.state.passwordConfirm}
-                  onChange={this.handleChange}
-                />
-              ) : null}
-              {this.state.errorMessage.map((errorMessage, index) => {
-                return (
-                  <p key={index} className="error">
-                    {errorMessage}
-                  </p>
-                );
-              })}
-              <input
-                type="submit"
-                value={this.state.form === 'login' ? 'LOGIN' : 'SIGN UP'}
-              />
-              <p>
-                Don‘t have an account?{' '}
-                <button className="switch-form" onClick={this.handleSwitchForm}>
-                  {this.state.form === 'login' ? 'Sign Up' : 'Login'}
-                </button>
-              </p>
-            </form>
-          </div>
-        </div>
+        {this.state.isLoggedIn ? (
+          <Dashboard />
+        ) : (
+          <Login
+            handleChange={this.handleChange}
+            handleSubmit={this.handleSubmit}
+            handleSwitchForm={this.handleSwitchForm}
+            form={this.state.form}
+            email={this.state.email}
+            password={this.state.password}
+            passwordConfirm={this.state.passwordConfirm}
+            errorMessage={this.state.errorMessage}
+          />
+        )}
       </section>
     );
   }
