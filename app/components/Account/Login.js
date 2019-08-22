@@ -4,7 +4,6 @@ import Input from '../Utility/Input';
 class Login extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
 
     this.handleChange = props.handleChange;
     this.handleSubmit = props.handleSubmit;
