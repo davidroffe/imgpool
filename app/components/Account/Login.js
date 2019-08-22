@@ -24,6 +24,18 @@ class Login extends React.Component {
               placeholder={'EMAIL'}
               handleChange={this.handleChange}
             />
+            {this.props.form === 'signUp' ? (
+              <Input
+                id="username"
+                autoComplete={'off'}
+                type={'text'}
+                title={'Username'}
+                name={'username'}
+                value={this.props.username}
+                placeholder={'USERNAME'}
+                handleChange={this.handleChange}
+              />
+            ) : null}
             <Input
               id="password"
               autoComplete={'off'}
@@ -39,8 +51,8 @@ class Login extends React.Component {
                 id="passwordConfirm"
                 autoComplete={'off'}
                 type={'password'}
-                title={'Password'}
-                name={'password'}
+                title={'password-confirm'}
+                name={'password-confirm'}
                 value={this.props.passwordConfirm}
                 placeholder={'CONFIRM PASSWORD'}
                 handleChange={this.handleChange}
