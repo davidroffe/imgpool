@@ -11,6 +11,7 @@ class Account extends React.Component {
     this.state = {
       form: 'login',
       email: '',
+      username: '',
       password: '',
       passwordConfirm: '',
       isLoggedIn: 'false',
@@ -22,8 +23,10 @@ class Account extends React.Component {
     this.handleSwitchForm = this.handleSwitchForm.bind(this);
   }
   componentDidMount() {
-    axios.post('/api/user/validate').then(() => {
+    axios.post('/api/user/validate').then(res => {
       this.setState({
+        username: res.data.username,
+        email: res.data.email,
         isLoggedIn: !!Cookies.get('auth')
       });
     });
@@ -42,9 +45,9 @@ class Account extends React.Component {
     let form = this.state.form;
     let errorMessage = [];
     let email = this.state.email;
+    let username = this.state.username;
     let password = this.state.password;
     let passwordConfirm = this.state.passwordConfirm;
-    let splashClass = this;
     const url = form === 'login' ? '/api/user/login' : '/api/user/signup';
 
     if (email === undefined || email === '') {
@@ -71,11 +74,15 @@ class Account extends React.Component {
         method: 'post',
         params: {
           email: email,
+          username: username,
           password: password
         }
       })
-        .then(() => {
+        .then(res => {
+          console.log(res);
           this.setState({
+            email: res.data.email,
+            username: res.data.username,
             isLoggedIn: true
           });
         })
@@ -100,7 +107,7 @@ class Account extends React.Component {
     return (
       <section id="account">
         {this.state.isLoggedIn ? (
-          <Dashboard />
+          <Dashboard email={this.state.email} username={this.state.username} />
         ) : (
           <Login
             handleChange={this.handleChange}
@@ -108,6 +115,7 @@ class Account extends React.Component {
             handleSwitchForm={this.handleSwitchForm}
             form={this.state.form}
             email={this.state.email}
+            username={this.state.username}
             password={this.state.password}
             passwordConfirm={this.state.passwordConfirm}
             errorMessage={this.state.errorMessage}

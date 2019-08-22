@@ -12,12 +12,12 @@ class Login extends React.Component {
         </h1>
         <h2>Username</h2>
         <div className="row">
-          <p>Foobar</p>
+          <p>{this.props.username}</p>
           <button>edit</button>
         </div>
         <h2>Email</h2>
         <div className="row">
-          <p>foobar@gmail.com</p>
+          <p>{this.props.email}</p>
           <button>edit</button>
         </div>
         <h2>Password</h2>

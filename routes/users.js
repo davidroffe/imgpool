@@ -4,6 +4,7 @@ const tokenHelper = require('../utility/token');
 module.exports = (Models, router) => {
   router.post('/user/signup', async ctx => {
     const email = ctx.query.email || '';
+    const username = ctx.query.username || '';
     const password = ctx.query.password || '';
 
     const emailRegEx = /[\w.]+@[\w.]+/;
@@ -28,6 +29,7 @@ module.exports = (Models, router) => {
       const user = await Models.User.findOrCreate({
         where: { email: email },
         defaults: {
+          username: username,
           password: bcrypt.hashSync(password, bcrypt.genSaltSync(8), null),
           token: token,
           tokenDate: tokenDate
@@ -38,6 +40,10 @@ module.exports = (Models, router) => {
       } else {
         ctx.cookies.set('auth', token, { httpOnly: false });
         ctx.status = 200;
+        ctx.body = {
+          username: user.username,
+          email: user.email
+        };
       }
     }
   });
@@ -61,6 +67,10 @@ module.exports = (Models, router) => {
 
         ctx.cookies.set('auth', token, { httpOnly: false });
         ctx.status = 200;
+        ctx.body = {
+          username: user.username,
+          email: user.email
+        };
       } else {
         ctx.throw(401, 'Invalid email or password');
       }
@@ -87,6 +97,10 @@ module.exports = (Models, router) => {
           user.tokenDate = tokenHelper.genExpDate();
           user.save();
         }
+        ctx.body = {
+          username: user.username,
+          email: user.email
+        };
       } else {
         console.log('No user found with that token; clearing token!');
         console.log('url is: ' + url);

@@ -4,7 +4,7 @@ const Input = props => {
   return (
     <input
       className="form-input"
-      id={props.name}
+      id={props.id}
       name={props.name}
       type={props.type}
       value={props.value}
