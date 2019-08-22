@@ -5,7 +5,29 @@ class Login extends React.Component {
     // TODO: Account dashboard
     //Username on top with logout button to the right
     //Simple text links to change account info or upload images
-    return <div id="account-dashboard"></div>;
+    return (
+      <section id="account-dashboard">
+        <h1>
+          <span>Account</span>
+        </h1>
+        <h2>Username</h2>
+        <div className="row">
+          <p>Foobar</p>
+          <button>edit</button>
+        </div>
+        <h2>Email</h2>
+        <div className="row">
+          <p>foobar@gmail.com</p>
+          <button>edit</button>
+        </div>
+        <h2>Password</h2>
+        <div className="row">
+          <p>hidden</p>
+          <button>edit</button>
+        </div>
+        <button id="delete-account">Delete Account</button>
+      </section>
+    );
   }
 }
 
