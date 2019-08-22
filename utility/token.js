@@ -14,7 +14,7 @@ module.exports = {
     return jwt.encode({ seed: this.genSecret() }, this.genSecret());
   },
 
-  genExpDate: function(minutes = 0) {
+  genExpDate: function(minutes = 60) {
     var dateObj = new Date();
 
     return dateObj.setMinutes(dateObj.getMinutes() + minutes);
