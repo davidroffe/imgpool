@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import Dashboard from './Dashboard';
 import Login from './Login';
 
@@ -12,6 +13,7 @@ class Account extends React.Component {
       email: '',
       password: '',
       passwordConfirm: '',
+      isLoggedIn: 'false',
       errorMessage: []
     };
 
@@ -19,7 +21,13 @@ class Account extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSwitchForm = this.handleSwitchForm.bind(this);
   }
-  componentDidMount() {}
+  componentDidMount() {
+    axios.post('/api/user/validate').then(() => {
+      this.setState({
+        isLoggedIn: !!Cookies.get('auth')
+      });
+    });
+  }
   handleChange(event) {
     let value = event.target.value;
     let newState = {};
@@ -67,7 +75,9 @@ class Account extends React.Component {
         }
       })
         .then(() => {
-          splashClass.props.history.push('/account/dashboard');
+          this.setState({
+            isLoggedIn: true
+          });
         })
         .catch(error => {
           errorMessage.push(error.response.data);

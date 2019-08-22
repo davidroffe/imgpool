@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import Splash from './Splash';
 import Account from './Account/index';
-import Dashboard from './Account/Dashboard';
 import About from './About';
 import Logo from '../assets/images/logo.svg';
 class App extends React.Component {
@@ -25,8 +24,7 @@ class App extends React.Component {
             <input className="search" type="text" placeholder="Search..." />
           </header>
           <Route path="/" exact component={Splash} />
-          <Route path="/account" exact component={Account} />
-          <Route path="/account/dashboard" exact component={Dashboard} />
+          <Route path="/account" component={Account} />
           <Route path="/about" exact component={About} />
         </div>
       </Router>
