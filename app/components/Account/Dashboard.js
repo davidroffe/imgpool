@@ -13,17 +13,23 @@ class Login extends React.Component {
         <h2>Username</h2>
         <div className="row">
           <p>{this.props.username}</p>
-          <button>edit</button>
+          <button id="edit-username" onClick={this.props.handleEditAccount}>
+            edit
+          </button>
         </div>
         <h2>Email</h2>
         <div className="row">
           <p>{this.props.email}</p>
-          <button>edit</button>
+          <button id="edit-email" onClick={this.props.handleEditAccount}>
+            edit
+          </button>
         </div>
         <h2>Password</h2>
         <div className="row">
           <p>hidden</p>
-          <button>edit</button>
+          <button id="edit-password" onClick={this.props.handleEditAccount}>
+            edit
+          </button>
         </div>
         <button id="delete-account">Delete Account</button>
       </section>

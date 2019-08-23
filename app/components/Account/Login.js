@@ -13,7 +13,7 @@ class Login extends React.Component {
     return (
       <div id="account-center">
         <div id="center-box">
-          <form onSubmit={this.handleSubmit}>
+          <form className="form-dark" onSubmit={this.handleSubmit}>
             <Input
               id="email"
               autoComplete={'off'}

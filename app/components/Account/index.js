@@ -3,6 +3,8 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import Dashboard from './Dashboard';
 import Login from './Login';
+import Edit from './Edit';
+import Modal from '../Utility/Modal';
 
 class Account extends React.Component {
   constructor(props) {
@@ -14,13 +16,22 @@ class Account extends React.Component {
       username: '',
       password: '',
       passwordConfirm: '',
+      edit: {
+        username: '',
+        password: '',
+        passwordConfirm: ''
+      },
       isLoggedIn: 'false',
+      editField: '',
+      showModal: false,
       errorMessage: []
     };
 
+    this.handleClick = this.handleClick.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSwitchForm = this.handleSwitchForm.bind(this);
+    this.handleEditAccount = this.handleEditAccount.bind(this);
   }
   componentDidMount() {
     axios.post('/api/user/validate').then(res => {
@@ -34,9 +45,13 @@ class Account extends React.Component {
   handleChange(event) {
     let value = event.target.value;
     let newState = {};
+    const inputEl = event.target;
 
-    newState[event.target.id] = value;
-    this.setState(newState);
+    newState[inputEl.id] = value;
+
+    this.setState(
+      inputEl.parentElement.id === 'edit-form' ? { edit: newState } : newState
+    );
   }
   handleSubmit(e) {
     e.preventDefault();
@@ -79,7 +94,6 @@ class Account extends React.Component {
         }
       })
         .then(res => {
-          console.log(res);
           this.setState({
             email: res.data.email,
             username: res.data.username,
@@ -103,11 +117,35 @@ class Account extends React.Component {
       form
     });
   }
+  handleEditAccount(e) {
+    e.preventDefault();
+
+    this.setState({
+      editField: e.target.id,
+      showModal: true
+    });
+  }
+  handleClick(e) {
+    if (e.target.id === 'modal-container') {
+      this.setState({
+        showModal: false,
+        edit: {
+          username: '',
+          password: '',
+          passwordConfirm: ''
+        }
+      });
+    }
+  }
   render() {
     return (
       <section id="account">
         {this.state.isLoggedIn ? (
-          <Dashboard email={this.state.email} username={this.state.username} />
+          <Dashboard
+            handleEditAccount={this.handleEditAccount}
+            email={this.state.email}
+            username={this.state.username}
+          />
         ) : (
           <Login
             handleChange={this.handleChange}
@@ -121,6 +159,20 @@ class Account extends React.Component {
             errorMessage={this.state.errorMessage}
           />
         )}
+        {this.state.showModal ? (
+          <Modal handleClick={this.handleClick}>
+            <Edit
+              handleChange={this.handleChange}
+              handleSubmit={this.handleSubmit}
+              field={this.state.editField}
+              email={this.state.edit.email}
+              username={this.state.edit.username}
+              password={this.state.edit.password}
+              passwordConfirm={this.state.edit.passwordConfirm}
+              errorMessage={this.state.errorMessage}
+            />
+          </Modal>
+        ) : null}
       </section>
     );
   }
