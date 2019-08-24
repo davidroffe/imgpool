@@ -20,7 +20,6 @@ module.exports = (Models, router) => {
     if (password === '') {
       errorRes.message.push('Please enter a password.');
     }
-    console.log(errorRes.message[0]);
     if (errorRes.message.length > 0) {
       ctx.throw(401, 'Invalid email or password', errorRes);
     } else {
@@ -56,7 +55,6 @@ module.exports = (Models, router) => {
       ctx.throw(401, 'Invalid email or password');
     } else {
       const user = await Models.User.findOne({ where: { email: email } });
-      console.log('user from logging in is set to: ' + user);
       if (!user) {
         ctx.throw(401, 'Invalid email or password');
       } else if (bcrypt.compareSync(password, user.password)) {
@@ -76,6 +74,52 @@ module.exports = (Models, router) => {
       }
     }
   });
+  router.post('/user/edit', async ctx => {
+    const token = ctx.cookies.get('auth');
+    const field = ctx.query.editField;
+    const email = ctx.query.email || '';
+    const username = ctx.query.username || '';
+    const password = ctx.query.password || '';
+    const passwordConfirm = ctx.query.passwordConfirm || '';
+    const emailRegEx = /[\w.]+@[\w.]+/;
+
+    const user = await Models.User.findOne({ where: { token: token } });
+    if (!user) {
+      ctx.throw(401, 'Invalid token');
+    } else {
+      if (field === 'edit-email') {
+        if (email === '' || !emailRegEx.test(email)) {
+          ctx.throw(401, 'Invalid email');
+        } else {
+          user.email = email;
+        }
+      } else if (field === 'edit-username') {
+        if (username === '') {
+          ctx.throw(401, 'Invalid username');
+        } else {
+          user.username = username;
+        }
+      } else if (field === 'edit-password') {
+        if (
+          password === '' ||
+          passwordConfirm === '' ||
+          password !== passwordConfirm
+        ) {
+          ctx.throw(401, 'Invalid password');
+        } else {
+          user.password = password;
+        }
+      }
+      user.tokenDate = tokenHelper.genExpDate();
+      user.save();
+      ctx.status = 200;
+      ctx.body = {
+        status: 'success',
+        username: user.username,
+        email: user.email
+      };
+    }
+  });
   router.post('/user/validate', async ctx => {
     const token = ctx.cookies.get('auth');
     const url = ctx.url;
@@ -83,12 +127,9 @@ module.exports = (Models, router) => {
     if (token) {
       const user = await Models.User.findOne({ where: { token: token } });
 
-      console.log('Checking DB for user with token: ' + token);
       if (user) {
-        console.log('User with token found in DB...');
         //Check for expiration
         if (user.tokenDate <= Date.now()) {
-          console.log('Token has expired, clearing token!');
           ctx.cookies.set('auth');
           user.token = '';
           user.tokenDate = '';
@@ -102,8 +143,6 @@ module.exports = (Models, router) => {
           email: user.email
         };
       } else {
-        console.log('No user found with that token; clearing token!');
-        console.log('url is: ' + url);
         ctx.cookies.set('auth');
       }
     }

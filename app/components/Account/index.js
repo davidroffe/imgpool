@@ -18,6 +18,7 @@ class Account extends React.Component {
       passwordConfirm: '',
       edit: {
         username: '',
+        email: '',
         password: '',
         passwordConfirm: ''
       },
@@ -32,6 +33,7 @@ class Account extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSwitchForm = this.handleSwitchForm.bind(this);
     this.handleEditAccount = this.handleEditAccount.bind(this);
+    this.handleEditSubmit = this.handleEditSubmit.bind(this);
   }
   componentDidMount() {
     axios.post('/api/user/validate').then(res => {
@@ -108,6 +110,74 @@ class Account extends React.Component {
         });
     }
   }
+  handleEditSubmit(e) {
+    e.preventDefault();
+
+    const thisComponent = this;
+    const currentEmail = this.state.email;
+    const currentUsername = this.state.username;
+    const email = this.state.edit.email;
+    const username = this.state.edit.username;
+    const password = this.state.edit.password;
+    const passwordConfirm = this.state.edit.passwordConfirm;
+    const editField = this.state.editField;
+    const url = '/api/user/edit';
+    let errorMessage = [];
+
+    if (editField === 'edit-email') {
+      if (email === undefined || email === '') {
+        errorMessage.push('Please enter an email.');
+      } else if (email === currentEmail) {
+        errorMessage.push('Please use a different email.');
+      }
+    }
+    if (editField === 'edit-username') {
+      if (username === currentUsername) {
+        errorMessage.push('Please use a different username.');
+      }
+    }
+    if (editField === 'edit-password') {
+      if (password === undefined || password === '') {
+        errorMessage.push('Please enter a password.');
+      } else if (password.length < 8) {
+        errorMessage.push('Password must be at least 8 characters.');
+      } else if (password !== passwordConfirm) {
+        errorMessage.push('Passwords do not match.');
+      }
+    }
+    if (errorMessage.length > 0) {
+      this.setState({
+        errorMessage
+      });
+    } else {
+      axios({
+        url: url,
+        method: 'post',
+        params: {
+          currentEmail: currentEmail,
+          editField: editField,
+          email: email,
+          username: username,
+          password: password,
+          passwordConfirm: passwordConfirm
+        }
+      })
+        .then(res => {
+          if (res.data.status === 'success') {
+            this.setState({
+              email: res.data.email,
+              username: res.data.username
+            });
+          }
+        })
+        .catch(error => {
+          errorMessage.push(error.response.data);
+          thisComponent.setState({
+            errorMessage
+          });
+        });
+    }
+  }
   handleSwitchForm(e) {
     e.preventDefault();
 
@@ -163,7 +233,7 @@ class Account extends React.Component {
           <Modal handleClick={this.handleClick}>
             <Edit
               handleChange={this.handleChange}
-              handleSubmit={this.handleSubmit}
+              handleSubmit={this.handleEditSubmit}
               field={this.state.editField}
               email={this.state.edit.email}
               username={this.state.edit.username}
