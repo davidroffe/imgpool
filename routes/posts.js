@@ -9,8 +9,8 @@ module.exports = (Models, router) => {
   });
   router.post('/posts/create', upload.single('image'), async ctx => {
     const allPosts = await Models.Post.findAll();
-    console.log('ctx.request.files', ctx.request.files);
-    console.log('ctx.files', ctx.files);
+    console.log('ctx.request.file', ctx.request.file);
+    console.log('ctx.file', ctx.file);
     ctx.body = allPosts;
   });
   router.post('/posts/delete', async ctx => {

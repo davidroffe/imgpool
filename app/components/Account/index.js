@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import Dashboard from './Dashboard';
 import Login from './Login';
 import Edit from './Edit';
+import CreatePost from './CreatePost';
 import Modal from '../Utility/Modal';
 
 class Account extends React.Component {
@@ -22,9 +23,15 @@ class Account extends React.Component {
         password: '',
         passwordConfirm: ''
       },
+      post: {
+        file: '',
+        source: '',
+        tags: ''
+      },
       isLoggedIn: 'false',
       editField: '',
       showModal: false,
+      modalContent: '',
       errorMessage: []
     };
 
@@ -32,7 +39,7 @@ class Account extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSwitchForm = this.handleSwitchForm.bind(this);
-    this.handleEditAccount = this.handleEditAccount.bind(this);
+    this.toggleModal = this.toggleModal.bind(this);
     this.handleEditSubmit = this.handleEditSubmit.bind(this);
   }
   componentDidMount() {
@@ -187,10 +194,12 @@ class Account extends React.Component {
       form
     });
   }
-  handleEditAccount(e) {
+  toggleModal(modalContent, e) {
+    console.log(modalContent);
     e.preventDefault();
 
     this.setState({
+      modalContent: modalContent,
       editField: e.target.id,
       showModal: true
     });
@@ -212,7 +221,7 @@ class Account extends React.Component {
       <section id="account">
         {this.state.isLoggedIn ? (
           <Dashboard
-            handleEditAccount={this.handleEditAccount}
+            toggleModal={this.toggleModal}
             email={this.state.email}
             username={this.state.username}
           />
@@ -231,16 +240,27 @@ class Account extends React.Component {
         )}
         {this.state.showModal ? (
           <Modal handleClick={this.handleClick}>
-            <Edit
-              handleChange={this.handleChange}
-              handleSubmit={this.handleEditSubmit}
-              field={this.state.editField}
-              email={this.state.edit.email}
-              username={this.state.edit.username}
-              password={this.state.edit.password}
-              passwordConfirm={this.state.edit.passwordConfirm}
-              errorMessage={this.state.errorMessage}
-            />
+            {this.state.modalContent === 'edit' ? (
+              <Edit
+                handleChange={this.handleChange}
+                handleSubmit={this.handleEditSubmit}
+                field={this.state.editField}
+                email={this.state.edit.email}
+                username={this.state.edit.username}
+                password={this.state.edit.password}
+                passwordConfirm={this.state.edit.passwordConfirm}
+                errorMessage={this.state.errorMessage}
+              />
+            ) : (
+              <CreatePost
+                handleChange={this.handleChange}
+                handleSubmit={this.handleCreatePostSubmit}
+                file={this.state.post.file}
+                source={this.state.post.source}
+                tags={this.state.post.tags}
+                errorMessage={this.state.errorMessage}
+              />
+            )}
           </Modal>
         ) : null}
       </section>

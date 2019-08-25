@@ -10,28 +10,50 @@ class Login extends React.Component {
         <h1>
           <span>Account</span>
         </h1>
-        <h2>Username</h2>
-        <div className="row">
-          <p>{this.props.username}</p>
-          <button id="edit-username" onClick={this.props.handleEditAccount}>
-            edit
+        <div className="left">
+          <h2>Username</h2>
+          <div className="row">
+            <p>{this.props.username}</p>
+            <button
+              id="edit-username"
+              onClick={this.props.toggleModal.bind(this, 'edit')}
+            >
+              edit
+            </button>
+          </div>
+          <h2>Email</h2>
+          <div className="row">
+            <p>{this.props.email}</p>
+            <button
+              id="edit-email"
+              onClick={this.props.toggleModal.bind(this, 'edit')}
+            >
+              edit
+            </button>
+          </div>
+          <h2>Password</h2>
+          <div className="row">
+            <p>hidden</p>
+            <button
+              id="edit-password"
+              onClick={this.props.toggleModal.bind(this, 'edit')}
+            >
+              edit
+            </button>
+          </div>
+          <button className="button-large" id="delete-account">
+            Delete Account
           </button>
         </div>
-        <h2>Email</h2>
-        <div className="row">
-          <p>{this.props.email}</p>
-          <button id="edit-email" onClick={this.props.handleEditAccount}>
-            edit
+        <div className="right">
+          <button
+            className="border-button"
+            id="create-post"
+            onClick={this.props.toggleModal.bind(this, 'createPost')}
+          >
+            Create Post
           </button>
         </div>
-        <h2>Password</h2>
-        <div className="row">
-          <p>hidden</p>
-          <button id="edit-password" onClick={this.props.handleEditAccount}>
-            edit
-          </button>
-        </div>
-        <button id="delete-account">Delete Account</button>
       </section>
     );
   }

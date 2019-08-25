@@ -11,6 +11,28 @@ body,
   height: 100%;
 }
 
+.border-button {
+  border: 2px solid @charcoal;
+  padding: 0px 14px;
+  width: 326px;
+  height: 50px;
+  background: none;
+  color: @charcoal;
+  font-family: sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  display: block;
+  cursor: pointer;
+  transition: background 0.5s ease, color 0.5s ease;
+
+  &:hover {
+    background: @charcoal;
+    color: @faded_white;
+  }
+  &:focus {
+    outline: 0;
+  }
+}
 #main-header {
   display: flex;
   justify-content: space-between;

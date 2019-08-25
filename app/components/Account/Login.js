@@ -66,6 +66,7 @@ class Login extends React.Component {
               );
             })}
             <Input
+              className="border-button"
               type={'submit'}
               value={this.props.form === 'login' ? 'LOGIN' : 'SIGN UP'}
             />

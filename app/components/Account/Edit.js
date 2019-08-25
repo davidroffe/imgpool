@@ -66,7 +66,7 @@ class Edit extends React.Component {
             </p>
           );
         })}
-        <Input type={'submit'} />
+        <Input className="border-button" type={'submit'} />
       </form>
     );
   }

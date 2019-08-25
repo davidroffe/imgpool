@@ -26,26 +26,24 @@ input[type='password']:focus {
   opacity: 1;
 }
 input[type='submit'] {
-  border: 2px solid @charcoal;
-  padding: 0px 14px;
-  width: 326px;
-  height: 50px;
-  background: none;
-  color: @charcoal;
   margin: 40px auto 0;
-  font-family: sans-serif;
-  font-size: 1.2rem;
-  font-weight: 600;
-  display: block;
-  cursor: pointer;
-  transition: background 0.5s ease, color 0.5s ease;
 }
-input[type='submit']:hover {
-  background: @charcoal;
-  color: @faded_white;
-}
-input[type='submit']:focus {
-  outline: 0;
+
+.upload-container {
+  padding: 15px 10px;
+  margin: auto;
+  width: 300px;
+  border-bottom: 1px solid @charcoal;
+
+  button {
+    padding: 0;
+    border: none;
+    outline: none;
+    font-size: 1.2rem;
+    font-family: sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+  }
 }
 
 .form-dark {
