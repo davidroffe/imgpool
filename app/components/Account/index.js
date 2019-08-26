@@ -41,6 +41,7 @@ class Account extends React.Component {
     this.handleSwitchForm = this.handleSwitchForm.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
     this.handleEditSubmit = this.handleEditSubmit.bind(this);
+    this.handleCreatePostSubmit = this.handleCreatePostSubmit.bind(this);
   }
   componentDidMount() {
     axios.post('/api/user/validate').then(res => {
@@ -51,16 +52,26 @@ class Account extends React.Component {
       });
     });
   }
-  handleChange(event) {
-    let value = event.target.value;
-    let newState = {};
+  handleChange(form = '', event) {
     const inputEl = event.target;
+    let value = inputEl.type === 'file' ? inputEl.files[0] : inputEl.value;
+    let newState = {};
 
-    newState[inputEl.id] = value;
-
-    this.setState(
-      inputEl.parentElement.id === 'edit-form' ? { edit: newState } : newState
-    );
+    switch (form) {
+      case 'edit':
+        newState = this.state.edit;
+        newState[inputEl.id] = value;
+        this.setState({ edit: newState });
+        break;
+      case 'post':
+        newState = this.state.edit;
+        newState[inputEl.id] = value;
+        this.setState({ post: newState });
+        break;
+      default:
+        newState[inputEl.id] = value;
+        this.setState(newState);
+    }
   }
   handleSubmit(e) {
     e.preventDefault();
@@ -185,6 +196,49 @@ class Account extends React.Component {
         });
     }
   }
+  handleCreatePostSubmit(e) {
+    e.preventDefault();
+
+    const thisComponent = this;
+    const file = this.state.post.file;
+    const source = this.state.post.source;
+    const tags = this.state.post.tags;
+    const url = '/api/post/create';
+    let formData = new FormData();
+    const config = {
+      headers: {
+        'content-type': 'multipart/form-data'
+      }
+    };
+    let errorMessage = [];
+
+    if (file === undefined || file === '') {
+      errorMessage.push('Please select a file.');
+    }
+    if (errorMessage.length > 0) {
+      this.setState({
+        errorMessage
+      });
+    } else {
+      config.params = {
+        source: source,
+        tags: tags
+      };
+      formData.append('image', file);
+      axios
+        .post(url, formData, config)
+        .then(res => {
+          if (res.data.status === 'success') {
+          }
+        })
+        .catch(error => {
+          errorMessage.push(error.response.data);
+          thisComponent.setState({
+            errorMessage
+          });
+        });
+    }
+  }
   handleSwitchForm(e) {
     e.preventDefault();
 
@@ -195,7 +249,6 @@ class Account extends React.Component {
     });
   }
   toggleModal(modalContent, e) {
-    console.log(modalContent);
     e.preventDefault();
 
     this.setState({

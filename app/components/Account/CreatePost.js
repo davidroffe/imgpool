@@ -5,20 +5,21 @@ import FileInput from '../Utility/FileInput';
 class CreatePost extends React.Component {
   constructor(props) {
     super(props);
-
-    this.handleChange = props.handleChange;
-    this.handleSubmit = props.handleSubmit;
   }
   render() {
     return (
-      <form id="edit-form" className="form-light" onSubmit={this.handleSubmit}>
+      <form
+        id="post-form"
+        className="form-light"
+        onSubmit={this.props.handleSubmit}
+      >
         <FileInput
-          id="post"
+          id="file"
           type={'file'}
           title={'Post'}
           name={'post'}
           value={this.props.post}
-          handleChange={this.handleChange}
+          handleChange={this.props.handleChange.bind(this, 'post')}
         />
         <Input
           id="source"
@@ -28,7 +29,7 @@ class CreatePost extends React.Component {
           name={'source'}
           value={this.props.source}
           placeholder={'SOURCE'}
-          handleChange={this.handleChange}
+          handleChange={this.props.handleChange.bind(this, 'post')}
         />
         <Input
           id="tags"
@@ -38,7 +39,7 @@ class CreatePost extends React.Component {
           name={'tags'}
           value={this.props.tags}
           placeholder={'TAGS'}
-          handleChange={this.handleChange}
+          handleChange={this.props.handleChange.bind(this, 'post')}
         />
         {this.props.errorMessage.map((errorMessage, index) => {
           return (

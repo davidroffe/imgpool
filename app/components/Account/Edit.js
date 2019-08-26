@@ -4,13 +4,14 @@ import Input from '../Utility/Input';
 class Edit extends React.Component {
   constructor(props) {
     super(props);
-
-    this.handleChange = props.handleChange;
-    this.handleSubmit = props.handleSubmit;
   }
   render() {
     return (
-      <form id="edit-form" className="form-light" onSubmit={this.handleSubmit}>
+      <form
+        id="edit-form"
+        className="form-light"
+        onSubmit={this.props.handleSubmit}
+      >
         {this.props.field === 'edit-username' ? (
           <Input
             id="username"
@@ -20,7 +21,7 @@ class Edit extends React.Component {
             name={'username'}
             value={this.props.username}
             placeholder={'USERNAME'}
-            handleChange={this.handleChange}
+            handleChange={this.props.handleChange.bind(this, 'edit')}
           />
         ) : null}
         {this.props.field === 'edit-email' ? (
@@ -32,7 +33,7 @@ class Edit extends React.Component {
             name={'email'}
             value={this.props.email}
             placeholder={'EMAIL'}
-            handleChange={this.handleChange}
+            handleChange={this.props.handleChange.bind(this, 'edit')}
           />
         ) : null}
         {this.props.field === 'edit-password' ? (
@@ -45,7 +46,7 @@ class Edit extends React.Component {
               name={'password'}
               value={this.props.password}
               placeholder={'PASSWORD'}
-              handleChange={this.handleChange}
+              handleChange={this.props.handleChange.bind(this, 'edit')}
             />
             <Input
               id="passwordConfirm"
@@ -55,7 +56,7 @@ class Edit extends React.Component {
               name={'password-confirm'}
               value={this.props.passwordConfirm}
               placeholder={'CONFIRM PASSWORD'}
-              handleChange={this.handleChange}
+              handleChange={this.props.handleChange.bind(this, 'edit')}
             />
           </div>
         ) : null}
