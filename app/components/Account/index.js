@@ -53,6 +53,7 @@ class Account extends React.Component {
     });
   }
   handleChange(form = '', event) {
+    if (typeof event === 'undefined') event = form;
     const inputEl = event.target;
     let value = inputEl.type === 'file' ? inputEl.files[0] : inputEl.value;
     let newState = {};
