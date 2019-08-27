@@ -23,7 +23,7 @@ module.exports = (Models, router) => {
   });
   router.post('/post/create', upload.single('image'), async ctx => {
     const dimensions = sizeOf(ctx.file.path);
-    const tags = ctx.query.tags;
+    const tags = ctx.query.tags.split(' ');
     const source = ctx.query.source;
     const newPost = await Models.Post.create({
       height: dimensions.height,
@@ -31,6 +31,18 @@ module.exports = (Models, router) => {
       source: source,
       url: '/uploads/' + ctx.file.filename
     });
+
+    for (var i = 0; i < tags.length; i++) {
+      const [tag, created] = await Models.Tag.findOrCreate({
+        where: { name: tags[i] },
+        defaults: { active: true }
+      });
+
+      await Models.TaggedPost.create({
+        postId: newPost.id,
+        tagId: tag.id
+      });
+    }
 
     ctx.body = newPost;
   });
