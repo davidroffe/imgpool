@@ -10,6 +10,7 @@
     ]
   },
   "scripts": {
+    "init": "node init.js",
     "test": "jest --watchAll",
     "dev": "node app.js"
   },
