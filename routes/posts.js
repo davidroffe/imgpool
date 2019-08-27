@@ -2,6 +2,7 @@ const path = require('path');
 const rootPath = path.dirname(require.main.filename);
 const multer = require('@koa/multer');
 const sizeOf = require('image-size');
+const sharp = require('sharp');
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, rootPath + '/uploads');
@@ -23,8 +24,10 @@ module.exports = (Models, router) => {
   });
   router.post('/post/create', upload.single('image'), async ctx => {
     const dimensions = sizeOf(ctx.file.path);
-    const tags = ctx.query.tags.split(' ');
-    const source = ctx.query.source;
+    const tags =
+      typeof ctx.query.tags !== 'undefined' ? ctx.query.tags.split(' ') : '';
+    const source =
+      typeof ctx.query.source !== 'undefined' ? ctx.query.source : '';
     const newPost = await Models.Post.create({
       height: dimensions.height,
       width: dimensions.width,
@@ -43,6 +46,12 @@ module.exports = (Models, router) => {
         tagId: tag.id
       });
     }
+
+    await sharp(ctx.file.path)
+      .resize(200, 200, {
+        fit: 'inside'
+      })
+      .toFile(ctx.file.destination + '/thumbnails/' + ctx.file.filename);
 
     ctx.body = newPost;
   });
