@@ -6,6 +6,7 @@ module.exports = (Models, router) => {
     const email = ctx.query.email || '';
     const username = ctx.query.username || '';
     const password = ctx.query.password || '';
+    const passwordConfirm = ctx.query.passwordConfirm || '';
 
     const emailRegEx = /[\w.]+@[\w.]+/;
 
@@ -19,6 +20,9 @@ module.exports = (Models, router) => {
     }
     if (password === '') {
       errorRes.message.push('Please enter a password.');
+    }
+    if (password !== passwordConfirm) {
+      errorRes.message.push('Please enter a matching password confirmation.');
     }
     if (errorRes.message.length > 0) {
       ctx.throw(401, 'Invalid email or password', errorRes);
@@ -40,8 +44,8 @@ module.exports = (Models, router) => {
         ctx.cookies.set('auth', token, { httpOnly: false });
         ctx.status = 200;
         ctx.body = {
-          username: user.username,
-          email: user.email
+          username: user[0].username,
+          email: user[0].email
         };
       }
     }

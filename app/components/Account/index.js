@@ -111,7 +111,8 @@ class Account extends React.Component {
         params: {
           email: email,
           username: username,
-          password: password
+          password: password,
+          passwordConfirm: passwordConfirm
         }
       })
         .then(res => {
