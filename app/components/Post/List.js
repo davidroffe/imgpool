@@ -17,10 +17,10 @@ class List extends React.Component {
   }
   render() {
     return (
-      <section id="browse">
+      <section id="post-list">
         {this.state.posts.map((post, index) => {
           return (
-            <Link key={index} to={'/post/' + post.id}>
+            <Link key={index} to={'/post/' + post.id} className="post-item">
               <img src={post.thumbUrl} />
             </Link>
           );

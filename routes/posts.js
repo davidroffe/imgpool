@@ -56,7 +56,7 @@ module.exports = (Models, router) => {
 
     await sharp(ctx.file.path)
       .resize(200, 200, {
-        fit: 'inside'
+        fit: 'cover'
       })
       .toFile(ctx.file.destination + '/thumbnails/' + ctx.file.filename);
 

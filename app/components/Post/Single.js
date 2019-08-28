@@ -21,7 +21,9 @@ class Single extends React.Component {
   render() {
     return (
       <section id="post-single">
-        <img src={this.state.post.url} />
+        <div className="image-container">
+          <img src={this.state.post.url} />
+        </div>
       </section>
     );
   }
