@@ -231,6 +231,14 @@ class Account extends React.Component {
         .post(url, formData, config)
         .then(res => {
           if (res.data.status === 'success') {
+            this.setState({
+              showModal: false,
+              post: {
+                file: null,
+                source: '',
+                tags: ''
+              }
+            });
           }
         })
         .catch(error => {
@@ -267,6 +275,11 @@ class Account extends React.Component {
           username: '',
           password: '',
           passwordConfirm: ''
+        },
+        post: {
+          file: null,
+          source: '',
+          tags: ''
         }
       });
     }

@@ -53,7 +53,7 @@ module.exports = (Models, router) => {
       })
       .toFile(ctx.file.destination + '/thumbnails/' + ctx.file.filename);
 
-    ctx.body = newPost;
+    ctx.body = { status: 'success' };
   });
   router.post('/posts/delete', async ctx => {
     const allPosts = await Models.Post.findAll();
