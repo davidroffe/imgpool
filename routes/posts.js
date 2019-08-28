@@ -5,7 +5,7 @@ const sizeOf = require('image-size');
 const sharp = require('sharp');
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
-    cb(null, rootPath + '/uploads');
+    cb(null, rootPath + '/public/uploads');
   },
   filename: function(req, file, cb) {
     cb(
@@ -17,10 +17,16 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 module.exports = (Models, router) => {
-  router.get('/post/get', async ctx => {
+  router.get('/post/list', async ctx => {
     const allPosts = await Models.Post.findAll();
 
     ctx.body = allPosts;
+  });
+  router.get('/post/single', async ctx => {
+    const postId = ctx.query.id;
+    const post = await Models.Post.findOne({ where: { id: postId } });
+
+    ctx.body = post;
   });
   router.post('/post/create', upload.single('image'), async ctx => {
     const dimensions = sizeOf(ctx.file.path);
@@ -32,7 +38,8 @@ module.exports = (Models, router) => {
       height: dimensions.height,
       width: dimensions.width,
       source: source,
-      url: '/uploads/' + ctx.file.filename
+      url: '/uploads/' + ctx.file.filename,
+      thumbUrl: '/uploads/thumbnails/' + ctx.file.filename
     });
 
     for (var i = 0; i < tags.length; i++) {
