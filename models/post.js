@@ -6,7 +6,8 @@ module.exports = (sequelize, DataTypes) => {
       height: DataTypes.INTEGER,
       width: DataTypes.INTEGER,
       source: DataTypes.STRING,
-      url: DataTypes.STRING
+      url: DataTypes.STRING,
+      thumbUrl: DataTypes.STRING
     },
     {}
   );

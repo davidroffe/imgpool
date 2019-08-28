@@ -20,6 +20,9 @@ module.exports = {
       url: {
         type: Sequelize.STRING
       },
+      thumbUrl: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
