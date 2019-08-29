@@ -18,7 +18,21 @@ const upload = multer({ storage: storage });
 
 module.exports = (Models, router) => {
   router.get('/post/list', async ctx => {
-    const allPosts = await Models.Post.findAll();
+    const allPosts = await Models.Post.findAll({
+      include: [
+        {
+          model: Models.Tag,
+          as: 'tag',
+          required: false,
+          attributes: ['id', 'name', 'description', 'active'],
+          through: {
+            model: Models.TaggedPost,
+            as: 'taggedPost',
+            attributes: ['tagId']
+          }
+        }
+      ]
+    });
 
     ctx.body = allPosts;
   });
