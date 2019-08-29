@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import TagMenu from './TagMenu';
 import Splash from './Splash';
 import Account from './Account/index';
 import PostList from './Post/List';
@@ -7,10 +8,29 @@ import PostSingle from './Post/Single';
 import About from './About';
 import Logo from '../assets/images/logo.svg';
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      tagMenu: false
+    };
+
+    this.toggleTagMenu = this.toggleTagMenu.bind(this);
+  }
+  toggleTagMenu(e) {
+    e.preventDefault();
+
+    this.setState({
+      tagMenu: !this.state.tagMenu
+    });
+  }
   render() {
     return (
       <Router>
         <div>
+          <TagMenu
+            isActive={this.state.tagMenu}
+            toggleMenu={this.toggleTagMenu}
+          />
           <header id="main-header">
             <div className="left">
               <Link className="logo" to="/">
