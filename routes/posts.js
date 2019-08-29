@@ -24,12 +24,7 @@ module.exports = (Models, router) => {
           model: Models.Tag,
           as: 'tag',
           required: false,
-          attributes: ['id', 'name', 'description', 'active'],
-          through: {
-            model: Models.TaggedPost,
-            as: 'taggedPost',
-            attributes: ['tagId']
-          }
+          attributes: ['id', 'name']
         }
       ]
     });
