@@ -17,13 +17,18 @@ const TagMenu = props => {
 
     props.handleChange(e);
   };
+
   return (
     <aside id="tag-menu" className={props.isActive ? 'active' : ''}>
       <div className="body">
         <nav>
-          <Link to="post" className="tag">
-            tagName
-          </Link>
+          {props.tags.map((tag, index) => {
+            return (
+              <Link key={index} to={'post?tag=' + tag.id} className="tag">
+                {tag.name}
+              </Link>
+            );
+          })}
         </nav>
       </div>
       <button className="tab" onClick={props.toggleMenu}>
