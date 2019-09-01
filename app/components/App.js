@@ -20,12 +20,23 @@ class App extends React.Component {
     this.toggleTagMenu = this.toggleTagMenu.bind(this);
     this.setPostList = this.setPostList.bind(this);
     this.processTagList = this.processTagList.bind(this);
+    this.toggleTag = this.toggleTag.bind(this);
   }
   toggleTagMenu(e) {
     e.preventDefault();
 
     this.setState({
       tagMenu: !this.state.tagMenu
+    });
+  }
+  toggleTag(tag) {
+    let tagList = this.state.tagList;
+    for (var i = 0; i < tagList.length; i++) {
+      if (tagList[i].id === tag.id)
+        tagList[i].active = tagList[i].active ? false : true;
+    }
+    this.setState({
+      tagList
     });
   }
   setPostList(postList) {
@@ -47,6 +58,8 @@ class App extends React.Component {
           }
         }
 
+        tag.active = false;
+
         if (!exists) tagList.push(tag);
       }
     }
@@ -59,6 +72,7 @@ class App extends React.Component {
           <TagMenu
             isActive={this.state.tagMenu}
             toggleMenu={this.toggleTagMenu}
+            toggleTag={this.toggleTag}
             tags={this.state.tagList}
           />
           <header id="main-header">
@@ -83,6 +97,7 @@ class App extends React.Component {
               <PostList
                 setPostList={this.setPostList}
                 posts={this.state.postList}
+                tags={this.state.tagList}
               />
             )}
           />
