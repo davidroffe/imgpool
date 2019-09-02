@@ -52,23 +52,33 @@ class List extends React.Component {
     return activePosts;
   }
   render() {
-    return (
-      <section id="post-list">
-        <TagMenu
-          isActive={this.state.tagMenu}
-          toggleMenu={this.toggleTagMenu}
-          toggleTag={this.props.toggleTag}
-          tags={this.props.tags}
-        />
-        {this.getActivePosts().map((post, index) => {
-          return (
-            <Link key={index} to={'/post/' + post.id} className="post-item">
-              <img src={post.thumbUrl} />
-            </Link>
-          );
-        })}
-      </section>
-    );
+    if (this.props.posts.length === 0) {
+      return (
+        <section id="splash">
+          <div id="splash-center">
+            <h1>IMGPOOL</h1>
+          </div>
+        </section>
+      );
+    } else {
+      return (
+        <section id="post-list">
+          <TagMenu
+            isActive={this.state.tagMenu}
+            toggleMenu={this.toggleTagMenu}
+            toggleTag={this.props.toggleTag}
+            tags={this.props.tags}
+          />
+          {this.getActivePosts().map((post, index) => {
+            return (
+              <Link key={index} to={'/post/' + post.id} className="post-item">
+                <img src={post.thumbUrl} />
+              </Link>
+            );
+          })}
+        </section>
+      );
+    }
   }
 }
 

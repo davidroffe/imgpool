@@ -1,6 +1,10 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-import Splash from './Splash';
+import {
+  BrowserRouter as Router,
+  Route,
+  Redirect,
+  Link
+} from 'react-router-dom';
 import Account from './Account/index';
 import PostList from './Post/List';
 import PostSingle from './Post/Single';
@@ -65,16 +69,15 @@ class App extends React.Component {
                 <img src={Logo} alt="Classic Team Championship Logo" />
               </Link>
               <nav id="main-nav">
-                <Link to="/post">Browse</Link>
+                <Link to="/posts">Posts</Link>
                 <Link to="/account">Account</Link>
                 <Link to="/about">About</Link>
               </nav>
             </div>
             <input className="search" type="text" placeholder="Search..." />
           </header>
-          <Route path="/" exact component={Splash} />
           <Route
-            path="/post"
+            path="/posts"
             exact
             render={() => (
               <PostList
@@ -88,6 +91,7 @@ class App extends React.Component {
           <Route path="/post/:id" component={PostSingle} />
           <Route path="/account" component={Account} />
           <Route path="/about" exact component={About} />
+          <Redirect from="/" to="/posts" />
         </div>
       </Router>
     );
