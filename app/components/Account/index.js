@@ -35,7 +35,6 @@ class Account extends React.Component {
       errorMessage: []
     };
 
-    this.handleClick = this.handleClick.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSwitchForm = this.handleSwitchForm.bind(this);
@@ -259,15 +258,9 @@ class Account extends React.Component {
     });
   }
   toggleModal(modalContent, e) {
-    e.preventDefault();
+    e = typeof e === 'undefined' ? modalContent : e;
 
-    this.setState({
-      modalContent: modalContent,
-      editField: e.target.id,
-      showModal: true
-    });
-  }
-  handleClick(e) {
+    e.preventDefault();
     if (e.target.id === 'modal-container') {
       this.setState({
         showModal: false,
@@ -281,6 +274,12 @@ class Account extends React.Component {
           source: '',
           tags: ''
         }
+      });
+    } else {
+      this.setState({
+        modalContent: modalContent,
+        editField: e.target.id,
+        showModal: true
       });
     }
   }
@@ -307,7 +306,7 @@ class Account extends React.Component {
           />
         )}
         {this.state.showModal ? (
-          <Modal handleClick={this.handleClick}>
+          <Modal toggleModal={this.toggleModal}>
             {this.state.modalContent === 'edit' ? (
               <Edit
                 handleChange={this.handleChange}
