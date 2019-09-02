@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-import TagMenu from './TagMenu';
 import Splash from './Splash';
 import Account from './Account/index';
 import PostList from './Post/List';
@@ -13,21 +12,12 @@ class App extends React.Component {
     super(props);
     this.state = {
       postList: [],
-      tagList: [],
-      tagMenu: false
+      tagList: []
     };
 
-    this.toggleTagMenu = this.toggleTagMenu.bind(this);
     this.setPostList = this.setPostList.bind(this);
     this.processTagList = this.processTagList.bind(this);
     this.toggleTag = this.toggleTag.bind(this);
-  }
-  toggleTagMenu(e) {
-    e.preventDefault();
-
-    this.setState({
-      tagMenu: !this.state.tagMenu
-    });
   }
   toggleTag(tag) {
     let tagList = this.state.tagList;
@@ -69,12 +59,6 @@ class App extends React.Component {
     return (
       <Router>
         <div>
-          <TagMenu
-            isActive={this.state.tagMenu}
-            toggleMenu={this.toggleTagMenu}
-            toggleTag={this.toggleTag}
-            tags={this.state.tagList}
-          />
           <header id="main-header">
             <div className="left">
               <Link className="logo" to="/">
@@ -96,6 +80,7 @@ class App extends React.Component {
               <PostList
                 setPostList={this.setPostList}
                 posts={this.state.postList}
+                toggleTag={this.toggleTag}
                 tags={this.state.tagList}
               />
             )}

@@ -1,12 +1,14 @@
 import React from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import TagMenu from '../TagMenu';
 
 class List extends React.Component {
   constructor(props) {
     super(props);
 
     this.getActivePosts = this.getActivePosts.bind(this);
+    this.state = { tagMenu: false };
   }
   componentDidMount() {
     axios.get('/api/post/list').then(res => {
@@ -53,6 +55,12 @@ class List extends React.Component {
   render() {
     return (
       <section id="post-list">
+        <TagMenu
+          isActive={this.state.tagMenu}
+          toggleMenu={this.toggleTagMenu}
+          toggleTag={this.props.toggleTag}
+          tags={this.props.tags}
+        />
         {this.getActivePosts().map((post, index) => {
           return (
             <Link key={index} to={'/post/' + post.id} className="post-item">
