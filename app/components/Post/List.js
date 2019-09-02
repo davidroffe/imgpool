@@ -23,27 +23,26 @@ class List extends React.Component {
     const tags = this.props.tags;
     let posts = this.props.posts;
     let activePosts = [];
-    let tagActive,
-      tagsActive = false;
+    let activeTags = [];
+    let tagsActive;
 
-    for (var i = 0; i < tags.length; i++) {
-      if (tags[i].active) tagsActive = true;
+    for (let i = 0; i < tags.length; i++) {
+      if (tags[i].active) activeTags.push(tags[i]);
     }
 
-    if (tagsActive) {
-      for (var i = 0; i < posts.length; i++) {
-        tagActive = false;
+    if (activeTags.length) {
+      for (let i = 0; i < posts.length; i++) {
+        tagsActive = 0;
 
-        for (var j = 0; j < posts[i].tag.length; j++) {
-          for (var k = 0; k < tags.length; k++) {
-            if (tags[k].active && tags[k].id === posts[i].tag[j].id) {
-              tagActive = true;
+        for (let j = 0; j < activeTags.length; j++) {
+          for (let k = 0; k < posts[i].tag.length; k++) {
+            if (activeTags[j].id === posts[i].tag[k].id) {
+              tagsActive++;
             }
           }
-          if (tagActive) {
-            activePosts.push(posts[i]);
-            break;
-          }
+        }
+        if (tagsActive === activeTags.length) {
+          activePosts.push(posts[i]);
         }
       }
     } else {
