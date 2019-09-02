@@ -83,7 +83,6 @@ class App extends React.Component {
               <nav id="main-nav">
                 <Link to="/post">Browse</Link>
                 <Link to="/account">Account</Link>
-                <Link to="/tags">Tags</Link>
                 <Link to="/about">About</Link>
               </nav>
             </div>
