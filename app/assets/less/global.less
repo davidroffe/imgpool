@@ -3,6 +3,9 @@
 @import './modal.less';
 @import './form.less';
 
+@mobile: 720px;
+@tablet: 900px;
+
 /* React wrapping root element children in div */
 html,
 body,
@@ -40,14 +43,24 @@ body {
 #main-header {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
   padding: 0 50px;
+  @media (max-width: @mobile) {
+    padding: 0 15px 0 65px;
+  }
 
   .left {
     display: flex;
+    @media (max-width: @mobile) {
+      width: 100%;
+    }
     .logo {
       display: inline-block;
       max-width: 150px;
       margin: 15px 0 0 20px;
+      @media (max-width: @mobile) {
+        margin: 0;
+      }
 
       img {
         width: 100%;
@@ -91,6 +104,9 @@ body {
       -6px 8px 15px rgba(0, 0, 0, 0.04), 6px 8px 15px rgba(0, 0, 0, 0.04);
     &::placeholder {
       color: @faded_white;
+    }
+    @media (max-width: @mobile) {
+      width: 100%;
     }
   }
 }
