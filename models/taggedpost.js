@@ -18,9 +18,23 @@ module.exports = (sequelize, DataTypes) => {
           model: 'Tag',
           key: 'id'
         }
+      },
+      tagName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        references: {
+          model: 'Tag',
+          key: 'name'
+        }
       }
     },
     {}
   );
+  TaggedPost.associate = function(models) {
+    TaggedPost.belongsTo(models.Post, {
+      as: 'post',
+      foreignKey: 'postId'
+    });
+  };
   return TaggedPost;
 };

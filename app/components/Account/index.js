@@ -259,8 +259,6 @@ class Account extends React.Component {
   }
   toggleModal(modalContent, e) {
     e = typeof e === 'undefined' ? modalContent : e;
-
-    e.preventDefault();
     if (e.target.id === 'modal-container') {
       this.setState({
         showModal: false,

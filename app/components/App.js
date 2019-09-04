@@ -1,11 +1,13 @@
 import React from 'react';
 import {
   BrowserRouter as Router,
+  Switch,
   Route,
   Redirect,
   Link
 } from 'react-router-dom';
 import Account from './Account/index';
+import PostSearch from './Post/Search';
 import PostList from './Post/List';
 import PostSingle from './Post/Single';
 import About from './About';
@@ -38,7 +40,7 @@ class App extends React.Component {
     this.processTagList(postList);
   }
   processTagList(postList) {
-    let tagList = this.state.tagList;
+    let tagList = [];
     let exists;
 
     for (var i = 0; i < postList.length; i++) {
@@ -74,7 +76,7 @@ class App extends React.Component {
                 <Link to="/about">About</Link>
               </nav>
             </div>
-            <input className="search" type="text" placeholder="Search..." />
+            <PostSearch setPostList={this.setPostList} />
           </header>
           <Route
             path="/posts"
@@ -88,10 +90,12 @@ class App extends React.Component {
               />
             )}
           />
-          <Route path="/post/:id" component={PostSingle} />
-          <Route path="/account" component={Account} />
-          <Route path="/about" exact component={About} />
-          <Redirect from="/" to="/posts" />
+          <Switch>
+            <Route path="/post/:id" component={PostSingle} />
+            <Route path="/account" component={Account} />
+            <Route path="/about" exact component={About} />
+            <Redirect from="/" exact to="/posts" />
+          </Switch>
         </div>
       </Router>
     );

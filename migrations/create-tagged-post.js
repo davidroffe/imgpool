@@ -24,6 +24,14 @@ module.exports = {
           key: 'id'
         }
       },
+      tagName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        references: {
+          model: 'Tags',
+          key: 'name'
+        }
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

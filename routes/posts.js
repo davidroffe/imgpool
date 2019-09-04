@@ -37,6 +37,7 @@ module.exports = (Models, router) => {
 
     ctx.body = post;
   });
+
   router.post('/post/create', upload.single('image'), async ctx => {
     const dimensions = sizeOf(ctx.file.path);
     const tags =
@@ -59,7 +60,8 @@ module.exports = (Models, router) => {
 
       await Models.TaggedPost.create({
         postId: newPost.id,
-        tagId: tag.id
+        tagId: tag.id,
+        tagName: tag.name
       });
     }
 
@@ -71,12 +73,43 @@ module.exports = (Models, router) => {
 
     ctx.body = { status: 'success' };
   });
-  router.post('/posts/delete', async ctx => {
+
+  router.get('/post/search', async ctx => {
+    const searchQuery = ctx.query.searchQuery.split(' ').map(x => `'${x}'`);
+    const posts = await Models.TaggedPost.findAll({
+      attributes: ['postId'],
+      group: [
+        'TaggedPost.postId',
+        'post.id',
+        'post->tag.id',
+        'post->tag->TaggedPost.postId',
+        'post->tag->TaggedPost.tagId',
+        'post->tag->TaggedPost.tagName',
+        'post->tag->TaggedPost.createdAt',
+        'post->tag->TaggedPost.updatedAt'
+      ],
+      having: Models.sequelize.literal(
+        `array_agg("TaggedPost"."tagName") @> array[${searchQuery}]::varchar[]`
+      ),
+      include: {
+        model: Models.Post,
+        as: 'post',
+        include: {
+          model: Models.Tag,
+          as: 'tag'
+        }
+      }
+    });
+
+    ctx.body = posts.map(x => x.post);
+  });
+
+  router.post('/post/delete', async ctx => {
     const allPosts = await Models.Post.findAll();
 
     ctx.body = allPosts;
   });
-  router.post('/posts/addTag', async ctx => {
+  router.post('/post/addTag', async ctx => {
     const allPosts = await Models.Post.findAll();
 
     ctx.body = allPosts;
