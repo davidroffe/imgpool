@@ -6,12 +6,12 @@ import {
   Redirect,
   Link
 } from 'react-router-dom';
+import Header from './Header';
 import Account from './Account/index';
 import PostSearch from './Post/Search';
 import PostList from './Post/List';
 import PostSingle from './Post/Single';
 import About from './About';
-import Logo from '../assets/images/logo.svg';
 
 class App extends React.Component {
   constructor(props) {
@@ -65,19 +65,9 @@ class App extends React.Component {
     return (
       <Router>
         <div>
-          <header id="main-header">
-            <div className="left">
-              <Link className="logo" to="/">
-                <img src={Logo} alt="Classic Team Championship Logo" />
-              </Link>
-              <nav id="main-nav">
-                <Link to="/posts">Posts</Link>
-                <Link to="/account">Account</Link>
-                <Link to="/about">About</Link>
-              </nav>
-            </div>
+          <Header>
             <PostSearch setPostList={this.setPostList} />
-          </header>
+          </Header>
           <Route
             path="/posts"
             exact
