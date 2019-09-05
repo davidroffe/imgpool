@@ -224,6 +224,11 @@ class Account extends React.Component {
     if (file === undefined || file === '') {
       errorMessage.push('Please select a file.');
     }
+    if (tags.split(' ').length < 4) {
+      errorMessage.push(
+        'Minimum 4 space separated tags. ie: red race_car bmw m3'
+      );
+    }
     if (errorMessage.length > 0) {
       this.setState({
         errorMessage

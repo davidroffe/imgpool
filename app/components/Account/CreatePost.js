@@ -28,7 +28,7 @@ class CreatePost extends React.Component {
           title={'Source'}
           name={'source'}
           value={this.props.source}
-          placeholder={'SOURCE'}
+          placeholder={'SOURCE URL'}
           handleChange={this.props.handleChange.bind(this, 'post')}
         />
         <Input
@@ -41,13 +41,15 @@ class CreatePost extends React.Component {
           placeholder={'TAGS'}
           handleChange={this.props.handleChange.bind(this, 'post')}
         />
-        {this.props.errorMessage.map((errorMessage, index) => {
-          return (
-            <p key={index} className="error">
-              {errorMessage}
-            </p>
-          );
-        })}
+        <div className="error-messages">
+          {this.props.errorMessage.map((errorMessage, index) => {
+            return (
+              <p key={index} className="error">
+                {errorMessage}
+              </p>
+            );
+          })}
+        </div>
         <Input className="border-button" type={'submit'} />
       </form>
     );
