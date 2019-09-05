@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { withRouter } from 'react-router-dom';
 import axios from 'axios';
 
 const PostSearch = props => {
@@ -9,6 +10,7 @@ const PostSearch = props => {
     const url = searchQuery.length ? '/api/post/search' : '/api/post/list';
     axios.get(url, { params: { searchQuery: searchQuery } }).then(res => {
       props.setPostList(res.data);
+      props.history.push('/posts');
     });
   };
   const handleChange = e => {
@@ -26,4 +28,4 @@ const PostSearch = props => {
   );
 };
 
-export default PostSearch;
+export default withRouter(PostSearch);
