@@ -2,20 +2,27 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  padding: 40px 65px;
+  padding: 40px 45px;
   @media (max-width: @mobile) {
-    justify-content: center;
-    padding: 15px 0 0 65px;
+    justify-content: flex-start;
+    padding: 15px 45px;
   }
 
   .post-item {
     margin: 10px;
     overflow: hidden;
     box-sizing: border-box;
+    @media (max-width: @mobile) {
+      width: 50%;
+      margin: 0;
+    }
 
     img {
       display: block;
       transition: transform 0.5s;
+      @media (max-width: @mobile) {
+        width: 100%;
+      }
 
       &:hover {
         transform: scale(1.1);

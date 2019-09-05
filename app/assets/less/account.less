@@ -2,6 +2,10 @@
   #account-center {
     width: 540px;
     margin: 200px auto 0;
+    @media (max-width: @mobile) {
+      width: 100%;
+      margin-top: 100px;
+    }
 
     #center-box {
       width: 520px;
@@ -10,10 +14,15 @@
       padding: 25px 0;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04),
         -6px 8px 15px rgba(0, 0, 0, 0.04), 6px 8px 15px rgba(0, 0, 0, 0.04);
-
+      @media (max-width: @mobile) {
+        width: 100%;
+      }
       > form {
         width: 400px;
         margin: 0 auto;
+        @media (max-width: @mobile) {
+          width: 100%;
+        }
       }
 
       button.switch-form {

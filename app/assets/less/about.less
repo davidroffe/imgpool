@@ -2,7 +2,18 @@
   max-width: 75%;
   margin: 5% auto 0;
   padding: 60px;
+  @media (max-width: @mobile) {
+    max-width: none;
+    margin: 0;
+    padding: 45px;
+  }
 
+  h1 {
+    @media (max-width: @mobile) {
+      margin: 0 0 35px;
+      font-size: 5rem;
+    }
+  }
   p {
     margin: 10px 0;
     font-weight: 600;
