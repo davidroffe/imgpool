@@ -6,8 +6,10 @@ class Single extends React.Component {
     super(props);
 
     this.state = {
-      post: { id: props.match.params.id || '' }
+      post: { id: props.match.params.id || '', tag: [] }
     };
+
+    this.handleTagClick = this.handleTagClick.bind(this);
   }
   componentDidMount() {
     axios
@@ -18,11 +20,27 @@ class Single extends React.Component {
         this.setState({ post: res.data });
       });
   }
+  handleTagClick(e) {
+    this.props.handleTagClick(
+      e,
+      () => this.props.history.push('/posts'),
+      e.target.innerText
+    );
+  }
   render() {
     return (
       <section id="post-single">
         <div className="image-container">
           <img src={this.state.post.url} />
+        </div>
+        <div className="tags">
+          {this.state.post.tag.map((tag, index) => {
+            return (
+              <button key={index} className="tag" onClick={this.handleTagClick}>
+                {tag.name}
+              </button>
+            );
+          })}
         </div>
       </section>
     );

@@ -5,6 +5,7 @@ import {
   Route,
   Redirect
 } from 'react-router-dom';
+import axios from 'axios';
 import Header from './Header';
 import Account from './Account/index';
 import PostSearch from './Post/Search';
@@ -17,12 +18,15 @@ class App extends React.Component {
     super(props);
     this.state = {
       postList: [],
-      tagList: []
+      tagList: [],
+      searchValue: ''
     };
 
     this.setPostList = this.setPostList.bind(this);
     this.processTagList = this.processTagList.bind(this);
     this.toggleTag = this.toggleTag.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
+    this.setSearchValue = this.setSearchValue.bind(this);
   }
   toggleTag(tag) {
     let tagList = this.state.tagList;
@@ -60,12 +64,37 @@ class App extends React.Component {
     }
     this.setState({ tagList });
   }
+  setSearchValue(searchValue) {
+    this.setState({ searchValue });
+  }
+  handleSearch(e, toPostList, searchValue = '') {
+    e.preventDefault();
+    let searchQuery;
+
+    if (searchValue) {
+      this.setState({ searchValue });
+      searchQuery = searchValue;
+    } else {
+      searchQuery = this.state.searchValue;
+    }
+
+    const url = searchQuery.length ? '/api/post/search' : '/api/post/list';
+
+    axios.get(url, { params: { searchQuery: searchQuery } }).then(res => {
+      this.setState({ postList: res.data });
+      toPostList();
+    });
+  }
   render() {
     return (
       <Router>
         <div>
           <Header>
-            <PostSearch setPostList={this.setPostList} />
+            <PostSearch
+              handleSubmit={this.handleSearch}
+              setSearchValue={this.setSearchValue}
+              searchValue={this.state.searchValue}
+            />
           </Header>
           <Route
             path="/posts"
@@ -80,7 +109,16 @@ class App extends React.Component {
             )}
           />
           <Switch>
-            <Route path="/post/:id" component={PostSingle} />
+            <Route
+              path="/post/:id"
+              render={props => (
+                <PostSingle
+                  {...props}
+                  handleTagClick={this.handleSearch}
+                  setSearchValue={this.setSearchValue}
+                />
+              )}
+            />
             <Route path="/account" component={Account} />
             <Route path="/about" exact component={About} />
             <Redirect from="/" exact to="/posts" />

@@ -1,20 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { withRouter } from 'react-router-dom';
-import axios from 'axios';
 
 const PostSearch = props => {
-  const [searchValue, setSearchValue] = useState('');
-  const handleSubmit = e => {
-    e.preventDefault();
-    const searchQuery = e.target.children[0].value;
-    const url = searchQuery.length ? '/api/post/search' : '/api/post/list';
-    axios.get(url, { params: { searchQuery: searchQuery } }).then(res => {
-      props.setPostList(res.data);
-      props.history.push('/posts');
-    });
-  };
   const handleChange = e => {
-    setSearchValue(e.target.value);
+    props.setSearchValue(e.target.value);
+  };
+  const handleSubmit = e => {
+    props.handleSubmit(e, () => props.history.push('/posts'));
   };
   return (
     <form className="search" onSubmit={handleSubmit}>
@@ -22,6 +14,7 @@ const PostSearch = props => {
         className="search-field"
         type="text"
         placeholder="Search..."
+        value={props.searchValue}
         onChange={handleChange}
       />
     </form>
