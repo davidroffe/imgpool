@@ -54,8 +54,16 @@ class Account extends React.Component {
   handleChange(form = '', event) {
     if (typeof event === 'undefined') event = form;
     const inputEl = event.target;
-    let value = inputEl.type === 'file' ? inputEl.files[0] : inputEl.value;
-    let newState = {};
+    let value,
+      newState = {};
+
+    if (inputEl.type === 'file') {
+      value = inputEl.files[0];
+    } else if (inputEl.id === 'tags') {
+      value = inputEl.value.toLowerCase();
+    } else {
+      value = inputEl.value;
+    }
 
     switch (form) {
       case 'edit':

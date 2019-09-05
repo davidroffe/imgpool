@@ -26,7 +26,7 @@ class App extends React.Component {
     this.processTagList = this.processTagList.bind(this);
     this.toggleTag = this.toggleTag.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
-    this.setSearchValue = this.setSearchValue.bind(this);
+    this.handleSearchChange = this.handleSearchChange.bind(this);
   }
   toggleTag(tag) {
     let tagList = this.state.tagList;
@@ -64,7 +64,9 @@ class App extends React.Component {
     }
     this.setState({ tagList });
   }
-  setSearchValue(searchValue) {
+  handleSearchChange(e) {
+    const searchValue = e.target.value.toLowerCase();
+
     this.setState({ searchValue });
   }
   handleSearch(e, toPostList, searchValue = '') {
@@ -92,7 +94,7 @@ class App extends React.Component {
           <Header>
             <PostSearch
               handleSubmit={this.handleSearch}
-              setSearchValue={this.setSearchValue}
+              handleSearchChange={this.handleSearchChange}
               searchValue={this.state.searchValue}
             />
           </Header>
