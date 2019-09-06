@@ -2,6 +2,11 @@ import React from 'react';
 import Input from '../Utility/Input';
 
 const Login = props => {
+  const switchForm = e => {
+    e.preventDefault();
+    props.setForm(props.form === 'login' ? 'signUp' : 'login');
+  };
+  console.log(props);
   return (
     <div id="account-center">
       <div id="center-box">
@@ -14,7 +19,7 @@ const Login = props => {
             name={'email'}
             value={props.email}
             placeholder={'EMAIL'}
-            handleChange={props.handleChange}
+            handleChange={e => props.setEmail(e.target.value)}
           />
           {props.form === 'signUp' ? (
             <Input
@@ -25,7 +30,7 @@ const Login = props => {
               name={'username'}
               value={props.username}
               placeholder={'USERNAME'}
-              handleChange={props.handleChange}
+              handleChange={e => props.setUsername(e.target.value)}
             />
           ) : null}
           <Input
@@ -36,7 +41,7 @@ const Login = props => {
             name={'password'}
             value={props.password}
             placeholder={'PASSWORD'}
-            handleChange={props.handleChange}
+            handleChange={e => props.setPassword(e.target.value)}
           />
           {props.form === 'signUp' ? (
             <Input
@@ -47,7 +52,7 @@ const Login = props => {
               name={'password-confirm'}
               value={props.passwordConfirm}
               placeholder={'CONFIRM PASSWORD'}
-              handleChange={props.handleChange}
+              handleChange={e => props.setPasswordConfirm(e.target.value)}
             />
           ) : null}
           <div className="error-messages">
@@ -66,7 +71,7 @@ const Login = props => {
           />
           <p>
             Don‘t have an account?{' '}
-            <button className="switch-form" onClick={props.handleSwitchForm}>
+            <button className="switch-form" onClick={switchForm}>
               {props.form === 'login' ? 'Sign Up' : 'Login'}
             </button>
           </p>

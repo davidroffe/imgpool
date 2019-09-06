@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Dashboard from './Dashboard';
@@ -7,110 +7,56 @@ import Edit from './Edit';
 import CreatePost from './CreatePost';
 import Modal from '../Utility/Modal';
 
-class Account extends React.Component {
-  constructor(props) {
-    super(props);
+const Account = () => {
+  const [form, setForm] = useState('login');
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editUsername, setEditUsername] = useState('');
+  const [editPassword, setEditPassword] = useState('');
+  const [editPasswordConfirm, setEditPasswordConfirm] = useState('');
+  const [postFile, setPostFile] = useState('');
+  const [postSource, setPostSource] = useState('');
+  const [postTags, setPostTags] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState('false');
+  const [editField, setEditField] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [modalContent, setModalContent] = useState('');
+  const [errorMessage, setErrorMessage] = useState([]);
 
-    this.state = {
-      form: 'login',
-      email: '',
-      username: '',
-      password: '',
-      passwordConfirm: '',
-      edit: {
-        username: '',
-        email: '',
-        password: '',
-        passwordConfirm: ''
-      },
-      post: {
-        file: '',
-        source: '',
-        tags: ''
-      },
-      isLoggedIn: 'false',
-      editField: '',
-      showModal: false,
-      modalContent: '',
-      errorMessage: []
-    };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleSwitchForm = this.handleSwitchForm.bind(this);
-    this.toggleModal = this.toggleModal.bind(this);
-    this.handleEditSubmit = this.handleEditSubmit.bind(this);
-    this.handleCreatePostSubmit = this.handleCreatePostSubmit.bind(this);
-  }
-  componentDidMount() {
+  useEffect(() => {
     axios.post('/api/user/validate').then(res => {
-      this.setState({
-        username: res.data.username,
-        email: res.data.email,
-        isLoggedIn: !!Cookies.get('auth')
-      });
+      setUsername(res.data.username || '');
+      setEmail(res.data.email || '');
+      setIsLoggedIn(!!Cookies.get('auth'));
     });
-  }
-  handleChange(form = '', event) {
-    if (typeof event === 'undefined') event = form;
-    const inputEl = event.target;
-    let value,
-      newState = {};
+  }, []);
 
-    if (inputEl.type === 'file') {
-      value = inputEl.files[0];
-    } else if (inputEl.id === 'tags') {
-      value = inputEl.value.toLowerCase();
-    } else {
-      value = inputEl.value;
-    }
-
-    switch (form) {
-      case 'edit':
-        newState = this.state.edit;
-        newState[inputEl.id] = value;
-        this.setState({ edit: newState });
-        break;
-      case 'post':
-        newState = this.state.edit;
-        newState[inputEl.id] = value;
-        this.setState({ post: newState });
-        break;
-      default:
-        newState[inputEl.id] = value;
-        this.setState(newState);
-    }
-  }
-  handleSubmit(e) {
+  const handleLoginSignUpSubmit = e => {
     e.preventDefault();
 
-    const thisComponent = this;
-    let form = this.state.form;
-    let errorMessage = [];
-    let email = this.state.email;
-    let username = this.state.username;
-    let password = this.state.password;
-    let passwordConfirm = this.state.passwordConfirm;
+    let newErrorMessage = [];
+    let passwordConfirm = passwordConfirm;
     const url = form === 'login' ? '/api/user/login' : '/api/user/signup';
 
     if (email === undefined || email === '') {
-      errorMessage.push('Please enter an email.');
+      newErrorMessage.push('Please enter an email.');
     }
     if (password === undefined || password === '') {
-      errorMessage.push('Please enter a password.');
+      newErrorMessage.push('Please enter a password.');
     }
     if (form === 'signUp') {
       if (password !== passwordConfirm) {
-        errorMessage.push('Passwords do not match.');
+        newErrorMessage.push('Passwords do not match.');
       }
       if (password.length < 8) {
-        errorMessage.push('Password must be at least 8 characters.');
+        newErrorMessage.push('Password must be at least 8 characters.');
       }
     }
-    if (errorMessage.length > 0) {
-      this.setState({
-        errorMessage
-      });
+    if (newErrorMessage.length > 0) {
+      setErrorMessage(newErrorMessage);
     } else {
       axios({
         url: url,
@@ -123,95 +69,80 @@ class Account extends React.Component {
         }
       })
         .then(res => {
-          this.setState({
-            email: res.data.email,
-            username: res.data.username,
-            isLoggedIn: true
-          });
+          setEmail(res.data.email);
+          setUsername(res.data.username);
+          setIsLoggedIn(true);
         })
         .catch(error => {
-          errorMessage.push(error.response.data);
-          thisComponent.setState({
-            errorMessage
-          });
+          setRrrorMessage(error.response.data);
         });
     }
-  }
-  handleEditSubmit(e) {
+  };
+  const handleEditSubmit = e => {
     e.preventDefault();
 
-    const thisComponent = this;
-    const currentEmail = this.state.email;
-    const currentUsername = this.state.username;
-    const email = this.state.edit.email;
-    const username = this.state.edit.username;
-    const password = this.state.edit.password;
-    const passwordConfirm = this.state.edit.passwordConfirm;
-    const editField = this.state.editField;
     const url = '/api/user/edit';
-    let errorMessage = [];
+    let newErrorMessage = [];
 
     if (editField === 'edit-email') {
-      if (email === undefined || email === '') {
-        errorMessage.push('Please enter an email.');
-      } else if (email === currentEmail) {
-        errorMessage.push('Please use a different email.');
+      if (editEmail === undefined || editEmail === '') {
+        newErrorMessage.push('Please enter an email.');
+      } else if (editEmail === email) {
+        newErrorMessage.push('Please use a different email.');
       }
     }
     if (editField === 'edit-username') {
-      if (username === currentUsername) {
-        errorMessage.push('Please use a different username.');
+      if (editUsername === undefined || editUsername === '') {
+        newErrorMessage.push('Please enter a username.');
+      } else if (editUsername === username) {
+        newErrorMessage.push('Please use a different username.');
       }
     }
     if (editField === 'edit-password') {
-      if (password === undefined || password === '') {
-        errorMessage.push('Please enter a password.');
-      } else if (password.length < 8) {
-        errorMessage.push('Password must be at least 8 characters.');
-      } else if (password !== passwordConfirm) {
-        errorMessage.push('Passwords do not match.');
+      if (editPassword === undefined || editPassword === '') {
+        newErrorMessage.push('Please enter a password.');
+      } else if (editPassword.length < 8) {
+        newErrorMessage.push('Password must be at least 8 characters.');
+      } else if (editPasswordConfirm !== passwordConfirm) {
+        newErrorMessage.push('Passwords do not match.');
       }
     }
-    if (errorMessage.length > 0) {
-      this.setState({
-        errorMessage
-      });
+    if (newErrorMessage.length > 0) {
+      setErrorMessage(newErrorMessage);
     } else {
       axios({
         url: url,
         method: 'post',
         params: {
-          currentEmail: currentEmail,
+          currentEmail: email,
           editField: editField,
-          email: email,
-          username: username,
-          password: password,
-          passwordConfirm: passwordConfirm
+          email: editEmail,
+          username: editUsername,
+          password: editPassword,
+          passwordConfirm: editPasswordConfirm
         }
       })
         .then(res => {
           if (res.data.status === 'success') {
-            this.setState({
-              email: res.data.email,
-              username: res.data.username
-            });
+            setEmail(res.data.email);
+            setUsername(res.data.username);
+
+            setShowModal(false);
+            setEditField('');
+            setEditEmail('');
+            setEditUsername('');
+            setEditPassword('');
+            setEditPasswordConfirm('');
           }
         })
         .catch(error => {
-          errorMessage.push(error.response.data);
-          thisComponent.setState({
-            errorMessage
-          });
+          setErrorMessage(error.response.data);
         });
     }
-  }
-  handleCreatePostSubmit(e) {
+  };
+  const handleCreatePostSubmit = e => {
     e.preventDefault();
 
-    const thisComponent = this;
-    const file = this.state.post.file;
-    const source = this.state.post.source;
-    const tags = this.state.post.tags;
     const url = '/api/post/create';
     let formData = new FormData();
     const config = {
@@ -219,131 +150,112 @@ class Account extends React.Component {
         'content-type': 'multipart/form-data'
       }
     };
-    let errorMessage = [];
+    let newErrorMessage = [];
 
-    if (file === undefined || file === '') {
-      errorMessage.push('Please select a file.');
+    if (postFile === undefined || postFile === '') {
+      newErrorMessage.push('Please select a file.');
     }
-    if (tags.split(' ').length < 4) {
-      errorMessage.push(
+    if (postTags.split(' ').length < 4) {
+      newErrorMessage.push(
         'Minimum 4 space separated tags. ie: red race_car bmw m3'
       );
     }
-    if (errorMessage.length > 0) {
-      this.setState({
-        errorMessage
-      });
+    if (newErrorMessage.length > 0) {
+      setErrorMessage(newErrorMessage);
     } else {
       config.params = {
-        source: source,
-        tags: tags
+        source: postSource,
+        tags: postTags
       };
-      formData.append('image', file);
+      formData.append('image', postFile);
       axios
         .post(url, formData, config)
         .then(res => {
           if (res.data.status === 'success') {
-            this.setState({
-              showModal: false,
-              post: {
-                file: null,
-                source: '',
-                tags: ''
-              }
-            });
+            setShowModal(false);
+            setPostFile(null);
+            setPostSource('');
+            setPostTags('');
           }
         })
         .catch(error => {
-          errorMessage.push(error.response.data);
-          thisComponent.setState({
-            errorMessage
-          });
+          setErrorMessage([error.response.data]);
         });
     }
-  }
-  handleSwitchForm(e) {
-    e.preventDefault();
-
-    let form = this.state.form === 'login' ? 'signUp' : 'login';
-
-    this.setState({
-      form
-    });
-  }
-  toggleModal(modalContent, e) {
+  };
+  const toggleModal = (modalContent, e) => {
     e = typeof e === 'undefined' ? modalContent : e;
+
     if (e.target.id === 'modal-container') {
-      this.setState({
-        showModal: false,
-        edit: {
-          username: '',
-          password: '',
-          passwordConfirm: ''
-        },
-        post: {
-          file: null,
-          source: '',
-          tags: ''
-        }
-      });
-    } else {
-      this.setState({
-        modalContent: modalContent,
-        editField: e.target.id,
-        showModal: true
-      });
+      setShowModal(false);
+      setEditUsername('');
+      setEditPassword('');
+      setEditPasswordConfirm('');
+      setPostFile(null);
+      setPostSource('');
+      setPostTags('');
+    } else if (typeof modalContent === 'string') {
+      setModalContent(modalContent);
+      setEditField(e.target.id);
+      setShowModal(true);
     }
-  }
-  render() {
-    return (
-      <section id="account">
-        {this.state.isLoggedIn ? (
-          <Dashboard
-            toggleModal={this.toggleModal}
-            email={this.state.email}
-            username={this.state.username}
-          />
-        ) : (
-          <Login
-            handleChange={this.handleChange}
-            handleSubmit={this.handleSubmit}
-            handleSwitchForm={this.handleSwitchForm}
-            form={this.state.form}
-            email={this.state.email}
-            username={this.state.username}
-            password={this.state.password}
-            passwordConfirm={this.state.passwordConfirm}
-            errorMessage={this.state.errorMessage}
-          />
-        )}
-        {this.state.showModal ? (
-          <Modal toggleModal={this.toggleModal}>
-            {this.state.modalContent === 'edit' ? (
-              <Edit
-                handleChange={this.handleChange}
-                handleSubmit={this.handleEditSubmit}
-                field={this.state.editField}
-                email={this.state.edit.email}
-                username={this.state.edit.username}
-                password={this.state.edit.password}
-                passwordConfirm={this.state.edit.passwordConfirm}
-                errorMessage={this.state.errorMessage}
-              />
-            ) : (
-              <CreatePost
-                handleChange={this.handleChange}
-                handleSubmit={this.handleCreatePostSubmit}
-                file={this.state.post.file}
-                source={this.state.post.source}
-                tags={this.state.post.tags}
-                errorMessage={this.state.errorMessage}
-              />
-            )}
-          </Modal>
-        ) : null}
-      </section>
-    );
-  }
-}
+  };
+  return (
+    <section id="account">
+      {isLoggedIn ? (
+        <Dashboard
+          toggleModal={toggleModal}
+          email={email}
+          username={username}
+        />
+      ) : (
+        <Login
+          handleSubmit={handleLoginSignUpSubmit}
+          setEmail={setEmail}
+          setUsername={setUsername}
+          setPassword={setPassword}
+          setPasswordConfirm={setPasswordConfirm}
+          setForm={setForm}
+          form={form}
+          email={email}
+          username={username}
+          password={password}
+          passwordConfirm={passwordConfirm}
+          errorMessage={errorMessage}
+        />
+      )}
+      {showModal ? (
+        <Modal toggleModal={toggleModal}>
+          {modalContent === 'edit' ? (
+            <Edit
+              handleSubmit={handleEditSubmit}
+              setEditEmail={setEditEmail}
+              setEditUsername={setEditUsername}
+              setEditPassword={setEditPassword}
+              setEditPasswordConfirm={setEditPasswordConfirm}
+              field={editField}
+              email={editEmail}
+              username={editUsername}
+              password={editPassword}
+              passwordConfirm={editPasswordConfirm}
+              errorMessage={errorMessage}
+            />
+          ) : (
+            <CreatePost
+              handleSubmit={handleCreatePostSubmit}
+              setPostFile={setPostFile}
+              setPostSource={setPostSource}
+              setPostTags={setPostTags}
+              file={postFile}
+              source={postSource}
+              tags={postTags}
+              errorMessage={errorMessage}
+            />
+          )}
+        </Modal>
+      ) : null}
+    </section>
+  );
+};
 
 export default Account;
