@@ -55,10 +55,10 @@ module.exports = (Models, router) => {
       message: []
     };
 
-    if (ctx.file) {
+    if (!ctx.file) {
       errorRes.message.push('Please select a file.');
     }
-    if (tags.length) {
+    if (!tags.length) {
       errorRes.message.push(
         'Minimum 4 space separated tags. ie: red race_car bmw m3'
       );
