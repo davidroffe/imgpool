@@ -47,37 +47,55 @@ module.exports = (Models, router) => {
   router.post('/post/create', upload.single('image'), async ctx => {
     const dimensions = sizeOf(ctx.file.path);
     const tags =
-      typeof ctx.query.tags !== 'undefined' ? ctx.query.tags.split(' ') : '';
+      typeof ctx.query.tags !== 'undefined' ? ctx.query.tags.split(' ') : [];
     const source =
       typeof ctx.query.source !== 'undefined' ? ctx.query.source : '';
-    const newPost = await Models.Post.create({
-      height: dimensions.height,
-      width: dimensions.width,
-      source: source,
-      url: '/uploads/' + ctx.file.filename,
-      thumbUrl: '/uploads/thumbnails/' + ctx.file.filename
-    });
 
-    for (var i = 0; i < tags.length; i++) {
-      const [tag, created] = await Models.Tag.findOrCreate({
-        where: { name: tags[i] },
-        defaults: { active: true }
-      });
+    let errorRes = {
+      status: 401,
+      message: []
+    };
 
-      await Models.TaggedPost.create({
-        postId: newPost.id,
-        tagId: tag.id,
-        tagName: tag.name
-      });
+    if (ctx.file.path) {
+      errorRes.message.push('Please select a file.');
     }
+    if (tags.length) {
+      errorRes.message.push(
+        'Minimum 4 space separated tags. ie: red race_car bmw m3'
+      );
+    }
+    if (!errorRes.message.length) {
+      const newPost = await Models.Post.create({
+        height: dimensions.height,
+        width: dimensions.width,
+        source: source,
+        url: '/uploads/' + ctx.file.filename,
+        thumbUrl: '/uploads/thumbnails/' + ctx.file.filename
+      });
 
-    await sharp(ctx.file.path)
-      .resize(200, 200, {
-        fit: 'cover'
-      })
-      .toFile(ctx.file.destination + '/thumbnails/' + ctx.file.filename);
+      for (var i = 0; i < tags.length; i++) {
+        const [tag, created] = await Models.Tag.findOrCreate({
+          where: { name: tags[i] },
+          defaults: { active: true }
+        });
 
-    ctx.body = { status: 'success' };
+        await Models.TaggedPost.create({
+          postId: newPost.id,
+          tagId: tag.id,
+          tagName: tag.name
+        });
+      }
+
+      await sharp(ctx.file.path)
+        .resize(200, 200, {
+          fit: 'cover'
+        })
+        .toFile(ctx.file.destination + '/thumbnails/' + ctx.file.filename);
+
+      ctx.body = { status: 'success' };
+    } else {
+      ctx.throw(errorRes.status, 'Invalid file or tags', errorRes);
+    }
   });
 
   router.get('/post/search', async ctx => {
