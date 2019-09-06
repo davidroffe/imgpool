@@ -1,25 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import TagMenu from '../TagMenu';
 
-class List extends React.Component {
-  constructor(props) {
-    super(props);
+const List = props => {
+  const [tagMenu, setTagMenu] = useState(false);
+  useEffect(() => {
+    props.retrievePosts();
+  });
 
-    this.getActivePosts = this.getActivePosts.bind(this);
-    this.state = { tagMenu: false };
-  }
-  componentDidMount() {
-    this.props.retrievePosts();
-  }
-  getActivePosts() {
-    if (this.props.posts.length === 0 || this.props.tags.length === 0) {
-      return this.props.posts;
+  const getActivePosts = () => {
+    if (props.posts.length === 0 || props.tags.length === 0) {
+      return props.posts;
     }
 
-    const tags = this.props.tags;
-    let posts = this.props.posts;
+    const tags = props.tags;
+    let posts = props.posts;
     let activePosts = [];
     let activeTags = [];
     let tagsActive;
@@ -44,40 +40,37 @@ class List extends React.Component {
         }
       }
     } else {
-      activePosts = this.props.posts;
+      activePosts = props.posts;
     }
 
     return activePosts;
+  };
+  if (props.posts.length === 0) {
+    return (
+      <section id="splash">
+        <div id="splash-center">
+          <h1>IMGPOOL</h1>
+        </div>
+      </section>
+    );
+  } else {
+    return (
+      <section id="post-list">
+        <TagMenu
+          isActive={tagMenu}
+          toggleTag={props.toggleTag}
+          tags={props.tags}
+        />
+        {getActivePosts().map((post, index) => {
+          return (
+            <Link key={index} to={'/post/' + post.id} className="post-item">
+              <img src={post.thumbUrl} />
+            </Link>
+          );
+        })}
+      </section>
+    );
   }
-  render() {
-    if (this.props.posts.length === 0) {
-      return (
-        <section id="splash">
-          <div id="splash-center">
-            <h1>IMGPOOL</h1>
-          </div>
-        </section>
-      );
-    } else {
-      return (
-        <section id="post-list">
-          <TagMenu
-            isActive={this.state.tagMenu}
-            toggleMenu={this.toggleTagMenu}
-            toggleTag={this.props.toggleTag}
-            tags={this.props.tags}
-          />
-          {this.getActivePosts().map((post, index) => {
-            return (
-              <Link key={index} to={'/post/' + post.id} className="post-item">
-                <img src={post.thumbUrl} />
-              </Link>
-            );
-          })}
-        </section>
-      );
-    }
-  }
-}
+};
 
 export default List;

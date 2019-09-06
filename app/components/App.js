@@ -18,26 +18,28 @@ const App = () => {
   const [tagList, setTagList] = useState([]);
   const [searchValue, setSearchValue] = useState('');
 
-  const toggleTag = tag => {
-    let tagList = tagList;
-    for (var i = 0; i < tagList.length; i++) {
-      if (tagList[i].id === tag.id)
-        tagList[i].active = tagList[i].active ? false : true;
-    }
-    setTagList(tagList);
+  const toggleTag = menuTag => {
+    const newTagList = tagList.map(tag => {
+      if (tag.id === menuTag.id) {
+        tag.active = tag.active ? false : true;
+      }
+      return tag;
+    });
+
+    setTagList(newTagList);
   };
 
   const retrievePosts = () => {
     if (!postList.length) {
       axios.get('/api/post/list').then(res => {
         setPostList(res.data);
-        processTagList(postList);
+        processTagList(res.data);
       });
     }
   };
 
   const processTagList = postList => {
-    let tagList = [];
+    let newTagList = [];
     let exists;
 
     for (var i = 0; i < postList.length; i++) {
@@ -45,18 +47,19 @@ const App = () => {
         exists = false;
         let tag = postList[i].tag[j];
 
-        for (var k = 0; k < tagList.length; k++) {
-          if (tagList[k].id === tag.id) {
+        for (var k = 0; k < newTagList.length; k++) {
+          if (newTagList[k].id === tag.id) {
             exists = true;
           }
         }
 
         tag.active = false;
 
-        if (!exists) tagList.push(tag);
+        if (!exists) newTagList.push(tag);
       }
     }
-    setTagList(tagList);
+
+    setTagList(newTagList);
   };
 
   const handleSearchChange = e => {
