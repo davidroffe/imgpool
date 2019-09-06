@@ -45,7 +45,6 @@ module.exports = (Models, router) => {
   });
 
   router.post('/post/create', upload.single('image'), async ctx => {
-    const dimensions = sizeOf(ctx.file.path);
     const tags =
       typeof ctx.query.tags !== 'undefined' ? ctx.query.tags.split(' ') : [];
     const source =
@@ -56,7 +55,7 @@ module.exports = (Models, router) => {
       message: []
     };
 
-    if (ctx.file.path) {
+    if (ctx.file) {
       errorRes.message.push('Please select a file.');
     }
     if (tags.length) {
@@ -64,7 +63,9 @@ module.exports = (Models, router) => {
         'Minimum 4 space separated tags. ie: red race_car bmw m3'
       );
     }
+
     if (!errorRes.message.length) {
+      const dimensions = sizeOf(ctx.file.path);
       const newPost = await Models.Post.create({
         height: dimensions.height,
         width: dimensions.width,
@@ -94,7 +95,7 @@ module.exports = (Models, router) => {
 
       ctx.body = { status: 'success' };
     } else {
-      ctx.throw(errorRes.status, 'Invalid file or tags', errorRes);
+      ctx.throw(errorRes.status, 'Invalid file or tags');
     }
   });
 
