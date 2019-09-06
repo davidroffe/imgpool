@@ -1,50 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-class Single extends React.Component {
-  constructor(props) {
-    super(props);
+const Single = props => {
+  const [post, setPost] = useState({
+    id: props.match.params.id || '',
+    tag: []
+  });
 
-    this.state = {
-      post: { id: props.match.params.id || '', tag: [] }
-    };
-
-    this.handleTagClick = this.handleTagClick.bind(this);
-  }
-  componentDidMount() {
+  useEffect(() => {
     axios
       .get('/api/post/single', {
-        params: { id: this.state.post.id }
+        params: { id: post.id }
       })
       .then(res => {
-        this.setState({ post: res.data });
+        setPost(res.data);
       });
-  }
-  handleTagClick(e) {
-    this.props.handleTagClick(
+  });
+  const handleTagClick = e => {
+    props.handleTagClick(
       e,
-      () => this.props.history.push('/posts'),
+      () => props.history.push('/posts'),
       e.target.innerText
     );
-  }
-  render() {
-    return (
-      <section id="post-single">
-        <div className="image-container">
-          <img src={this.state.post.url} />
-        </div>
-        <div className="tags">
-          {this.state.post.tag.map((tag, index) => {
-            return (
-              <button key={index} className="tag" onClick={this.handleTagClick}>
-                {tag.name}
-              </button>
-            );
-          })}
-        </div>
-      </section>
-    );
-  }
-}
+  };
+  return (
+    <section id="post-single">
+      <div className="image-container">
+        <img src={post.url} />
+      </div>
+      <div className="tags">
+        {post.tag.map((tag, index) => {
+          return (
+            <button key={index} className="tag" onClick={handleTagClick}>
+              {tag.name}
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+};
 
 export default Single;
