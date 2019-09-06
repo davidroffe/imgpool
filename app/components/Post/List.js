@@ -11,11 +11,7 @@ class List extends React.Component {
     this.state = { tagMenu: false };
   }
   componentDidMount() {
-    if (!this.props.posts.length) {
-      axios.get('/api/post/list').then(res => {
-        this.props.setPostList(res.data);
-      });
-    }
+    this.props.retrievePosts();
   }
   getActivePosts() {
     if (this.props.posts.length === 0 || this.props.tags.length === 0) {

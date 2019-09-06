@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -13,36 +13,30 @@ import PostList from './Post/List';
 import PostSingle from './Post/Single';
 import About from './About';
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      postList: [],
-      tagList: [],
-      searchValue: ''
-    };
+const App = () => {
+  const [postList, setPostList] = useState([]);
+  const [tagList, setTagList] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
 
-    this.setPostList = this.setPostList.bind(this);
-    this.processTagList = this.processTagList.bind(this);
-    this.toggleTag = this.toggleTag.bind(this);
-    this.handleSearch = this.handleSearch.bind(this);
-    this.handleSearchChange = this.handleSearchChange.bind(this);
-  }
-  toggleTag(tag) {
-    let tagList = this.state.tagList;
+  const toggleTag = tag => {
+    let tagList = tagList;
     for (var i = 0; i < tagList.length; i++) {
       if (tagList[i].id === tag.id)
         tagList[i].active = tagList[i].active ? false : true;
     }
-    this.setState({
-      tagList
-    });
-  }
-  setPostList(postList) {
-    this.setState({ postList });
-    this.processTagList(postList);
-  }
-  processTagList(postList) {
+    setTagList(tagList);
+  };
+
+  const retrievePosts = () => {
+    if (!postList.length) {
+      axios.get('/api/post/list').then(res => {
+        setPostList(res.data);
+        processTagList(postList);
+      });
+    }
+  };
+
+  const processTagList = postList => {
     let tagList = [];
     let exists;
 
@@ -62,73 +56,73 @@ class App extends React.Component {
         if (!exists) tagList.push(tag);
       }
     }
-    this.setState({ tagList });
-  }
-  handleSearchChange(e) {
-    const searchValue = e.target.value.toLowerCase();
+    setTagList(tagList);
+  };
 
-    this.setState({ searchValue });
-  }
-  handleSearch(e, toPostList, searchValue = '') {
+  const handleSearchChange = e => {
+    const newSearchValue = e.target.value.toLowerCase();
+
+    setSearchValue(newSearchValue);
+  };
+
+  const handleSearch = (e, toPostList, newSearchValue = '') => {
     e.preventDefault();
     let searchQuery;
 
-    if (searchValue) {
-      this.setState({ searchValue });
-      searchQuery = searchValue;
+    if (newSearchValue) {
+      setSearchValue(newSearchValue);
+      searchQuery = newSearchValue;
     } else {
-      searchQuery = this.state.searchValue;
+      searchQuery = searchValue;
     }
 
     const url = searchQuery.length ? '/api/post/search' : '/api/post/list';
 
     axios.get(url, { params: { searchQuery: searchQuery } }).then(res => {
-      this.setState({ postList: res.data });
+      setPostList(res.data);
       toPostList();
     });
-  }
-  render() {
-    return (
-      <Router>
-        <div>
-          <Header>
-            <PostSearch
-              handleSubmit={this.handleSearch}
-              handleSearchChange={this.handleSearchChange}
-              searchValue={this.state.searchValue}
+  };
+  return (
+    <Router>
+      <div>
+        <Header>
+          <PostSearch
+            handleSubmit={handleSearch}
+            handleSearchChange={handleSearchChange}
+            searchValue={searchValue}
+          />
+        </Header>
+        <Route
+          path="/posts"
+          exact
+          render={() => (
+            <PostList
+              retrievePosts={retrievePosts}
+              posts={postList}
+              toggleTag={toggleTag}
+              tags={tagList}
             />
-          </Header>
+          )}
+        />
+        <Switch>
           <Route
-            path="/posts"
-            exact
-            render={() => (
-              <PostList
-                setPostList={this.setPostList}
-                posts={this.state.postList}
-                toggleTag={this.toggleTag}
-                tags={this.state.tagList}
+            path="/post/:id"
+            render={props => (
+              <PostSingle
+                {...props}
+                handleTagClick={handleSearch}
+                setSearchValue={setSearchValue}
               />
             )}
           />
-          <Switch>
-            <Route
-              path="/post/:id"
-              render={props => (
-                <PostSingle
-                  {...props}
-                  handleTagClick={this.handleSearch}
-                  setSearchValue={this.setSearchValue}
-                />
-              )}
-            />
-            <Route path="/account" component={Account} />
-            <Route path="/about" exact component={About} />
-            <Redirect from="/" exact to="/posts" />
-          </Switch>
-        </div>
-      </Router>
-    );
-  }
-}
+          <Route path="/account" component={Account} />
+          <Route path="/about" exact component={About} />
+          <Redirect from="/" exact to="/posts" />
+        </Switch>
+      </div>
+    </Router>
+  );
+};
 
 export default App;
