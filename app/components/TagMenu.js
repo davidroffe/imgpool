@@ -1,22 +1,30 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { toggleTagMenu, toggleTag } from '../actions';
+
+const mapStateToProps = state => {
+  return {
+    tags: state.tags,
+    tagMenu: state.tagMenu
+  };
+};
 
 const TagMenu = props => {
-  const [tagMenu, setTagMenu] = useState(false);
-  const toggleTagMenu = e => {
+  const toggleMenu = e => {
     e.preventDefault();
 
-    setTagMenu(!tagMenu);
+    props.dispatch(toggleTagMenu());
   };
   const handleClick = (tag, e) => {
     e.preventDefault();
     e.target.toggleAttribute('active');
 
-    props.toggleTag(tag);
+    props.dispatch(toggleTag(tag));
   };
 
   return (
-    <aside id="tag-menu" className={tagMenu ? 'active' : ''}>
+    <aside id="tag-menu" className={props.tagMenu ? 'active' : ''}>
       <div className="body">
         <nav>
           {props.tags.map((tag, index) => {
@@ -34,7 +42,7 @@ const TagMenu = props => {
           })}
         </nav>
       </div>
-      <button className="tab" onClick={toggleTagMenu}>
+      <button className="tab" onClick={toggleMenu}>
         <span className="burger">
           <span className="line"></span>
           <span className="line"></span>
@@ -46,4 +54,4 @@ const TagMenu = props => {
   );
 };
 
-export default TagMenu;
+export default connect(mapStateToProps)(TagMenu);

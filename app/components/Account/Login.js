@@ -6,7 +6,7 @@ const Login = props => {
     e.preventDefault();
     props.setForm(props.form === 'login' ? 'signUp' : 'login');
   };
-  console.log(props);
+
   return (
     <div id="account-center">
       <div id="center-box">

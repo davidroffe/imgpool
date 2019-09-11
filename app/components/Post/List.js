@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import TagMenu from '../TagMenu';
 
+const mapStateToProps = state => {
+  return {
+    posts: state.posts,
+    tags: state.tags
+  };
+};
+
 const List = props => {
-  const [tagMenu, setTagMenu] = useState(false);
   useEffect(() => {
     props.retrievePosts();
   });
@@ -56,11 +62,7 @@ const List = props => {
   } else {
     return (
       <section id="post-list">
-        <TagMenu
-          isActive={tagMenu}
-          toggleTag={props.toggleTag}
-          tags={props.tags}
-        />
+        <TagMenu />
         {getActivePosts().map((post, index) => {
           return (
             <Link key={index} to={'/post/' + post.id} className="post-item">
@@ -73,4 +75,4 @@ const List = props => {
   }
 };
 
-export default List;
+export default connect(mapStateToProps)(List);

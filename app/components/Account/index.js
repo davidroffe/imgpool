@@ -7,7 +7,7 @@ import Edit from './Edit';
 import CreatePost from './CreatePost';
 import Modal from '../Utility/Modal';
 
-const Account = () => {
+const Account = props => {
   const [form, setForm] = useState('login');
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -74,7 +74,7 @@ const Account = () => {
           setIsLoggedIn(true);
         })
         .catch(error => {
-          setRrrorMessage(error.response.data);
+          setErrorMessage(error.response.data);
         });
     }
   };

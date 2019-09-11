@@ -5,114 +5,79 @@ import {
   Route,
   Redirect
 } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { setPosts, setTags } from '../actions';
 import axios from 'axios';
 import Header from './Header';
 import Account from './Account/index';
 import PostSearch from './Post/Search';
-import PostList from './Post/List';
-import PostSingle from './Post/Single';
+import Posts from './Post/List';
+import Post from './Post/Single';
 import About from './About';
 
-const App = () => {
-  const [postList, setPostList] = useState([]);
-  const [tagList, setTagList] = useState([]);
-  const [searchValue, setSearchValue] = useState('');
+const mapStateToProps = state => {
+  return {
+    posts: state.posts,
+    tags: state.tags
+  };
+};
 
+const App = props => {
   const toggleTag = menuTag => {
-    const newTagList = tagList.map(tag => {
-      if (tag.id === menuTag.id) {
-        tag.active = tag.active ? false : true;
-      }
-      return tag;
-    });
-
-    setTagList(newTagList);
+    props.dispatch(toggleTag(menuTag));
   };
 
   const retrievePosts = () => {
-    if (!postList.length) {
+    if (!props.posts.length) {
       axios.get('/api/post/list').then(res => {
-        setPostList(res.data);
-        processTagList(res.data);
+        props.dispatch(setPosts(res.data));
+        processTags(res.data);
       });
     }
   };
 
-  const processTagList = postList => {
-    let newTagList = [];
+  const processTags = posts => {
+    let newTags = [];
     let exists;
 
-    for (var i = 0; i < postList.length; i++) {
-      for (var j = 0; j < postList[i].tag.length; j++) {
+    for (var i = 0; i < posts.length; i++) {
+      for (var j = 0; j < posts[i].tag.length; j++) {
         exists = false;
-        let tag = postList[i].tag[j];
+        let tag = posts[i].tag[j];
 
-        for (var k = 0; k < newTagList.length; k++) {
-          if (newTagList[k].id === tag.id) {
+        for (var k = 0; k < newTags.length; k++) {
+          if (newTags[k].id === tag.id) {
             exists = true;
           }
         }
 
         tag.active = false;
 
-        if (!exists) newTagList.push(tag);
+        if (!exists) newTags.push(tag);
       }
     }
 
-    setTagList(newTagList);
+    props.dispatch(setTags(newTags));
   };
 
-  const handleSearchChange = e => {
-    const newSearchValue = e.target.value.toLowerCase();
-
-    setSearchValue(newSearchValue);
-  };
-
-  const handleSearch = (e, toPostList, newSearchValue = '') => {
-    e.preventDefault();
-    let searchQuery;
-
-    if (newSearchValue) {
-      setSearchValue(newSearchValue);
-      searchQuery = newSearchValue;
-    } else {
-      searchQuery = searchValue;
-    }
-
-    const url = searchQuery.length ? '/api/post/search' : '/api/post/list';
-
-    axios.get(url, { params: { searchQuery: searchQuery } }).then(res => {
-      setPostList(res.data);
-      toPostList();
-    });
-  };
   return (
     <Router>
       <div>
         <Header>
-          <PostSearch
-            handleSubmit={handleSearch}
-            handleSearchChange={handleSearchChange}
-            searchValue={searchValue}
-          />
+          <PostSearch processTags={processTags} />
         </Header>
-        <Route
-          path="/posts"
-          exact
-          render={() => (
-            <PostList
-              retrievePosts={retrievePosts}
-              posts={postList}
-              toggleTag={toggleTag}
-              tags={tagList}
-            />
-          )}
-        />
         <Switch>
+          <Route
+            path="/posts"
+            exact
+            render={() => (
+              <Posts retrievePosts={retrievePosts} toggleTag={toggleTag} />
+            )}
+          />
           <Route
             path="/post/:id"
             render={props => (
-              <PostSingle
+              <Post
                 {...props}
                 handleTagClick={handleSearch}
                 setSearchValue={setSearchValue}
@@ -128,4 +93,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default connect(mapStateToProps)(App);
