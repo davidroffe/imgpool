@@ -71,7 +71,7 @@ const Login = props => {
 
   const switchForm = e => {
     e.preventDefault();
-    props.setForm(form === 'login' ? 'signUp' : 'login');
+    setForm(form === 'login' ? 'signUp' : 'login');
   };
 
   return (
