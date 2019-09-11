@@ -1,16 +1,83 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
+import { setUser } from '../../actions';
+import axios from 'axios';
 import Input from '../Utility/Input';
 
+const mapStateToProps = state => {
+  return {
+    email: state.user.email,
+    username: state.user.username,
+    password: state.user.password,
+    passwordConfirm: state.user.passwordConfirm
+  };
+};
+
 const Login = props => {
+  const [errorMessage, setErrorMessage] = useState([]);
+  const [form, setForm] = useState('login');
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    console.log(props);
+    let newErrorMessage = [];
+    const { email, username, password, passwordConfirm } = props;
+    const url = form === 'login' ? '/api/user/login' : '/api/user/signup';
+
+    if (email === undefined || email === '') {
+      newErrorMessage.push('Please enter an email.');
+    }
+    if (password === undefined || password === '') {
+      newErrorMessage.push('Please enter a password.');
+    }
+    if (form === 'signUp') {
+      if (password !== passwordConfirm) {
+        newErrorMessage.push('Passwords do not match.');
+      }
+      if (password.length < 8) {
+        newErrorMessage.push('Password must be at least 8 characters.');
+      }
+    }
+    if (newErrorMessage.length > 0) {
+      setErrorMessage(newErrorMessage);
+    } else {
+      axios({
+        url: url,
+        method: 'post',
+        params: {
+          email: email,
+          username: username,
+          password: password,
+          passwordConfirm: passwordConfirm
+        }
+      })
+        .then(res => {
+          props.dispatch(setUser('email', res.data.email));
+          props.dispatch(setUser('username', res.data.username));
+          props.dispatch(setUser('loggedIn', true));
+        })
+        .catch(error => {
+          setErrorMessage([error.response.data]);
+        });
+    }
+  };
+
+  const handleChange = e => {
+    const field = e.target.id;
+    const value = e.target.value;
+
+    props.dispatch(setUser(field, value));
+  };
+
   const switchForm = e => {
     e.preventDefault();
-    props.setForm(props.form === 'login' ? 'signUp' : 'login');
+    props.setForm(form === 'login' ? 'signUp' : 'login');
   };
 
   return (
     <div id="account-center">
       <div id="center-box">
-        <form className="form-dark" onSubmit={props.handleSubmit}>
+        <form className="form-dark" onSubmit={handleSubmit}>
           <Input
             id="email"
             autoComplete={'off'}
@@ -19,9 +86,9 @@ const Login = props => {
             name={'email'}
             value={props.email}
             placeholder={'EMAIL'}
-            handleChange={e => props.setEmail(e.target.value)}
+            handleChange={handleChange}
           />
-          {props.form === 'signUp' ? (
+          {form === 'signUp' ? (
             <Input
               id="username"
               autoComplete={'off'}
@@ -30,7 +97,7 @@ const Login = props => {
               name={'username'}
               value={props.username}
               placeholder={'USERNAME'}
-              handleChange={e => props.setUsername(e.target.value)}
+              handleChange={handleChange}
             />
           ) : null}
           <Input
@@ -41,9 +108,9 @@ const Login = props => {
             name={'password'}
             value={props.password}
             placeholder={'PASSWORD'}
-            handleChange={e => props.setPassword(e.target.value)}
+            handleChange={handleChange}
           />
-          {props.form === 'signUp' ? (
+          {form === 'signUp' ? (
             <Input
               id="passwordConfirm"
               autoComplete={'off'}
@@ -52,11 +119,11 @@ const Login = props => {
               name={'password-confirm'}
               value={props.passwordConfirm}
               placeholder={'CONFIRM PASSWORD'}
-              handleChange={e => props.setPasswordConfirm(e.target.value)}
+              handleChange={handleChange}
             />
           ) : null}
           <div className="error-messages">
-            {props.errorMessage.map((errorMessage, index) => {
+            {errorMessage.map((errorMessage, index) => {
               return (
                 <p key={index} className="error">
                   {errorMessage}
@@ -67,12 +134,12 @@ const Login = props => {
           <Input
             className="border-button"
             type={'submit'}
-            value={props.form === 'login' ? 'LOGIN' : 'SIGN UP'}
+            value={form === 'login' ? 'LOGIN' : 'SIGN UP'}
           />
           <p>
             Don‘t have an account?{' '}
             <button className="switch-form" onClick={switchForm}>
-              {props.form === 'login' ? 'Sign Up' : 'Login'}
+              {form === 'login' ? 'Sign Up' : 'Login'}
             </button>
           </p>
         </form>
@@ -81,4 +148,4 @@ const Login = props => {
   );
 };
 
-export default Login;
+export default connect(mapStateToProps)(Login);

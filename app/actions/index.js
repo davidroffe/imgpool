@@ -21,3 +21,8 @@ export const setSearch = text => ({
   type: 'SET_SEARCH',
   text
 });
+
+export const setUser = (field, value) => ({
+  type: `SET_${field.toUpperCase()}`,
+  text: value
+});

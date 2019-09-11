@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import { setUser } from '../../actions';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Dashboard from './Dashboard';
@@ -7,12 +9,15 @@ import Edit from './Edit';
 import CreatePost from './CreatePost';
 import Modal from '../Utility/Modal';
 
+const mapStateToProps = state => {
+  return {
+    email: state.user.email,
+    username: state.user.username,
+    loggedIn: state.user.loggedIn
+  };
+};
+
 const Account = props => {
-  const [form, setForm] = useState('login');
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConfirm] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editUsername, setEditUsername] = useState('');
   const [editPassword, setEditPassword] = useState('');
@@ -28,56 +33,12 @@ const Account = props => {
 
   useEffect(() => {
     axios.post('/api/user/validate').then(res => {
-      setUsername(res.data.username || '');
-      setEmail(res.data.email || '');
-      setIsLoggedIn(!!Cookies.get('auth'));
+      props.dispatch(setUser('username', res.data.username || ''));
+      props.dispatch(setUser('email', res.data.email || ''));
+      props.dispatch(setUser('loggedIn', !!Cookies.get('auth')));
     });
   }, []);
 
-  const handleLoginSignUpSubmit = e => {
-    e.preventDefault();
-
-    let newErrorMessage = [];
-    let passwordConfirm = passwordConfirm;
-    const url = form === 'login' ? '/api/user/login' : '/api/user/signup';
-
-    if (email === undefined || email === '') {
-      newErrorMessage.push('Please enter an email.');
-    }
-    if (password === undefined || password === '') {
-      newErrorMessage.push('Please enter a password.');
-    }
-    if (form === 'signUp') {
-      if (password !== passwordConfirm) {
-        newErrorMessage.push('Passwords do not match.');
-      }
-      if (password.length < 8) {
-        newErrorMessage.push('Password must be at least 8 characters.');
-      }
-    }
-    if (newErrorMessage.length > 0) {
-      setErrorMessage(newErrorMessage);
-    } else {
-      axios({
-        url: url,
-        method: 'post',
-        params: {
-          email: email,
-          username: username,
-          password: password,
-          passwordConfirm: passwordConfirm
-        }
-      })
-        .then(res => {
-          setEmail(res.data.email);
-          setUsername(res.data.username);
-          setIsLoggedIn(true);
-        })
-        .catch(error => {
-          setErrorMessage(error.response.data);
-        });
-    }
-  };
   const handleEditSubmit = e => {
     e.preventDefault();
 
@@ -87,14 +48,14 @@ const Account = props => {
     if (editField === 'edit-email') {
       if (editEmail === undefined || editEmail === '') {
         newErrorMessage.push('Please enter an email.');
-      } else if (editEmail === email) {
+      } else if (editEmail === props.email) {
         newErrorMessage.push('Please use a different email.');
       }
     }
     if (editField === 'edit-username') {
       if (editUsername === undefined || editUsername === '') {
         newErrorMessage.push('Please enter a username.');
-      } else if (editUsername === username) {
+      } else if (editUsername === props.username) {
         newErrorMessage.push('Please use a different username.');
       }
     }
@@ -103,7 +64,7 @@ const Account = props => {
         newErrorMessage.push('Please enter a password.');
       } else if (editPassword.length < 8) {
         newErrorMessage.push('Password must be at least 8 characters.');
-      } else if (editPasswordConfirm !== passwordConfirm) {
+      } else if (editPasswordConfirm !== editPassword) {
         newErrorMessage.push('Passwords do not match.');
       }
     }
@@ -114,7 +75,7 @@ const Account = props => {
         url: url,
         method: 'post',
         params: {
-          currentEmail: email,
+          currentEmail: props.email,
           editField: editField,
           email: editEmail,
           username: editUsername,
@@ -124,8 +85,8 @@ const Account = props => {
       })
         .then(res => {
           if (res.data.status === 'success') {
-            setEmail(res.data.email);
-            setUsername(res.data.username);
+            props.dispatch(setUser('email', res.data.email));
+            props.dispatch(setUser('username', res.data.username));
 
             setShowModal(false);
             setEditField('');
@@ -133,10 +94,11 @@ const Account = props => {
             setEditUsername('');
             setEditPassword('');
             setEditPasswordConfirm('');
+            setErrorMessage([]);
           }
         })
         .catch(error => {
-          setErrorMessage(error.response.data);
+          setErrorMessage(error.data);
         });
     }
   };
@@ -179,7 +141,7 @@ const Account = props => {
           }
         })
         .catch(error => {
-          setErrorMessage([error.response.data]);
+          setErrorMessage([error.data]);
         });
     }
   };
@@ -199,31 +161,12 @@ const Account = props => {
       setEditField(e.target.id);
       setShowModal(true);
     }
+
+    setErrorMessage([]);
   };
   return (
     <section id="account">
-      {isLoggedIn ? (
-        <Dashboard
-          toggleModal={toggleModal}
-          email={email}
-          username={username}
-        />
-      ) : (
-        <Login
-          handleSubmit={handleLoginSignUpSubmit}
-          setEmail={setEmail}
-          setUsername={setUsername}
-          setPassword={setPassword}
-          setPasswordConfirm={setPasswordConfirm}
-          setForm={setForm}
-          form={form}
-          email={email}
-          username={username}
-          password={password}
-          passwordConfirm={passwordConfirm}
-          errorMessage={errorMessage}
-        />
-      )}
+      {props.loggedIn ? <Dashboard toggleModal={toggleModal} /> : <Login />}
       {showModal ? (
         <Modal toggleModal={toggleModal}>
           {modalContent === 'edit' ? (
@@ -258,4 +201,4 @@ const Account = props => {
   );
 };
 
-export default Account;
+export default connect(mapStateToProps)(Account);
