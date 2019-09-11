@@ -111,7 +111,11 @@ module.exports = (Models, router) => {
         ) {
           ctx.throw(401, 'Invalid password');
         } else {
-          user.password = password;
+          user.password = bcrypt.hashSync(
+            password,
+            bcrypt.genSaltSync(8),
+            null
+          );
         }
       }
       user.tokenDate = tokenHelper.genExpDate();
