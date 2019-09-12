@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import Logo from '../assets/images/logo.svg';
 
 const Header = props => {
@@ -18,6 +19,10 @@ const Header = props => {
       {props.children}
     </header>
   );
+};
+
+Header.propTypes = {
+  children: PropTypes.element.isRequired
 };
 
 export default Header;
