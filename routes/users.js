@@ -113,7 +113,7 @@ module.exports = (Models, router) => {
         } else {
           user.password = bcrypt.hashSync(
             password,
-            bcrypt.genSaltSync(8),
+            bcrypt.genSaltSync(12),
             null
           );
         }
@@ -130,7 +130,6 @@ module.exports = (Models, router) => {
   });
   router.post('/user/validate', async ctx => {
     const token = ctx.cookies.get('auth');
-    const url = ctx.url;
 
     if (token) {
       const user = await Models.User.findOne({ where: { token: token } });
