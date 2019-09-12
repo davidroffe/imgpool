@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { toggleTagMenu, toggleTag } from '../actions';
 
@@ -52,6 +53,12 @@ const TagMenu = props => {
       </button>
     </aside>
   );
+};
+
+TagMenu.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  tagMenu: PropTypes.bool.isRequired,
+  tags: PropTypes.array.isRequired
 };
 
 export default connect(mapStateToProps)(TagMenu);
