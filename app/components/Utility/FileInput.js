@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 const FileInput = props => {
   const [placeholder, setPlaceholder] = useState(
@@ -9,7 +10,7 @@ const FileInput = props => {
     e.target.nextSibling.click();
   };
   const handleChange = e => {
-    const fileName = e.target.value.replace(/^.*?([^\\\/]*)$/, '$1');
+    const fileName = e.target.value.replace(/^.*?([^\\/]*)$/, '$1');
 
     if (fileName) {
       setPlaceholder(fileName);
@@ -33,6 +34,16 @@ const FileInput = props => {
       />
     </div>
   );
+};
+
+FileInput.propTypes = {
+  placeholder: PropTypes.string,
+  handleChange: PropTypes.func.isRequired,
+  className: PropTypes.string,
+  id: PropTypes.string,
+  name: PropTypes.string,
+  type: PropTypes.string.isRequired,
+  value: PropTypes.string
 };
 
 export default FileInput;

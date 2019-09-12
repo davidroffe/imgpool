@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Modal = props => {
   return (
@@ -6,6 +7,11 @@ const Modal = props => {
       <div id="modal">{props.children}</div>
     </div>
   );
+};
+
+Modal.propTypes = {
+  toggleModal: PropTypes.func.isRequired,
+  children: PropTypes.element.isRequire
 };
 
 export default Modal;
