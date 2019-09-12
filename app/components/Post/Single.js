@@ -51,7 +51,8 @@ const Single = props => {
 Single.propTypes = {
   dispatch: PropTypes.func.isRequired,
   match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
+  processTags: PropTypes.func.isRequired
 };
 
 export default connect(() => {

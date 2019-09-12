@@ -1,6 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { setSearch, setPosts } from '../../actions';
 import axios from 'axios';
 
@@ -38,6 +39,13 @@ const PostSearch = props => {
       />
     </form>
   );
+};
+
+PostSearch.propTypes = {
+  text: PropTypes.string.isRequired,
+  processTags: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired
 };
 
 export default withRouter(connect(mapStateToProps)(PostSearch));

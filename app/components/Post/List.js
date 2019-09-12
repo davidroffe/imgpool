@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import TagMenu from '../TagMenu';
 
 const mapStateToProps = state => {
@@ -73,6 +74,11 @@ const List = props => {
       </section>
     );
   }
+};
+
+List.propTypes = {
+  posts: PropTypes.array.isRequired,
+  tags: PropTypes.array.isRequired
 };
 
 export default connect(mapStateToProps)(List);
