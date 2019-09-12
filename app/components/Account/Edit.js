@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Input from '../Utility/Input';
 
 const Edit = props => {
@@ -64,6 +65,20 @@ const Edit = props => {
       <Input className="border-button" type={'submit'} />
     </form>
   );
+};
+
+Edit.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
+  field: PropTypes.string.isRequired,
+  email: PropTypes.string.isRequired,
+  username: PropTypes.string.isRequired,
+  password: PropTypes.string.isRequired,
+  passwordConfirm: PropTypes.string.isRequired,
+  setEditEmail: PropTypes.func.isRequired,
+  setEditUsername: PropTypes.func.isRequired,
+  setEditPassword: PropTypes.func.isRequired,
+  setEditPasswordConfirm: PropTypes.func.isRequired,
+  errorMessage: PropTypes.array.isRequired
 };
 
 export default Edit;

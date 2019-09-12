@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Input from '../Utility/Input';
 import FileInput from '../Utility/FileInput';
 
@@ -45,6 +46,17 @@ const CreatePost = props => {
       <Input className="border-button" type={'submit'} />
     </form>
   );
+};
+
+CreatePost.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
+  setPostFile: PropTypes.func.isRequired,
+  setPostSource: PropTypes.func.isRequired,
+  setPostTags: PropTypes.func.isRequired,
+  post: PropTypes.string.isRequired,
+  source: PropTypes.string.isRequired,
+  tags: PropTypes.string.isRequired,
+  errorMessage: PropTypes.array.isRequired
 };
 
 export default CreatePost;

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { setUser } from '../../actions';
 import axios from 'axios';
 import Input from '../Utility/Input';
@@ -19,7 +20,7 @@ const Login = props => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    console.log(props);
+
     let newErrorMessage = [];
     const { email, username, password, passwordConfirm } = props;
     const url = form === 'login' ? '/api/user/login' : '/api/user/signup';
@@ -146,6 +147,14 @@ const Login = props => {
       </div>
     </div>
   );
+};
+
+Login.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  email: PropTypes.string.isRequired,
+  username: PropTypes.string.isRequired,
+  password: PropTypes.string.isRequired,
+  passwordConfirm: PropTypes.string.isRequired
 };
 
 export default connect(mapStateToProps)(Login);

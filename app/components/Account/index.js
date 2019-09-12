@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { setUser } from '../../actions';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -25,7 +26,6 @@ const Account = props => {
   const [postFile, setPostFile] = useState('');
   const [postSource, setPostSource] = useState('');
   const [postTags, setPostTags] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState('false');
   const [editField, setEditField] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState('');
@@ -199,6 +199,13 @@ const Account = props => {
       ) : null}
     </section>
   );
+};
+
+Account.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  username: PropTypes.string.isRequired,
+  email: PropTypes.string.isRequired,
+  loggedIn: PropTypes.bool.isRequired
 };
 
 export default connect(mapStateToProps)(Account);

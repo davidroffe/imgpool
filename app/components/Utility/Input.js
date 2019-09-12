@@ -21,7 +21,7 @@ Input.propTypes = {
   name: PropTypes.string,
   type: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
-  handleChange: PropTypes.func.isRequired,
+  handleChange: PropTypes.func,
   placeholder: PropTypes.string
 };
 

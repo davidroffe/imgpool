@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 const mapStateToProps = state => {
   return {
@@ -60,6 +61,12 @@ const Login = props => {
       </div>
     </section>
   );
+};
+
+Login.propTypes = {
+  email: PropTypes.string.isRequired,
+  username: PropTypes.string.isRequired,
+  toggleModal: PropTypes.func.isRequired
 };
 
 export default connect(mapStateToProps)(Login);
