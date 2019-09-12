@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect
 } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { setPosts, setTags } from '../actions';
 import axios from 'axios';
@@ -74,16 +75,7 @@ const App = props => {
               <Posts retrievePosts={retrievePosts} toggleTag={toggleTag} />
             )}
           />
-          <Route
-            path="/post/:id"
-            render={props => (
-              <Post
-                {...props}
-                handleTagClick={handleSearch}
-                setSearchValue={setSearchValue}
-              />
-            )}
-          />
+          <Route path="/post/:id" component={Post} />
           <Route path="/account" component={Account} />
           <Route path="/about" exact component={About} />
           <Redirect from="/" exact to="/posts" />
@@ -91,6 +83,12 @@ const App = props => {
       </div>
     </Router>
   );
+};
+
+App.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  posts: PropTypes.array.isRequired,
+  tags: PropTypes.array.isRequired
 };
 
 export default connect(mapStateToProps)(App);
