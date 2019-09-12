@@ -2,7 +2,8 @@ const initialState = {
   email: '',
   username: '',
   password: '',
-  passwordConfirm: ''
+  passwordConfirm: '',
+  loggedIn: false
 };
 
 const user = (state = initialState, action) => {
