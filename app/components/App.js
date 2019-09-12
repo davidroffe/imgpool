@@ -75,7 +75,10 @@ const App = props => {
               <Posts retrievePosts={retrievePosts} toggleTag={toggleTag} />
             )}
           />
-          <Route path="/post/:id" component={Post} />
+          <Route
+            path="/post/:id"
+            render={props => <Post {...props} processTags={processTags} />}
+          />
           <Route path="/account" component={Account} />
           <Route path="/about" exact component={About} />
           <Redirect from="/" exact to="/posts" />

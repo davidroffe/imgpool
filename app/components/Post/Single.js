@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { setPosts, setSearch } from '../../actions';
 import axios from 'axios';
 
 const Single = props => {
@@ -15,13 +18,17 @@ const Single = props => {
       .then(res => {
         setPost(res.data);
       });
-  });
+  }, []);
   const handleTagClick = e => {
-    props.handleTagClick(
-      e,
-      () => props.history.push('/posts'),
-      e.target.innerText
-    );
+    const searchQuery = e.target.innerText;
+    const url = '/api/post/search';
+
+    props.dispatch(setSearch(searchQuery));
+    axios.get(url, { params: { searchQuery: searchQuery } }).then(res => {
+      props.dispatch(setPosts(res.data));
+      props.processTags(res.data);
+      props.history.push('/posts');
+    });
   };
   return (
     <section id="post-single">
@@ -41,4 +48,12 @@ const Single = props => {
   );
 };
 
-export default Single;
+Single.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  match: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired
+};
+
+export default connect(() => {
+  return {};
+})(Single);
