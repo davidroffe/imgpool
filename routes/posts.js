@@ -75,7 +75,7 @@ module.exports = (Models, router) => {
       });
 
       for (var i = 0; i < tags.length; i++) {
-        const [tag, created] = await Models.Tag.findOrCreate({
+        const [tag] = await Models.Tag.findOrCreate({
           where: { name: tags[i] },
           defaults: { active: true }
         });
