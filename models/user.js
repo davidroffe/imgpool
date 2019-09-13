@@ -8,8 +8,8 @@ module.exports = (sequelize, DataTypes) => {
       password: DataTypes.STRING,
       admin: DataTypes.BOOLEAN,
       bio: DataTypes.STRING,
-      token: DataTypes.STRING,
-      tokenDate: DataTypes.STRING
+      sessionId: DataTypes.STRING,
+      sessionExpDate: DataTypes.STRING
     },
     {}
   );

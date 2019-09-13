@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const tokenHelper = require('../utility/token');
+const sessionHelper = require('../utility/session');
 
 module.exports = (Models, router) => {
   router.post('/user/signup', async ctx => {
@@ -27,21 +27,21 @@ module.exports = (Models, router) => {
     if (errorRes.message.length > 0) {
       ctx.throw(401, 'Invalid email or password', errorRes);
     } else {
-      const token = tokenHelper.genToken();
-      const tokenDate = tokenHelper.genExpDate();
+      const sessionId = sessionHelper.genHash();
+      const sessionExpDate = sessionHelper.genExpDate();
       const user = await Models.User.findOrCreate({
         where: { email: email },
         defaults: {
           username: username,
           password: bcrypt.hashSync(password, bcrypt.genSaltSync(8), null),
-          token: token,
-          tokenDate: tokenDate
+          sessionId: sessionId,
+          sessionExpDate: sessionExpDate
         }
       });
       if (!user[1]) {
         ctx.throw(401, 'Sorry, that email is taken.');
       } else {
-        ctx.cookies.set('auth', token, { httpOnly: false });
+        ctx.cookies.set('auth', sessionId, { httpOnly: false });
         ctx.status = 200;
         ctx.body = {
           username: user[0].username,
@@ -62,12 +62,12 @@ module.exports = (Models, router) => {
       if (!user) {
         ctx.throw(401, 'Invalid email or password');
       } else if (bcrypt.compareSync(password, user.password)) {
-        const token = tokenHelper.genToken();
-        user.token = token;
-        user.tokenDate = tokenHelper.genExpDate();
+        const sessionId = sessionHelper.genHash();
+        user.sessionId = sessionId;
+        user.sessionExpDate = sessionHelper.genExpDate();
         user.save();
 
-        ctx.cookies.set('auth', token, { httpOnly: false });
+        ctx.cookies.set('auth', sessionId, { httpOnly: false });
         ctx.status = 200;
         ctx.body = {
           username: user.username,
@@ -79,7 +79,7 @@ module.exports = (Models, router) => {
     }
   });
   router.post('/user/edit', async ctx => {
-    const token = ctx.cookies.get('auth');
+    const sessionId = ctx.cookies.get('auth');
     const field = ctx.query.editField;
     const email = ctx.query.email || '';
     const username = ctx.query.username || '';
@@ -87,9 +87,9 @@ module.exports = (Models, router) => {
     const passwordConfirm = ctx.query.passwordConfirm || '';
     const emailRegEx = /[\w.]+@[\w.]+/;
 
-    const user = await Models.User.findOne({ where: { token: token } });
+    const user = await Models.User.findOne({ where: { sessionId: sessionId } });
     if (!user) {
-      ctx.throw(401, 'Invalid token');
+      ctx.throw(401, 'Invalid session');
     } else {
       if (field === 'edit-email') {
         if (email === '' || !emailRegEx.test(email)) {
@@ -118,7 +118,7 @@ module.exports = (Models, router) => {
           );
         }
       }
-      user.tokenDate = tokenHelper.genExpDate();
+      user.sessionExpDate = sessionHelper.genExpDate();
       user.save();
       ctx.status = 200;
       ctx.body = {
@@ -129,20 +129,22 @@ module.exports = (Models, router) => {
     }
   });
   router.post('/user/validate', async ctx => {
-    const token = ctx.cookies.get('auth');
+    const sessionId = ctx.cookies.get('auth');
 
-    if (token) {
-      const user = await Models.User.findOne({ where: { token: token } });
+    if (sessionId) {
+      const user = await Models.User.findOne({
+        where: { sessionId: sessionId }
+      });
 
       if (user) {
         //Check for expiration
-        if (user.tokenDate <= Date.now()) {
+        if (user.sessionExpDate <= Date.now()) {
           ctx.cookies.set('auth');
-          user.token = '';
-          user.tokenDate = '';
+          user.sessionId = '';
+          user.sessionExpDate = '';
           user.save();
         } else {
-          user.tokenDate = tokenHelper.genExpDate();
+          user.sessionExpDate = sessionHelper.genExpDate();
           user.save();
         }
         ctx.body = {

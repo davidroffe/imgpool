@@ -1,29 +1,29 @@
-const tokenHelper = require('../utility/token');
+const sessionHelper = require('../utility/session');
 const Models = require('../models');
 
 module.exports = async (ctx, next) => {
-  const token = ctx.cookies.get('auth');
+  const sessionId = ctx.cookies.get('auth');
   const url = ctx.url;
 
-  if (token) {
-    const user = await Models.User.findOne({ where: { token: token } });
+  if (sessionId) {
+    const user = await Models.User.findOne({ where: { sessionId: sessionId } });
 
-    console.log('Checking DB for user with token: ' + token);
+    console.log('Checking DB for user with session ID: ' + sessionId);
     if (user) {
-      console.log('User with token found in DB...');
+      console.log('User with that session ID found in DB...');
       //Check for expiration
-      if (user.tokenDate <= Date.now()) {
-        console.log('Token has expired, clearing token!');
+      if (user.sessionExpDate <= Date.now()) {
+        console.log('Session has expired, clearing session!');
         ctx.cookies.set('auth');
-        user.token = '';
-        user.tokenDate = '';
+        user.sessionId = '';
+        user.sessionExpDate = '';
         user.save();
       } else {
-        user.tokenDate = tokenHelper.genExpDate();
+        user.sessionExpDate = sessionHelper.genExpDate();
         user.save();
       }
     } else {
-      console.log('No user found with that token; clearing token!');
+      console.log('No user found with that session ID; clearing session!');
       console.log('url is: ' + url);
       ctx.cookies.set('auth');
     }
