@@ -46,9 +46,6 @@ const Login = props => {
             edit
           </button>
         </div>
-        <button className="button-large" id="delete-account">
-          Delete Account
-        </button>
       </div>
       <div className="right">
         <button
@@ -58,12 +55,19 @@ const Login = props => {
         >
           Create Post
         </button>
+        <button className="border-button" id="logout" onClick={props.logout}>
+          Log Out
+        </button>
+        <button className="border-button-red" id="delete-account">
+          Delete Account
+        </button>
       </div>
     </section>
   );
 };
 
 Login.propTypes = {
+  logout: PropTypes.func.isRequired,
   email: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
   toggleModal: PropTypes.func.isRequired

@@ -78,6 +78,21 @@ module.exports = (Models, router) => {
       }
     }
   });
+  router.post('/user/logout', async ctx => {
+    const sessionId = ctx.cookies.get('auth');
+
+    if (sessionId) {
+      const user = await Models.User.findOne({
+        where: { sessionId: sessionId }
+      });
+
+      ctx.cookies.set('auth');
+      user.sessionId = '';
+      user.sessionExpDate = '';
+      user.save();
+    }
+    ctx.status = 200;
+  });
   router.post('/user/edit', async ctx => {
     const sessionId = ctx.cookies.get('auth');
     const field = ctx.query.editField;

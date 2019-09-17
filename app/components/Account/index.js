@@ -33,11 +33,22 @@ const Account = props => {
 
   useEffect(() => {
     axios.post('/api/user/validate').then(res => {
+      Cookies.remove('auth');
       props.dispatch(setUser('username', res.data.username || ''));
       props.dispatch(setUser('email', res.data.email || ''));
-      props.dispatch(setUser('loggedIn', !!Cookies.get('auth')));
+      props.dispatch(setUser('loggedIn', false));
     });
   }, []);
+
+  const logout = e => {
+    e.preventDefault();
+
+    axios.post('/api/user/logout').then(res => {
+      props.dispatch(setUser('username', ''));
+      props.dispatch(setUser('email', ''));
+      props.dispatch(setUser('loggedIn', !!Cookies.get('auth')));
+    });
+  };
 
   const handleEditSubmit = e => {
     e.preventDefault();
@@ -166,7 +177,11 @@ const Account = props => {
   };
   return (
     <section id="account">
-      {props.loggedIn ? <Dashboard toggleModal={toggleModal} /> : <Login />}
+      {props.loggedIn ? (
+        <Dashboard toggleModal={toggleModal} logout={logout} />
+      ) : (
+        <Login />
+      )}
       {showModal ? (
         <Modal toggleModal={toggleModal}>
           {modalContent === 'edit' ? (
