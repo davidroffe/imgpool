@@ -11,7 +11,7 @@ const Modal = props => {
 
 Modal.propTypes = {
   toggleModal: PropTypes.func.isRequired,
-  children: PropTypes.element.isRequire
+  children: PropTypes.element.isRequired
 };
 
 export default Modal;

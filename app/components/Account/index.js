@@ -9,6 +9,7 @@ import Login from './Login';
 import Edit from './Edit';
 import CreatePost from './CreatePost';
 import Modal from '../Utility/Modal';
+import DeleteAccount from './Delete';
 
 const mapStateToProps = state => {
   return {
@@ -19,6 +20,8 @@ const mapStateToProps = state => {
 };
 
 const Account = props => {
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deletePasswordConfirm, setDeletePasswordConfirm] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editUsername, setEditUsername] = useState('');
   const [editPassword, setEditPassword] = useState('');
@@ -33,20 +36,21 @@ const Account = props => {
 
   useEffect(() => {
     axios.post('/api/user/validate').then(res => {
-      Cookies.remove('auth');
       props.dispatch(setUser('username', res.data.username || ''));
       props.dispatch(setUser('email', res.data.email || ''));
-      props.dispatch(setUser('loggedIn', false));
+      props.dispatch(setUser('loggedIn', !!Cookies.get('auth')));
     });
   }, []);
 
   const logout = e => {
     e.preventDefault();
 
-    axios.post('/api/user/logout').then(res => {
+    axios.post('/api/user/logout').then(() => {
       props.dispatch(setUser('username', ''));
       props.dispatch(setUser('email', ''));
-      props.dispatch(setUser('loggedIn', !!Cookies.get('auth')));
+      props.dispatch(setUser('loggedIn', false));
+      Cookies.remove('auth');
+      window.location.reload();
     });
   };
 
@@ -113,6 +117,44 @@ const Account = props => {
         });
     }
   };
+
+  const handleDeleteAccountSubmit = e => {
+    e.preventDefault();
+
+    const url = '/api/user/delete';
+    let newErrorMessage = [];
+
+    if (deletePassword === undefined || deletePassword === '') {
+      newErrorMessage.push('Please enter a password.');
+    } else if (deletePassword.length < 8) {
+      newErrorMessage.push('Password must be at least 8 characters.');
+    } else if (deletePasswordConfirm !== deletePassword) {
+      newErrorMessage.push('Passwords do not match.');
+    }
+
+    if (newErrorMessage.length > 0) {
+      setErrorMessage(newErrorMessage);
+    } else {
+      axios({
+        url: url,
+        method: 'post',
+        params: {
+          password: deletePassword
+        }
+      })
+        .then(() => {
+          props.dispatch(setUser('username', ''));
+          props.dispatch(setUser('email', ''));
+          props.dispatch(setUser('loggedIn', false));
+          Cookies.remove('auth');
+          window.location.reload();
+        })
+        .catch(error => {
+          setErrorMessage([error.response.data]);
+        });
+    }
+  };
+
   const handleCreatePostSubmit = e => {
     e.preventDefault();
 
@@ -182,34 +224,53 @@ const Account = props => {
       ) : (
         <Login />
       )}
+
       {showModal ? (
         <Modal toggleModal={toggleModal}>
-          {modalContent === 'edit' ? (
-            <Edit
-              handleSubmit={handleEditSubmit}
-              setEditEmail={setEditEmail}
-              setEditUsername={setEditUsername}
-              setEditPassword={setEditPassword}
-              setEditPasswordConfirm={setEditPasswordConfirm}
-              field={editField}
-              email={editEmail}
-              username={editUsername}
-              password={editPassword}
-              passwordConfirm={editPasswordConfirm}
-              errorMessage={errorMessage}
-            />
-          ) : (
-            <CreatePost
-              handleSubmit={handleCreatePostSubmit}
-              setPostFile={setPostFile}
-              setPostSource={setPostSource}
-              setPostTags={setPostTags}
-              file={postFile}
-              source={postSource}
-              tags={postTags}
-              errorMessage={errorMessage}
-            />
-          )}
+          {(() => {
+            switch (modalContent) {
+              case 'edit':
+                return (
+                  <Edit
+                    handleSubmit={handleEditSubmit}
+                    setEditEmail={setEditEmail}
+                    setEditUsername={setEditUsername}
+                    setEditPassword={setEditPassword}
+                    setEditPasswordConfirm={setEditPasswordConfirm}
+                    field={editField}
+                    email={editEmail}
+                    username={editUsername}
+                    password={editPassword}
+                    passwordConfirm={editPasswordConfirm}
+                    errorMessage={errorMessage}
+                  />
+                );
+              case 'deleteAccount':
+                return (
+                  <DeleteAccount
+                    handleSubmit={handleDeleteAccountSubmit}
+                    setPassword={setDeletePassword}
+                    setPasswordConfirm={setDeletePasswordConfirm}
+                    password={deletePassword}
+                    passwordConfirm={deletePasswordConfirm}
+                    errorMessage={errorMessage}
+                  />
+                );
+              default:
+                return (
+                  <CreatePost
+                    handleSubmit={handleCreatePostSubmit}
+                    setPostFile={setPostFile}
+                    setPostSource={setPostSource}
+                    setPostTags={setPostTags}
+                    file={postFile}
+                    source={postSource}
+                    tags={postTags}
+                    errorMessage={errorMessage}
+                  />
+                );
+            }
+          })()}
         </Modal>
       ) : null}
     </section>

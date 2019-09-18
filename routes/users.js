@@ -143,6 +143,22 @@ module.exports = (Models, router) => {
       };
     }
   });
+  router.post('/user/delete', async ctx => {
+    const sessionId = ctx.cookies.get('auth');
+    const password = ctx.query.password || '';
+    const user = await Models.User.findOne({ where: { sessionId: sessionId } });
+    if (!user) {
+      ctx.throw(401, 'Invalid session');
+    } else {
+      if (password === '' || !bcrypt.compareSync(password, user.password)) {
+        ctx.throw(401, 'Invalid password');
+      } else {
+        user.destroy();
+        ctx.cookies.set('auth');
+        ctx.status = 200;
+      }
+    }
+  });
   router.post('/user/validate', async ctx => {
     const sessionId = ctx.cookies.get('auth');
 

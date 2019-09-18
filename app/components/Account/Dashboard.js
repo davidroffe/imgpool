@@ -9,7 +9,7 @@ const mapStateToProps = state => {
   };
 };
 
-const Login = props => {
+const Dashboard = props => {
   return (
     <section id="account-dashboard">
       <h1>
@@ -58,7 +58,11 @@ const Login = props => {
         <button className="border-button" id="logout" onClick={props.logout}>
           Log Out
         </button>
-        <button className="border-button-red" id="delete-account">
+        <button
+          className="border-button-red"
+          id="delete-account"
+          onClick={props.toggleModal.bind(this, 'deleteAccount')}
+        >
           Delete Account
         </button>
       </div>
@@ -66,11 +70,11 @@ const Login = props => {
   );
 };
 
-Login.propTypes = {
+Dashboard.propTypes = {
   logout: PropTypes.func.isRequired,
   email: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
   toggleModal: PropTypes.func.isRequired
 };
 
-export default connect(mapStateToProps)(Login);
+export default connect(mapStateToProps)(Dashboard);
