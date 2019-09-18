@@ -62,7 +62,7 @@ const Edit = props => {
           );
         })}
       </div>
-      <Input className="border-button" type={'submit'} />
+      <Input className="border-button" type="submit" />
     </form>
   );
 };

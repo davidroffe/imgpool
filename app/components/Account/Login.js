@@ -134,7 +134,7 @@ const Login = props => {
           </div>
           <Input
             className="border-button"
-            type={'submit'}
+            type="submit"
             value={form === 'login' ? 'LOGIN' : 'SIGN UP'}
           />
           <p>
