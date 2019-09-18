@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { setUser } from '../../actions';
+import { setUser, setPosts } from '../../actions';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Dashboard from './Dashboard';
@@ -191,6 +191,7 @@ const Account = props => {
             setPostFile(null);
             setPostSource('');
             setPostTags('');
+            props.dispatch(setPosts([]));
           }
         })
         .catch(error => {
