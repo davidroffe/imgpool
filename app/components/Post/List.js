@@ -52,7 +52,7 @@ const List = props => {
 
     return activePosts;
   };
-  if (props.posts.length === 0) {
+  if (props.posts[0] === false) {
     return (
       <section id="splash">
         <div id="splash-center">

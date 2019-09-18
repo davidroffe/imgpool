@@ -31,7 +31,7 @@ const App = props => {
   const retrievePosts = () => {
     if (!props.posts.length) {
       axios.get('/api/post/list').then(res => {
-        props.dispatch(setPosts(res.data));
+        props.dispatch(setPosts(res.data.length ? res.data : [false]));
         processTags(res.data);
       });
     }
