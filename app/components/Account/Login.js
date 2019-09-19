@@ -22,14 +22,29 @@ const Login = props => {
     e.preventDefault();
 
     let newErrorMessage = [];
+    let url;
+
     const { email, username, password, passwordConfirm } = props;
-    const url = form === 'login' ? '/api/user/login' : '/api/user/signup';
+
+    switch (form) {
+      case 'login':
+        url = '/api/user/login';
+        break;
+      case 'signUp':
+        url = '/api/user/signup';
+        break;
+      case 'forgotPassword':
+        url = '/api/user/password-reset';
+        break;
+    }
 
     if (email === undefined || email === '') {
       newErrorMessage.push('Please enter an email.');
     }
-    if (password === undefined || password === '') {
-      newErrorMessage.push('Please enter a password.');
+    if (form === 'login' || form === 'signUp') {
+      if (password === undefined || password === '') {
+        newErrorMessage.push('Please enter a password.');
+      }
     }
     if (form === 'signUp') {
       if (password !== passwordConfirm) {
@@ -53,9 +68,13 @@ const Login = props => {
         }
       })
         .then(res => {
-          props.dispatch(setUser('email', res.data.email));
-          props.dispatch(setUser('username', res.data.username));
-          props.dispatch(setUser('loggedIn', true));
+          if (form === 'forgotPassword') {
+            setErrorMessage(['An email has been sent.']);
+          } else {
+            props.dispatch(setUser('email', res.data.email));
+            props.dispatch(setUser('username', res.data.username));
+            props.dispatch(setUser('loggedIn', true));
+          }
         })
         .catch(error => {
           setErrorMessage([error.response.data]);
@@ -72,7 +91,12 @@ const Login = props => {
 
   const switchForm = e => {
     e.preventDefault();
-    setForm(form === 'login' ? 'signUp' : 'login');
+
+    if (e.target.id === 'forgot-password') {
+      setForm('forgotPassword');
+    } else {
+      setForm(form === 'login' ? 'signUp' : 'login');
+    }
   };
 
   return (
@@ -101,16 +125,18 @@ const Login = props => {
               handleChange={handleChange}
             />
           ) : null}
-          <Input
-            id="password"
-            autoComplete={'off'}
-            type={'password'}
-            title={'Password'}
-            name={'password'}
-            value={props.password}
-            placeholder={'PASSWORD'}
-            handleChange={handleChange}
-          />
+          {form === 'signUp' || form === 'login' ? (
+            <Input
+              id="password"
+              autoComplete={'off'}
+              type={'password'}
+              title={'Password'}
+              name={'password'}
+              value={props.password}
+              placeholder={'PASSWORD'}
+              handleChange={handleChange}
+            />
+          ) : null}
           {form === 'signUp' ? (
             <Input
               id="passwordConfirm"
@@ -135,12 +161,28 @@ const Login = props => {
           <Input
             className="border-button"
             type="submit"
-            value={form === 'login' ? 'LOGIN' : 'SIGN UP'}
+            value={(() => {
+              switch (form) {
+                case 'login':
+                  return 'LOGIN';
+                case 'signUp':
+                  return 'SIGN UP';
+                case 'forgotPassword':
+                  return 'RESET PASSWORD';
+              }
+            })()}
           />
           <p>
-            Don‘t have an account?{' '}
             <button className="switch-form" onClick={switchForm}>
               {form === 'login' ? 'Sign Up' : 'Login'}
+            </button>
+            <span> | </span>
+            <button
+              id="forgot-password"
+              className="switch-form"
+              onClick={switchForm}
+            >
+              Forgot Password
             </button>
           </p>
         </form>
