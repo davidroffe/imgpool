@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
-const sessionHelper = require('../utility/session');
+const nodemailer = require('nodemailer');
+const auth = require('../utility/auth');
+require('dotenv').config();
 
 module.exports = (Models, router) => {
   router.post('/user/signup', async ctx => {
@@ -27,8 +29,8 @@ module.exports = (Models, router) => {
     if (errorRes.message.length > 0) {
       ctx.throw(401, 'Invalid email or password', errorRes);
     } else {
-      const sessionId = sessionHelper.genHash();
-      const sessionExpDate = sessionHelper.genExpDate();
+      const sessionId = auth.genHash();
+      const sessionExpDate = auth.genExpDate();
       const user = await Models.User.findOrCreate({
         where: { email: email },
         defaults: {
@@ -62,9 +64,9 @@ module.exports = (Models, router) => {
       if (!user) {
         ctx.throw(401, 'Invalid email or password');
       } else if (bcrypt.compareSync(password, user.password)) {
-        const sessionId = sessionHelper.genHash();
+        const sessionId = auth.genHash();
         user.sessionId = sessionId;
-        user.sessionExpDate = sessionHelper.genExpDate();
+        user.sessionExpDate = auth.genExpDate();
         user.save();
 
         ctx.cookies.set('auth', sessionId, { httpOnly: false });
@@ -133,7 +135,7 @@ module.exports = (Models, router) => {
           );
         }
       }
-      user.sessionExpDate = sessionHelper.genExpDate();
+      user.sessionExpDate = auth.genExpDate();
       user.save();
       ctx.status = 200;
       ctx.body = {
@@ -180,7 +182,7 @@ module.exports = (Models, router) => {
             valid: false
           };
         } else {
-          user.sessionExpDate = sessionHelper.genExpDate();
+          user.sessionExpDate = auth.genExpDate();
           user.save();
 
           ctx.body = {
@@ -199,5 +201,39 @@ module.exports = (Models, router) => {
       }
     }
     ctx.status = 200;
+  });
+  router.post('/user/password-reset', async ctx => {
+    const email = ctx.query.email || '';
+
+    const user = await Models.User.findOne({
+      where: { email: email }
+    });
+
+    if (user) {
+      const newPassword = auth.genPassword();
+
+      user.password = bcrypt.hashSync(
+        newPassword,
+        bcrypt.genSaltSync(12),
+        null
+      );
+      user.save();
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD
+        }
+      });
+
+      transporter.sendMail({
+        from: '"Imgpool Support" <support@imgpool.app>', // sender address
+        to: user.email,
+        subject: 'Password Reset', // Subject line
+        text: `Random password: ${newPassword}` // plain text body
+      });
+    }
   });
 };

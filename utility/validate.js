@@ -1,4 +1,4 @@
-const sessionHelper = require('../utility/session');
+const auth = require('../utility/auth');
 const Models = require('../models');
 
 module.exports = async (ctx, next) => {
@@ -19,7 +19,7 @@ module.exports = async (ctx, next) => {
         user.sessionExpDate = '';
         user.save();
       } else {
-        user.sessionExpDate = sessionHelper.genExpDate();
+        user.sessionExpDate = auth.genExpDate();
         user.save();
       }
     } else {
