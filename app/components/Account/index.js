@@ -36,9 +36,14 @@ const Account = props => {
 
   useEffect(() => {
     axios.post('/api/user/validate').then(res => {
-      props.dispatch(setUser('username', res.data.username || ''));
-      props.dispatch(setUser('email', res.data.email || ''));
-      props.dispatch(setUser('loggedIn', !!Cookies.get('auth')));
+      if (res.data.valid) {
+        props.dispatch(setUser('username', res.data.username));
+        props.dispatch(setUser('email', res.data.email));
+        props.dispatch(setUser('loggedIn', !!Cookies.get('auth')));
+      } else if (props.loggedIn) {
+        Cookies.remove('auth');
+        window.location.reload();
+      }
     });
   }, []);
 
