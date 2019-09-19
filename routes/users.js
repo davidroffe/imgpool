@@ -174,23 +174,30 @@ module.exports = (Models, router) => {
           user.sessionId = '';
           user.sessionExpDate = '';
           user.save();
+          ctx.body = {
+            username: '',
+            email: '',
+            valid: false
+          };
         } else {
           user.sessionExpDate = sessionHelper.genExpDate();
           user.save();
+
+          ctx.body = {
+            username: user.username,
+            email: user.email,
+            valid: true
+          };
         }
-        ctx.body = {
-          username: user.username,
-          email: user.email
-        };
       } else {
+        ctx.body = {
+          username: '',
+          email: '',
+          valid: false
+        };
         ctx.cookies.set('auth');
       }
     }
     ctx.status = 200;
-  });
-  router.post('/user/delete', async ctx => {
-    const allTags = await Models.Tag.findAll();
-
-    ctx.body = allTags;
   });
 };
