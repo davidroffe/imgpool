@@ -5,6 +5,7 @@ const Router = require('@koa/router');
 const logger = require('koa-logger');
 const routes = require('./routes');
 const validate = require('./utility/validate');
+require('dotenv').config();
 const app = new Koa();
 const apiRouter = new Router({
   prefix: '/api'
@@ -29,5 +30,5 @@ app.use(validate);
 routes(apiRouter);
 app.use(apiRouter.routes());
 app.use(apiRouter.allowedMethods());
-const server = app.listen(3000);
+const server = app.listen(process.env.PORT);
 module.exports = server;
