@@ -46,6 +46,7 @@ const Account = props => {
         props.dispatch(setUser('username', res.data.username));
         props.dispatch(setUser('email', res.data.email));
         props.dispatch(setUser('loggedIn', !!Cookies.get('auth')));
+        props.dispatch(setUser('admin', res.data.admin));
       } else if (props.loggedIn) {
         Cookies.remove('auth');
         window.location.reload();
@@ -57,9 +58,6 @@ const Account = props => {
     e.preventDefault();
 
     axios.post('/api/user/logout').then(() => {
-      props.dispatch(setUser('username', ''));
-      props.dispatch(setUser('email', ''));
-      props.dispatch(setUser('loggedIn', false));
       Cookies.remove('auth');
       window.location.reload();
     });

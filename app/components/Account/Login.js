@@ -74,6 +74,7 @@ const Login = props => {
             props.dispatch(setUser('email', res.data.email));
             props.dispatch(setUser('username', res.data.username));
             props.dispatch(setUser('loggedIn', true));
+            props.dispatch(setUser('admin', res.data.admin));
           }
         })
         .catch(error => {
