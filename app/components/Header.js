@@ -1,7 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Logo from '../assets/images/logo.svg';
+
+const mapStateToProps = state => {
+  return {
+    loggedIn: state.user.loggedIn,
+    admin: state.user.admin
+  };
+};
 
 const Header = props => {
   return (
@@ -14,6 +22,9 @@ const Header = props => {
           <Link to="/posts">Posts</Link>
           <Link to="/account">Account</Link>
           <Link to="/about">About</Link>
+          {props.loggedIn && props.admin ? (
+            <Link to="/admin">Admin</Link>
+          ) : null}
         </nav>
       </div>
       {props.children}
@@ -22,7 +33,9 @@ const Header = props => {
 };
 
 Header.propTypes = {
-  children: PropTypes.element.isRequired
+  children: PropTypes.element.isRequired,
+  loggedIn: PropTypes.bool.isRequired,
+  admin: PropTypes.bool.isRequired
 };
 
-export default Header;
+export default connect(mapStateToProps)(Header);
