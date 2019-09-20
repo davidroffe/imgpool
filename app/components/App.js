@@ -10,8 +10,8 @@ import { connect } from 'react-redux';
 import { setPosts, setTags } from '../actions';
 import axios from 'axios';
 import Header from './Header';
+import Admin from './Admin/index';
 import Account from './Account/index';
-import PasswordReset from './Account/PasswordReset';
 import PostSearch from './Post/Search';
 import Posts from './Post/List';
 import Post from './Post/Single';
@@ -85,6 +85,7 @@ const App = props => {
             exact
             component={Account}
           />
+          <Route path="/admin" exact component={Admin} />
           <Route path="/about" exact component={About} />
           <Redirect from="/" exact to="/posts" />
         </Switch>
