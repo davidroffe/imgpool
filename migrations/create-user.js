@@ -17,6 +17,9 @@ module.exports = {
       password: {
         type: Sequelize.STRING
       },
+      passwordResetToken: {
+        type: Sequelize.STRING
+      },
       admin: {
         type: Sequelize.BOOLEAN
       },
