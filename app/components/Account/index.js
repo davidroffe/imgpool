@@ -10,6 +10,7 @@ import Edit from './Edit';
 import CreatePost from './CreatePost';
 import Modal from '../Utility/Modal';
 import DeleteAccount from './Delete';
+import PasswordReset from './PasswordReset';
 
 const mapStateToProps = state => {
   return {
@@ -26,6 +27,11 @@ const Account = props => {
   const [editUsername, setEditUsername] = useState('');
   const [editPassword, setEditPassword] = useState('');
   const [editPasswordConfirm, setEditPasswordConfirm] = useState('');
+  const [passwordResetPassword, setPasswordResetPassword] = useState('');
+  const [
+    passwordResetPasswordConfirm,
+    setPasswordResetPasswordConfirm
+  ] = useState('');
   const [postFile, setPostFile] = useState('');
   const [postSource, setPostSource] = useState('');
   const [postTags, setPostTags] = useState('');
@@ -204,6 +210,42 @@ const Account = props => {
         });
     }
   };
+
+  const handlePasswordResetSubmit = e => {
+    e.preventDefault();
+
+    let newErrorMessage = [];
+    const url = '/api/user/password-reset';
+
+    if (passwordResetPassword !== passwordResetPasswordConfirm) {
+      newErrorMessage.push('Passwords do not match.');
+    }
+    if (passwordResetPassword.length < 8) {
+      newErrorMessage.push('Password must be at least 8 characters.');
+    }
+    if (newErrorMessage.length > 0) {
+      setErrorMessage(newErrorMessage);
+    } else {
+      axios({
+        url: url,
+        method: 'post',
+        params: {
+          passwordResetToken: props.match.params.passwordResetToken,
+          password: passwordResetPassword
+        }
+      })
+        .then(res => {
+          props.dispatch(setUser('email', res.data.email));
+          props.dispatch(setUser('username', res.data.username));
+          props.dispatch(setUser('loggedIn', true));
+          props.history.push('/account');
+        })
+        .catch(error => {
+          setErrorMessage([error.response.data]);
+        });
+    }
+  };
+
   const toggleModal = (modalContent, e) => {
     e = typeof e === 'undefined' ? modalContent : e;
 
@@ -225,11 +267,24 @@ const Account = props => {
   };
   return (
     <section id="account">
-      {props.loggedIn ? (
-        <Dashboard toggleModal={toggleModal} logout={logout} />
-      ) : (
-        <Login />
-      )}
+      {(() => {
+        if (props.loggedIn) {
+          return <Dashboard toggleModal={toggleModal} logout={logout} />;
+        } else if (props.match.params.passwordResetToken) {
+          return (
+            <PasswordReset
+              handleSubmit={handlePasswordResetSubmit}
+              setPassword={setPasswordResetPassword}
+              setPasswordConfirm={setPasswordResetPasswordConfirm}
+              password={passwordResetPassword}
+              passwordConfirm={passwordResetPasswordConfirm}
+              errorMessage={errorMessage}
+            />
+          );
+        } else {
+          return <Login />;
+        }
+      })()}
 
       {showModal ? (
         <Modal toggleModal={toggleModal}>
@@ -287,7 +342,9 @@ Account.propTypes = {
   dispatch: PropTypes.func.isRequired,
   username: PropTypes.string.isRequired,
   email: PropTypes.string.isRequired,
-  loggedIn: PropTypes.bool.isRequired
+  loggedIn: PropTypes.bool.isRequired,
+  match: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired
 };
 
 export default connect(mapStateToProps)(Account);

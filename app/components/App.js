@@ -11,6 +11,7 @@ import { setPosts, setTags } from '../actions';
 import axios from 'axios';
 import Header from './Header';
 import Account from './Account/index';
+import PasswordReset from './Account/PasswordReset';
 import PostSearch from './Post/Search';
 import Posts from './Post/List';
 import Post from './Post/Single';
@@ -79,7 +80,11 @@ const App = props => {
             path="/post/:id"
             render={props => <Post {...props} processTags={processTags} />}
           />
-          <Route path="/account" component={Account} />
+          <Route
+            path={['/account', '/account/password-reset/:passwordResetToken']}
+            exact
+            component={Account}
+          />
           <Route path="/about" exact component={About} />
           <Redirect from="/" exact to="/posts" />
         </Switch>

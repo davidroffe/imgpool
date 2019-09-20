@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
 const auth = require('../utility/auth');
 require('dotenv').config();
 
@@ -202,38 +203,88 @@ module.exports = (Models, router) => {
     }
     ctx.status = 200;
   });
-  router.post('/user/password-reset', async ctx => {
+  router.post('/user/password-reset/', async ctx => {
     const email = ctx.query.email || '';
+    const password = ctx.query.password || '';
+    const passwordResetToken = ctx.query.passwordResetToken;
+    const secret = process.env.JWT_SECRET;
 
-    const user = await Models.User.findOne({
-      where: { email: email }
-    });
+    if (passwordResetToken) {
+      try {
+        const payload = jwt.verify(passwordResetToken, secret);
 
-    if (user) {
-      const newPassword = auth.genPassword();
+        if (payload) {
+          const user = await Models.User.findOne({
+            where: { email: payload.email }
+          });
 
-      user.password = bcrypt.hashSync(
-        newPassword,
-        bcrypt.genSaltSync(12),
-        null
-      );
-      user.save();
-      const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,
-        auth: {
-          user: process.env.EMAIL_USERNAME,
-          pass: process.env.EMAIL_PASSWORD
+          if (
+            user &&
+            bcrypt.compareSync(passwordResetToken, user.passwordResetToken)
+          ) {
+            if (password.length < 8) {
+              ctx.throw(401, 'Invalid password length.');
+            } else {
+              user.password = bcrypt.hashSync(
+                password,
+                bcrypt.genSaltSync(12),
+                null
+              );
+
+              const sessionId = auth.genHash();
+              user.sessionId = sessionId;
+              user.sessionExpDate = auth.genExpDate();
+              user.passwordResetToken = null;
+              user.save();
+
+              ctx.cookies.set('auth', sessionId, { httpOnly: false });
+              ctx.status = 200;
+              ctx.body = {
+                username: user.username,
+                email: user.email
+              };
+            }
+          } else {
+            ctx.throw(401, 'Invalid Token.');
+          }
         }
+      } catch (e) {
+        ctx.throw(401, e.message);
+      }
+    } else {
+      const user = await Models.User.findOne({
+        where: { email }
       });
 
-      transporter.sendMail({
-        from: '"Imgpool Support" <support@imgpool.app>', // sender address
-        to: user.email,
-        subject: 'Password Reset', // Subject line
-        text: `Random password: ${newPassword}` // plain text body
-      });
+      if (user) {
+        const payload = { email };
+        const options = { expiresIn: '1h' };
+        const token = jwt.sign(payload, secret, options);
+
+        user.passwordResetToken = bcrypt.hashSync(
+          token,
+          bcrypt.genSaltSync(8),
+          null
+        );
+        user.save();
+        const transporter = nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          port: 587,
+          secure: false,
+          auth: {
+            user: process.env.EMAIL_USERNAME,
+            pass: process.env.EMAIL_PASSWORD
+          }
+        });
+
+        transporter.sendMail({
+          from: '"Imgpool Support" <support@imgpool.app>', // sender address
+          to: user.email,
+          subject: 'Password Reset', // Subject line
+          html: `<div style="width: 825px;max-width: 100%;"><h1 style="margin:0 auto 35px;color:#333;font-size:55px;font-family: sans-serif;font-weight: 600;"><span style="padding-right:15px;border-right:1px solid #333;">Password Reset</span></h1><p style="margin:10px 0;color:#333;font-weight: 600;font-size: 14px;line-height: 20px;">If you requested a password reset for ${user.username}, click the button below. If you didn't make this request, ignore this email.</p><a href="https://imgpool.app/account/password-reset/${token}" style="display:block; margin-top:50px;border:2px solid #333;padding:15px 14px 20px;box-sizing:border-box;width:326px;height:50px;background:none;text-align:center;text-transform:uppercase;text-decoration:none;color:#333;font-family:sans-serif;font-size:12px;font-weight:600;display:block;cursor:pointer;outline:none;">Reset Password</a>
+          </div>`
+        });
+      }
     }
   });
 };

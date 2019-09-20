@@ -168,7 +168,7 @@ const Login = props => {
                 case 'signUp':
                   return 'SIGN UP';
                 case 'forgotPassword':
-                  return 'RESET PASSWORD';
+                  return 'SEND EMAIL';
               }
             })()}
           />
