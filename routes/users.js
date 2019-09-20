@@ -74,7 +74,8 @@ module.exports = (Models, router) => {
         ctx.status = 200;
         ctx.body = {
           username: user.username,
-          email: user.email
+          email: user.email,
+          admin: user.admin
         };
       } else {
         ctx.throw(401, 'Invalid email or password');
@@ -180,6 +181,7 @@ module.exports = (Models, router) => {
           ctx.body = {
             username: '',
             email: '',
+            admin: false,
             valid: false
           };
         } else {
@@ -189,6 +191,7 @@ module.exports = (Models, router) => {
           ctx.body = {
             username: user.username,
             email: user.email,
+            admin: user.admin,
             valid: true
           };
         }
