@@ -3,7 +3,8 @@ const initialState = {
   username: '',
   password: '',
   passwordConfirm: '',
-  loggedIn: false
+  loggedIn: false,
+  admin: false
 };
 
 const user = (state = initialState, action) => {
@@ -18,6 +19,8 @@ const user = (state = initialState, action) => {
       return { ...state, passwordConfirm: action.text };
     case 'SET_LOGGEDIN':
       return { ...state, loggedIn: action.text };
+    case 'SET_ADMIN':
+      return { ...state, admin: action.text };
     default:
       return state;
   }
