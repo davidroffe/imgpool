@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 const mapStateToProps = state => {
   return {
-    email: state.user.email,
-    username: state.user.username
+    tags: state.tags
   };
 };
 
 const Dashboard = props => {
+  useEffect(() => {
+    props.retrieveTags();
+  });
+
   return (
     <section id="account-dashboard">
       <h1>
@@ -18,7 +21,7 @@ const Dashboard = props => {
       <div className="left">
         <h2>Flagged Posts</h2>
         <div className="row">
-          <p>(Total number of flagged posts)</p>
+          <p>({props.tags.length}) Tags</p>
           <button
             id="show-flagged-posts"
             onClick={props.toggleModal.bind(this, 'flaggedPosts')}
@@ -58,8 +61,10 @@ const Dashboard = props => {
 };
 
 Dashboard.propTypes = {
+  retrieveTags: PropTypes.func.isRequired,
   toggleSignup: PropTypes.func.isRequired,
-  toggleModal: PropTypes.func.isRequired
+  toggleModal: PropTypes.func.isRequired,
+  tags: PropTypes.array.isRequired
 };
 
 export default connect(mapStateToProps)(Dashboard);
