@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { setPosts, setTags } from '../actions';
+import { setPosts, setMenuTags } from '../actions';
 import axios from 'axios';
 import Header from './Header';
 import Admin from './Admin/index';
@@ -20,7 +20,7 @@ import About from './About';
 const mapStateToProps = state => {
   return {
     posts: state.posts,
-    tags: state.tags
+    tags: state.tagMenu.tags
   };
 };
 
@@ -59,7 +59,7 @@ const App = props => {
       }
     }
 
-    props.dispatch(setTags(newTags));
+    props.dispatch(setMenuTags(newTags));
   };
 
   return (

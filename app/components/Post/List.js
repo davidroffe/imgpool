@@ -7,7 +7,7 @@ import TagMenu from '../TagMenu';
 const mapStateToProps = state => {
   return {
     posts: state.posts,
-    tags: state.tags
+    tags: state.tagMenu.tags
   };
 };
 

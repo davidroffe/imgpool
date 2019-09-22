@@ -3,6 +3,11 @@ export const setPosts = posts => ({
   posts
 });
 
+export const setMenuTags = tags => ({
+  type: 'SET_MENU_TAGS',
+  tags
+});
+
 export const setTags = tags => ({
   type: 'SET_TAGS',
   tags

@@ -6,8 +6,8 @@ import { toggleTagMenu, toggleTag } from '../actions';
 
 const mapStateToProps = state => {
   return {
-    tags: state.tags,
-    tagMenu: state.tagMenu
+    tags: state.tagMenu.tags,
+    tagMenu: state.tagMenu.state
   };
 };
 
