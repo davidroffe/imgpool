@@ -11,8 +11,8 @@ const CreatePost = props => {
         type={'file'}
         title={'Post'}
         name={'post'}
-        value={props.post}
-        handleChange={e => props.setPostFile(e.target.files[0])}
+        value={props.postFile.value}
+        handleChange={e => props.setPostFile(e.target)}
       />
       <Input
         id="source"
@@ -53,7 +53,7 @@ CreatePost.propTypes = {
   setPostFile: PropTypes.func.isRequired,
   setPostSource: PropTypes.func.isRequired,
   setPostTags: PropTypes.func.isRequired,
-  post: PropTypes.string.isRequired,
+  postFile: PropTypes.object.isRequired,
   source: PropTypes.string.isRequired,
   tags: PropTypes.string.isRequired,
   errorMessage: PropTypes.array.isRequired

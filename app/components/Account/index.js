@@ -32,7 +32,7 @@ const Account = props => {
     passwordResetPasswordConfirm,
     setPasswordResetPasswordConfirm
   ] = useState('');
-  const [postFile, setPostFile] = useState('');
+  const [postFile, setPostFile] = useState({ value: '' });
   const [postSource, setPostSource] = useState('');
   const [postTags, setPostTags] = useState('');
   const [editField, setEditField] = useState('');
@@ -191,7 +191,7 @@ const Account = props => {
         source: postSource,
         tags: postTags
       };
-      formData.append('image', postFile);
+      formData.append('image', postFile.files[0]);
       axios
         .post(url, formData, config)
         .then(res => {
@@ -322,7 +322,7 @@ const Account = props => {
                     setPostFile={setPostFile}
                     setPostSource={setPostSource}
                     setPostTags={setPostTags}
-                    file={postFile}
+                    postFile={postFile}
                     source={postSource}
                     tags={postTags}
                     errorMessage={errorMessage}
