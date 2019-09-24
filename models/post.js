@@ -3,6 +3,7 @@ module.exports = (sequelize, DataTypes) => {
   const Post = sequelize.define(
     'Post',
     {
+      status: DataTypes.STRING,
       height: DataTypes.INTEGER,
       width: DataTypes.INTEGER,
       source: DataTypes.STRING,
@@ -12,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   Post.associate = function(models) {
+    Post.hasMany(models.Flag);
     Post.belongsToMany(models.Tag, {
       through: 'TaggedPost',
       as: 'tag',
