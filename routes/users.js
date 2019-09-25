@@ -36,6 +36,7 @@ module.exports = (Models, router) => {
         where: { email: email },
         defaults: {
           username: username,
+          admin: false,
           password: bcrypt.hashSync(password, bcrypt.genSaltSync(8), null),
           sessionId: sessionId,
           sessionExpDate: sessionExpDate
