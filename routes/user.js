@@ -207,6 +207,25 @@ module.exports = (Models, router) => {
     }
     ctx.status = 200;
   });
+  router.get('/user/get', async ctx => {
+    const sessionId = ctx.cookies.get('auth');
+
+    if (sessionId) {
+      const user = await Models.User.findOne({
+        where: { sessionId: sessionId }
+      });
+
+      if (user && user.admin) {
+        const users = await Models.User.findAll();
+        ctx.body = users;
+      } else {
+        ctx.throw(401, 'Unauthorized request.');
+      }
+    } else {
+      ctx.throw(401, 'Invalid password');
+    }
+    ctx.status = 200;
+  });
   router.post('/user/password-reset/', async ctx => {
     const email = ctx.query.email || '';
     const password = ctx.query.password || '';
