@@ -13,6 +13,16 @@ export const setTags = tags => ({
   tags
 });
 
+export const setUsers = users => ({
+  type: 'SET_USERS',
+  users
+});
+
+export const setFlags = flags => ({
+  type: 'SET_FLAGS',
+  flags
+});
+
 export const toggleTagMenu = () => ({
   type: 'TOGGLE_TAG_MENU'
 });
