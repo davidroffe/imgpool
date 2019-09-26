@@ -1,15 +1,15 @@
 module.exports = (Models, router) => {
-  router.get('/tags/get', async ctx => {
+  router.get('/tag/get', async ctx => {
     const allTags = await Models.Tag.findAll();
 
     ctx.body = allTags;
   });
-  router.post('/tags/create', async ctx => {
+  router.post('/tag/create', async ctx => {
     const allTags = await Models.Tag.findAll();
 
     ctx.body = allTags;
   });
-  router.post('/tags/delete', async ctx => {
+  router.post('/tag/delete', async ctx => {
     const allTags = await Models.Tag.findAll();
 
     ctx.body = allTags;
