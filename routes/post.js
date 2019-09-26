@@ -29,6 +29,16 @@ module.exports = (Models, router) => {
 
     ctx.body = allPosts;
   });
+  router.get('/post/flag/get', async ctx => {
+    const allFlags = await Models.Flag.findAll({
+      include: {
+        model: Models.Post,
+        as: 'post'
+      }
+    });
+
+    ctx.body = allFlags;
+  });
   router.get('/post/single', async ctx => {
     const postId = ctx.query.id;
     const post = await Models.Post.findOne({
