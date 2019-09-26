@@ -13,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   Post.associate = function(models) {
-    Post.hasMany(models.Flag);
     Post.belongsToMany(models.Tag, {
       through: 'TaggedPost',
       as: 'tag',
