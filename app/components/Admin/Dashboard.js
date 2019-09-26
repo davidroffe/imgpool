@@ -1,17 +1,23 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import TagForm from './TagForm';
 
 const mapStateToProps = state => {
   return {
-    tags: state.tags
+    tags: state.tags,
+    users: state.users,
+    flags: state.flags
   };
 };
 
 const Dashboard = props => {
-  useEffect(() => {
-    props.retrieveTags();
-  });
+  const [showFlagForm, setShowFlagForm] = useState(false);
+  const [showUserForm, setShowUserForm] = useState(false);
+  const [showTagForm, setShowTagForm] = useState(false);
+  const [errorMessage, setErrorMessage] = useState([]);
+
+  const handleTagSubmit = () => {};
 
   return (
     <section id="account-dashboard">
@@ -19,32 +25,47 @@ const Dashboard = props => {
         <span>Admin</span>
       </h1>
       <div className="left">
-        <h2>Flagged Posts</h2>
+        <h2>Flags</h2>
         <div className="row">
-          <p>({props.tags.length}) Tags</p>
-          <button
-            id="show-flagged-posts"
-            onClick={props.toggleModal.bind(this, 'flaggedPosts')}
-          >
-            show
-          </button>
+          <p>({props.flags[0] ? props.flags.length : '0'})</p>
+          {props.flags[0] ? (
+            <button
+              id="show-flags"
+              onClick={() => {
+                setShowFlagForm(!showFlagForm);
+              }}
+            >
+              show
+            </button>
+          ) : null}
         </div>
         <h2>Users</h2>
         <div className="row">
-          <p>(Total number of users)</p>
-          <button
-            id="show-users"
-            onClick={props.toggleModal.bind(this, 'userList')}
-          >
-            show
-          </button>
+          <p>({props.users[0] ? props.users.length : '0'})</p>
+          {props.users[0] ? (
+            <button
+              id="show-users"
+              onClick={() => {
+                setShowUserForm(!showUserForm);
+              }}
+            >
+              show
+            </button>
+          ) : null}
         </div>
         <h2>Tags</h2>
         <div className="row">
-          <p>(Total number of users)</p>
-          <button id="show-tags" onClick={props.toggleModal.bind(this, 'tags')}>
-            show
-          </button>
+          <p>({props.tags[0] ? props.tags.length : '0'})</p>
+          {props.tags[0] ? (
+            <button
+              id="show-tags"
+              onClick={() => {
+                setShowTagForm(!showTagForm);
+              }}
+            >
+              show
+            </button>
+          ) : null}
         </div>
       </div>
       <div className="right">
@@ -56,15 +77,22 @@ const Dashboard = props => {
           Toggle Signups
         </button>
       </div>
+      <TagForm
+        show={showTagForm}
+        toggleShow={setShowTagForm}
+        handleSubmit={handleTagSubmit}
+        tags={props.tags}
+        errorMessage={errorMessage}
+      />
     </section>
   );
 };
 
 Dashboard.propTypes = {
-  retrieveTags: PropTypes.func.isRequired,
   toggleSignup: PropTypes.func.isRequired,
-  toggleModal: PropTypes.func.isRequired,
-  tags: PropTypes.array.isRequired
+  tags: PropTypes.array.isRequired,
+  users: PropTypes.array.isRequired,
+  flags: PropTypes.array.isRequired
 };
 
 export default connect(mapStateToProps)(Dashboard);
