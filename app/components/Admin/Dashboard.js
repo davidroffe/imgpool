@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import TagForm from './TagForm';
@@ -35,7 +35,7 @@ const Dashboard = props => {
                 setShowFlagForm(!showFlagForm);
               }}
             >
-              show
+              manage
             </button>
           ) : null}
         </div>
@@ -49,7 +49,7 @@ const Dashboard = props => {
                 setShowUserForm(!showUserForm);
               }}
             >
-              show
+              manage
             </button>
           ) : null}
         </div>
@@ -63,7 +63,7 @@ const Dashboard = props => {
                 setShowTagForm(!showTagForm);
               }}
             >
-              show
+              manage
             </button>
           ) : null}
         </div>

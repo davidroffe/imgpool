@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { setTags, setUsers, setFlags } from '../../actions';
@@ -16,8 +16,6 @@ const mapStateToProps = state => {
 };
 
 const Admin = props => {
-  //const [errorMessage, setErrorMessage] = useState([]);
-
   useEffect(() => {
     if (!props.loggedIn || !props.admin) {
       props.history.push('/account');
