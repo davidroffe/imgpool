@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import TagForm from './TagForm';
-import UserForm from './UserForm';
+import UserSelectForm from './UserSelectForm';
 
 const mapStateToProps = state => {
   return {
@@ -126,7 +126,7 @@ const Dashboard = props => {
         tags={props.tags}
         errorMessage={errorMessage}
       />
-      <UserForm
+      <UserSelectForm
         show={showUserForm}
         toggleShow={setShowUserForm}
         handleSubmit={handleUserSubmit}

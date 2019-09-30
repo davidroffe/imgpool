@@ -3,7 +3,7 @@ import Select from 'react-select';
 import PropTypes from 'prop-types';
 import Modal from '../Utility/Modal';
 
-const UserForm = props => {
+const UserSelectForm = props => {
   const [selectedUsers, setSelectedUsers] = useState([]);
 
   const handleChange = selectedUsers => {
@@ -69,7 +69,7 @@ const UserForm = props => {
   ) : null;
 };
 
-UserForm.propTypes = {
+UserSelectForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   users: PropTypes.array.isRequired,
   show: PropTypes.bool.isRequired,
@@ -77,4 +77,4 @@ UserForm.propTypes = {
   errorMessage: PropTypes.array.isRequired
 };
 
-export default UserForm;
+export default UserSelectForm;
