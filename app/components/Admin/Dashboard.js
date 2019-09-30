@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { setTags } from '../../actions';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import TagForm from './TagForm';
@@ -28,14 +27,8 @@ const Dashboard = props => {
           tagIds: tagIds
         }
       })
-        .then(res => {
-          const updatedTags = res.data;
-          const mergedTags = props.tags.map(tag => {
-            for (var i = 0; i < updatedTags.length; i++) {
-              return updatedTags[i].id === tag.id ? updatedTags[i] : tag;
-            }
-          });
-          props.dispatch(setTags(mergedTags));
+        .then(() => {
+          props.retrieveTags();
           setShowTagForm(!showTagForm);
         })
         .catch(error => {
@@ -117,6 +110,7 @@ const Dashboard = props => {
 
 Dashboard.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  retrieveTags: PropTypes.func.isRequired,
   toggleSignup: PropTypes.func.isRequired,
   tags: PropTypes.array.isRequired,
   users: PropTypes.array.isRequired,

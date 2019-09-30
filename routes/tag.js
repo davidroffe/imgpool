@@ -10,7 +10,7 @@ module.exports = (Models, router) => {
     ctx.body = allTags;
   });
 
-  router.post('/tag/toggle', async ctx => {
+  router.post(['/tag/toggle', '/tag/delete'], async ctx => {
     const sessionId = ctx.cookies.get('auth');
     const tagIds = ctx.query['tagIds[]'];
 
@@ -20,15 +20,19 @@ module.exports = (Models, router) => {
       });
 
       if (user.admin) {
-        const tags = await Models.Tag.findAll({
-          where: { id: tagIds }
-        });
-        for (var i = 0; i < tags.length; i++) {
-          tags[i].active = !tags[i].active;
-          tags[i].save();
+        if (ctx.url.indexOf('/api/tag/toggle') > -1) {
+          const tags = await Models.Tag.findAll({
+            where: { id: tagIds }
+          });
+          for (var i = 0; i < tags.length; i++) {
+            tags[i].active = !tags[i].active;
+            tags[i].save();
+          }
+        } else {
+          await Models.Tag.destroy({
+            where: { id: tagIds }
+          });
         }
-
-        ctx.body = tags;
       } else {
         ctx.throw(401, 'Unauthorized request.');
       }
