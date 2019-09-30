@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
+import { setTags } from '../../actions';
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import TagForm from './TagForm';
 
@@ -17,7 +19,32 @@ const Dashboard = props => {
   const [showTagForm, setShowTagForm] = useState(false);
   const [errorMessage, setErrorMessage] = useState([]);
 
-  const handleTagSubmit = () => {};
+  const handleTagSubmit = (url, tagIds) => {
+    if (tagIds.length) {
+      axios({
+        url: url,
+        method: 'post',
+        params: {
+          tagIds: tagIds
+        }
+      })
+        .then(res => {
+          const updatedTags = res.data;
+          const mergedTags = props.tags.map(tag => {
+            for (var i = 0; i < updatedTags.length; i++) {
+              return updatedTags[i].id === tag.id ? updatedTags[i] : tag;
+            }
+          });
+          props.dispatch(setTags(mergedTags));
+          setShowTagForm(!showTagForm);
+        })
+        .catch(error => {
+          setErrorMessage([error.response.data]);
+        });
+    } else {
+      setErrorMessage(['Please select one or more tags.']);
+    }
+  };
 
   return (
     <section id="account-dashboard">
@@ -89,6 +116,7 @@ const Dashboard = props => {
 };
 
 Dashboard.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   toggleSignup: PropTypes.func.isRequired,
   tags: PropTypes.array.isRequired,
   users: PropTypes.array.isRequired,

@@ -1,15 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Select from 'react-select';
 import PropTypes from 'prop-types';
 import Modal from '../Utility/Modal';
 
 const TagForm = props => {
+  const [selectedTags, setSelectedTags] = useState([]);
+
   const handleChange = selectedTags => {
-    console.log(selectedTags);
+    setSelectedTags(selectedTags);
   };
 
   const handleSubmit = e => {
     e.preventDefault();
+    const tagIds = selectedTags.map(tag => {
+      return tag.id;
+    });
+    const url =
+      e.target.id === 'toggle-state' ? '/api/tag/toggle' : 'api/tag/delete';
+
+    props.handleSubmit(url, tagIds);
+    setSelectedTags([]);
   };
 
   return props.show ? (
@@ -17,19 +27,44 @@ const TagForm = props => {
       showModal={props.show}
       toggleModal={() => props.toggleShow(!props.show)}
     >
-      <form id="tag-form" className="form-light" onSubmit={handleSubmit}>
+      <form id="tag-form" className="form-light">
         <Select
           id="tag-select"
           classNamePrefix="tag-select"
           isMulti
           closeMenuOnSelect={false}
           options={props.tags.map(tag => {
-            return { value: tag.name, label: tag.name };
+            return {
+              value: tag.name,
+              label: `${tag.name} ${tag.active ? '' : '(Disabled)'}`,
+              id: tag.id
+            };
           })}
           onChange={handleChange}
         />
-        <button className="border-button">Black List</button>
-        <button className="border-button-red">Delete</button>
+        <div className="error-messages">
+          {props.errorMessage.map((errorMessage, index) => {
+            return (
+              <p key={index} className="error">
+                {errorMessage}
+              </p>
+            );
+          })}
+        </div>
+        <button
+          id="toggle-state"
+          className="border-button"
+          onClick={handleSubmit}
+        >
+          Toggle State
+        </button>
+        <button
+          id="delete"
+          className="border-button-red"
+          onClick={handleSubmit}
+        >
+          Delete
+        </button>
       </form>
     </Modal>
   ) : null;
