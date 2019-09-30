@@ -1,32 +1,28 @@
-#tag-form {
+#admin-manage-form {
   padding: 20px 50px 0;
 
-  #tag-select {
-    margin-bottom: 25px;
+  .admin-manage-select__control {
+    border-radius: 0;
+    border-color: @charcoal;
+    box-shadow: none !important;
 
-    .tag-select__control {
-      border-radius: 0;
-      border-color: @charcoal;
-      box-shadow: none !important;
-
-      .tag-select__indicators {
-        .tag-select__indicator-separator {
-          background-color: @charcoal;
-        }
-        .tag-select__indicator {
-          color: @charcoal;
-        }
+    .admin-manage-select__indicators {
+      .admin-manage-select__indicator-separator {
+        background-color: @charcoal;
+      }
+      .admin-manage-select__indicator {
+        color: @charcoal;
       }
     }
-    .tag-select__menu {
-      border-radius: 0;
+  }
+  .admin-manage-select__menu {
+    border-radius: 0;
 
-      .tag-select__option {
-        &:hover,
-        &:active,
-        &--is-focused {
-          background-color: @cinder_block;
-        }
+    .admin-manage-select__option {
+      &:hover,
+      &:active,
+      &--is-focused {
+        background-color: @cinder_block;
       }
     }
   }
