@@ -7,10 +7,17 @@ module.exports = (sequelize, DataTypes) => {
       email: DataTypes.STRING,
       password: DataTypes.STRING,
       passwordResetToken: DataTypes.STRING,
-      admin: DataTypes.BOOLEAN,
+      admin: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+      },
       bio: DataTypes.STRING,
       sessionId: DataTypes.STRING,
-      sessionExpDate: DataTypes.STRING
+      sessionExpDate: DataTypes.STRING,
+      active: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+      }
     },
     {}
   );

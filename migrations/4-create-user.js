@@ -32,6 +32,9 @@ module.exports = {
       sessionExpDate: {
         type: Sequelize.STRING
       },
+      active: {
+        type: Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
