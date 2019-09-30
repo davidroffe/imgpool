@@ -22,7 +22,9 @@ module.exports = {
         references: {
           model: 'Tags',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       tagName: {
         type: Sequelize.STRING,
@@ -30,7 +32,9 @@ module.exports = {
         references: {
           model: 'Tags',
           key: 'name'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       createdAt: {
         allowNull: false,
