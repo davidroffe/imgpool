@@ -20,34 +20,34 @@ const Admin = props => {
     if (!props.loggedIn || !props.admin) {
       props.history.push('/account');
     } else {
-      retrieveTags();
-      retrieveUsers();
-      retrieveflags();
+      if (!props.tags.length) {
+        retrieveTags();
+      }
+      if (!props.users.length) {
+        retrieveUsers();
+      }
+      if (!props.flags.length) {
+        retrieveflags();
+      }
     }
   });
 
   const retrieveTags = () => {
-    if (!props.tags.length) {
-      axios.get('/api/tag/get').then(res => {
-        props.dispatch(setTags(res.data.length ? res.data : [false]));
-      });
-    }
+    axios.get('/api/tag/get').then(res => {
+      props.dispatch(setTags(res.data.length ? res.data : [false]));
+    });
   };
 
   const retrieveUsers = () => {
-    if (!props.users.length) {
-      axios.get('/api/user/get').then(res => {
-        props.dispatch(setUsers(res.data.length ? res.data : [false]));
-      });
-    }
+    axios.get('/api/user/get').then(res => {
+      props.dispatch(setUsers(res.data.length ? res.data : [false]));
+    });
   };
 
   const retrieveflags = () => {
-    if (!props.flags.length) {
-      axios.get('/api/post/flag/get/').then(res => {
-        props.dispatch(setFlags(res.data.length ? res.data : [false]));
-      });
-    }
+    axios.get('/api/post/flag/get/').then(res => {
+      props.dispatch(setFlags(res.data.length ? res.data : [false]));
+    });
   };
 
   const toggleSignup = e => {
@@ -55,7 +55,7 @@ const Admin = props => {
   };
   return (
     <section id="account">
-      <Dashboard toggleSignup={toggleSignup} />
+      <Dashboard retrieveTags={retrieveTags} toggleSignup={toggleSignup} />
     </section>
   );
 };
