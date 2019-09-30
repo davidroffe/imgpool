@@ -130,7 +130,7 @@ const Account = props => {
   const handleDeleteAccountSubmit = e => {
     e.preventDefault();
 
-    const url = '/api/user/delete';
+    const url = '/api/user/delete/self';
     let newErrorMessage = [];
 
     if (deletePassword === undefined || deletePassword === '') {

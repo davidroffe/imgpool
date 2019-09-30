@@ -149,7 +149,7 @@ module.exports = (Models, router) => {
       };
     }
   });
-  router.post('/user/delete', async ctx => {
+  router.post('/user/delete/self', async ctx => {
     const sessionId = ctx.cookies.get('auth');
     const password = ctx.query.password || '';
     const user = await Models.User.findOne({ where: { sessionId: sessionId } });
