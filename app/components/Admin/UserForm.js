@@ -3,23 +3,23 @@ import Select from 'react-select';
 import PropTypes from 'prop-types';
 import Modal from '../Utility/Modal';
 
-const TagForm = props => {
-  const [selectedTags, setSelectedTags] = useState([]);
+const UserForm = props => {
+  const [selectedUsers, setSelectedUsers] = useState([]);
 
-  const handleChange = selectedTags => {
-    setSelectedTags(selectedTags);
+  const handleChange = selectedUsers => {
+    setSelectedUsers(selectedUsers);
   };
 
   const handleSubmit = e => {
     e.preventDefault();
-    const tagIds = selectedTags.map(tag => {
-      return tag.id;
+    const userIds = selectedUsers.map(user => {
+      return user.id;
     });
     const url =
-      e.target.id === 'toggle-state' ? '/api/tag/toggle' : 'api/tag/delete';
+      e.target.id === 'toggle-state' ? '/api/user/toggle' : 'api/user/delete';
 
-    props.handleSubmit(url, tagIds);
-    setSelectedTags([]);
+    props.handleSubmit(url, userIds);
+    setSelectedUsers([]);
   };
 
   return props.show ? (
@@ -29,15 +29,14 @@ const TagForm = props => {
     >
       <form id="admin-manage-form" className="form-light">
         <Select
-          id="admin-manage-select"
           classNamePrefix="admin-manage-select"
           isMulti
           closeMenuOnSelect={false}
-          options={props.tags.map(tag => {
+          options={props.users.map(user => {
             return {
-              value: tag.name,
-              label: `${tag.name} ${tag.active ? '' : '(Disabled)'}`,
-              id: tag.id
+              value: user.username,
+              label: `${user.username} ${user.active ? '' : '(Disabled)'}`,
+              id: user.id
             };
           })}
           onChange={handleChange}
@@ -70,12 +69,12 @@ const TagForm = props => {
   ) : null;
 };
 
-TagForm.propTypes = {
+UserForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
-  tags: PropTypes.array.isRequired,
+  users: PropTypes.array.isRequired,
   show: PropTypes.bool.isRequired,
   toggleShow: PropTypes.func.isRequired,
   errorMessage: PropTypes.array.isRequired
 };
 
-export default TagForm;
+export default UserForm;

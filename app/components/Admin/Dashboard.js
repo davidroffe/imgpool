@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import TagForm from './TagForm';
+import UserForm from './UserForm';
 
 const mapStateToProps = state => {
   return {
@@ -36,6 +37,27 @@ const Dashboard = props => {
         });
     } else {
       setErrorMessage(['Please select one or more tags.']);
+    }
+  };
+
+  const handleUserSubmit = (url, userIds) => {
+    if (userIds.length) {
+      axios({
+        url: url,
+        method: 'post',
+        params: {
+          tagIds: userIds
+        }
+      })
+        .then(() => {
+          props.retrieveUsers();
+          setShowUserForm(!showUserForm);
+        })
+        .catch(error => {
+          setErrorMessage([error.response.data]);
+        });
+    } else {
+      setErrorMessage(['Please select one or more users.']);
     }
   };
 
@@ -104,6 +126,13 @@ const Dashboard = props => {
         tags={props.tags}
         errorMessage={errorMessage}
       />
+      <UserForm
+        show={showUserForm}
+        toggleShow={setShowUserForm}
+        handleSubmit={handleUserSubmit}
+        users={props.users}
+        errorMessage={errorMessage}
+      />
     </section>
   );
 };
@@ -111,6 +140,7 @@ const Dashboard = props => {
 Dashboard.propTypes = {
   dispatch: PropTypes.func.isRequired,
   retrieveTags: PropTypes.func.isRequired,
+  retrieveUsers: PropTypes.func.isRequired,
   toggleSignup: PropTypes.func.isRequired,
   tags: PropTypes.array.isRequired,
   users: PropTypes.array.isRequired,

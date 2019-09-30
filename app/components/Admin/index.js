@@ -55,7 +55,11 @@ const Admin = props => {
   };
   return (
     <section id="account">
-      <Dashboard retrieveTags={retrieveTags} toggleSignup={toggleSignup} />
+      <Dashboard
+        retrieveTags={retrieveTags}
+        retrieveUsers={retrieveUsers}
+        toggleSignup={toggleSignup}
+      />
     </section>
   );
 };
