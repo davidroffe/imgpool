@@ -22,11 +22,8 @@ const UserSelectForm = props => {
     setSelectedUsers([]);
   };
 
-  return props.show ? (
-    <Modal
-      showModal={props.show}
-      toggleModal={() => props.toggleShow(!props.show)}
-    >
+  return (
+    <Modal show={props.show} toggleModal={() => props.toggleShow(!props.show)}>
       <form id="admin-manage-form" className="form-light">
         <Select
           classNamePrefix="admin-manage-select"
@@ -66,7 +63,7 @@ const UserSelectForm = props => {
         </button>
       </form>
     </Modal>
-  ) : null;
+  );
 };
 
 UserSelectForm.propTypes = {

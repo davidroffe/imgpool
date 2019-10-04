@@ -22,11 +22,8 @@ const TagForm = props => {
     setSelectedTags([]);
   };
 
-  return props.show ? (
-    <Modal
-      showModal={props.show}
-      toggleModal={() => props.toggleShow(!props.show)}
-    >
+  return (
+    <Modal show={props.show} toggleModal={() => props.toggleShow(!props.show)}>
       <form id="admin-manage-form" className="form-light">
         <Select
           id="admin-manage-select"
@@ -67,7 +64,7 @@ const TagForm = props => {
         </button>
       </form>
     </Modal>
-  ) : null;
+  );
 };
 
 TagForm.propTypes = {
