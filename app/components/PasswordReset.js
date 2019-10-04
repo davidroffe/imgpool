@@ -93,4 +93,6 @@ PasswordReset.propTypes = {
   history: PropTypes.object.isRequired
 };
 
-export default connect({})(PasswordReset);
+export default connect(() => {
+  return {};
+})(PasswordReset);
