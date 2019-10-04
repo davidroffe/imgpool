@@ -5,9 +5,6 @@ import FileInput from '../Utility/FileInput';
 import Modal from '../Utility/Modal';
 
 const CreatePost = props => {
-  const handleChange = field => {
-    console.log(field);
-  };
   return (
     <Modal show={props.data.show} toggleModal={props.clearValues}>
       <form id="post-form" className="form-light" onSubmit={props.handleSubmit}>

@@ -4,9 +4,6 @@ import Input from '../Utility/Input';
 import Modal from '../Utility/Modal';
 
 const DeleteAccount = props => {
-  const handleChange = field => {
-    console.log(field);
-  };
   return (
     <Modal show={props.data.show} toggleModal={props.clearValues}>
       <form
