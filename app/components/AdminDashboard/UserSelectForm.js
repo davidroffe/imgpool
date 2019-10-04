@@ -27,7 +27,6 @@ const UserSelectForm = props => {
       <form id="admin-manage-form" className="form-light">
         <Select
           classNamePrefix="admin-manage-select"
-          isMulti
           closeMenuOnSelect={false}
           options={props.users.map(user => {
             return {
@@ -48,18 +47,11 @@ const UserSelectForm = props => {
           })}
         </div>
         <button
-          id="toggle-state"
+          id="manage-user"
           className="border-button"
           onClick={handleSubmit}
         >
-          Toggle State
-        </button>
-        <button
-          id="delete"
-          className="border-button-red"
-          onClick={handleSubmit}
-        >
-          Delete
+          Manage
         </button>
       </form>
     </Modal>

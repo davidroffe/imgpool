@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { setPosts, setMenuTags } from '../actions';
 import axios from 'axios';
 import Header from './Header';
-import Admin from './Admin';
+import AdminDashboard from './AdminDashboard';
 import AccountDashboard from './AccountDashboard';
 import PasswordReset from './PasswordReset';
 import PostSearch from './PostSearch';
@@ -90,7 +90,7 @@ const App = props => {
             exact
             component={PasswordReset}
           />
-          <Route path="/admin" exact component={Admin} />
+          <Route path="/admin" exact component={AdminDashboard} />
           <Route path="/about" exact component={About} />
           <Route path="/login" exact component={Login} />
           <Redirect from="/" exact to="/posts" />
