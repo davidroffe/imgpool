@@ -10,12 +10,14 @@ import { connect } from 'react-redux';
 import { setPosts, setMenuTags } from '../actions';
 import axios from 'axios';
 import Header from './Header';
-import Admin from './Admin/index';
-import Account from './Account/index';
+import Admin from './Admin';
+import AccountDashboard from './AccountDashboard';
+import PasswordReset from './PasswordReset';
 import PostSearch from './Post/Search';
 import Posts from './Post/List';
 import Post from './Post/Single';
 import About from './About';
+import Login from './Login';
 
 const mapStateToProps = state => {
   return {
@@ -80,13 +82,15 @@ const App = props => {
             path="/post/:id"
             render={props => <Post {...props} processTags={processTags} />}
           />
+          <Route path="/account" exact component={AccountDashboard} />
           <Route
-            path={['/account', '/account/password-reset/:passwordResetToken']}
+            path="/password-reset/:passwordResetToken"
             exact
-            component={Account}
+            component={PasswordReset}
           />
           <Route path="/admin" exact component={Admin} />
           <Route path="/about" exact component={About} />
+          <Route path="/login" exact component={Login} />
           <Redirect from="/" exact to="/posts" />
         </Switch>
       </div>

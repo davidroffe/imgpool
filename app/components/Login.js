@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { setUser } from '../../actions';
+import { setUser } from '../actions';
 import axios from 'axios';
-import Input from '../Utility/Input';
+import Input from './Utility/Input';
 
 const mapStateToProps = state => {
   return {
@@ -75,6 +75,7 @@ const Login = props => {
             props.dispatch(setUser('username', res.data.username));
             props.dispatch(setUser('loggedIn', true));
             props.dispatch(setUser('admin', res.data.admin));
+            props.history.push('/account');
           }
         })
         .catch(error => {
@@ -194,6 +195,7 @@ const Login = props => {
 
 Login.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
   email: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
   password: PropTypes.string.isRequired,
