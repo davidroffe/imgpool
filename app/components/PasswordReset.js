@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { setUser } from '../actions';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 import Input from './Utility/Input';
 
 const PasswordReset = props => {
