@@ -13,9 +13,9 @@ import Header from './Header';
 import Admin from './Admin';
 import AccountDashboard from './AccountDashboard';
 import PasswordReset from './PasswordReset';
-import PostSearch from './Post/Search';
-import Posts from './Post/List';
-import Post from './Post/Single';
+import PostSearch from './PostSearch';
+import PostList from './PostList';
+import PostSingle from './PostSingle';
 import About from './About';
 import Login from './Login';
 
@@ -75,12 +75,14 @@ const App = props => {
             path="/posts"
             exact
             render={() => (
-              <Posts retrievePosts={retrievePosts} toggleTag={toggleTag} />
+              <PostList retrievePosts={retrievePosts} toggleTag={toggleTag} />
             )}
           />
           <Route
             path="/post/:id"
-            render={props => <Post {...props} processTags={processTags} />}
+            render={props => (
+              <PostSingle {...props} processTags={processTags} />
+            )}
           />
           <Route path="/account" exact component={AccountDashboard} />
           <Route

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import TagMenu from '../TagMenu';
+import TagMenu from './TagMenu';
 
 const mapStateToProps = state => {
   return {

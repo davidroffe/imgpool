@@ -2,7 +2,7 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { setSearch, setPosts } from '../../actions';
+import { setSearch, setPosts } from '../actions';
 import axios from 'axios';
 
 const mapStateToProps = state => {
