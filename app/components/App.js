@@ -27,10 +27,6 @@ const mapStateToProps = state => {
 };
 
 const App = props => {
-  const toggleTag = menuTag => {
-    props.dispatch(toggleTag(menuTag));
-  };
-
   const retrievePosts = () => {
     if (!props.posts.length) {
       axios.get('/api/post/list').then(res => {
@@ -50,11 +46,9 @@ const App = props => {
           <Route
             path="/posts"
             exact
-            render={() => (
-              <PostList retrievePosts={retrievePosts} toggleTag={toggleTag} />
-            )}
+            render={() => <PostList retrievePosts={retrievePosts} />}
           />
-          <Route path="/post/:id" render={props => <PostSingle {...props} />} />
+          <Route path="/post/:id" component={PostSingle} />
           <Route path="/account" exact component={AccountDashboard} />
           <Route
             path="/password-reset/:passwordResetToken"
