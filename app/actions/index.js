@@ -50,10 +50,6 @@ export const setFlags = flags => ({
   flags
 });
 
-export const toggleTagMenu = () => ({
-  type: 'TOGGLE_TAG_MENU'
-});
-
 export const toggleTag = tag => ({
   type: 'TOGGLE_TAG',
   id: tag.id

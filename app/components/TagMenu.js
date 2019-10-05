@@ -1,27 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import {
-  toggleTagMenu,
-  setPosts,
-  setSearch,
-  setMenuTagsFromPosts
-} from '../actions';
+import { setPosts, setSearch, setMenuTagsFromPosts } from '../actions';
 import axios from 'axios';
 
 const mapStateToProps = state => {
   return {
-    tags: state.tagMenu.tags,
-    tagMenu: state.tagMenu.state
+    tags: state.tagMenu.tags
   };
 };
 
 const TagMenu = props => {
+  const [showMenu, setShowMenu] = useState(false);
+
   const toggleMenu = e => {
     e.preventDefault();
 
-    props.dispatch(toggleTagMenu());
+    setShowMenu(!showMenu);
   };
   const handleClick = (tag, e) => {
     e.preventDefault();
@@ -33,13 +29,13 @@ const TagMenu = props => {
     axios.get(url, { params: { searchQuery: searchQuery } }).then(res => {
       props.dispatch(setPosts(res.data));
       props.dispatch(setMenuTagsFromPosts(res.data));
+      setShowMenu(!showMenu);
       props.history.push('/posts');
-      props.dispatch(toggleTagMenu());
     });
   };
 
   return (
-    <aside id="tag-menu" className={props.tagMenu ? 'active' : ''}>
+    <aside id="tag-menu" className={showMenu ? 'active' : ''}>
       <div className="body">
         <nav>
           {props.tags.map((tag, index) => {
@@ -72,7 +68,6 @@ const TagMenu = props => {
 TagMenu.propTypes = {
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
-  tagMenu: PropTypes.bool.isRequired,
   tags: PropTypes.array.isRequired
 };
 
