@@ -2,7 +2,7 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { setSearch, setPosts } from '../actions';
+import { setSearch, setPosts, setMenuTagsFromPosts } from '../actions';
 import axios from 'axios';
 
 const mapStateToProps = state => {
@@ -19,7 +19,7 @@ const PostSearch = props => {
 
     axios.get(url, { params: { searchQuery } }).then(res => {
       props.dispatch(setPosts(res.data));
-      props.processTags(res.data);
+      props.dispatch(setMenuTagsFromPosts(res.data));
       props.history.push('/posts');
     });
   };
@@ -43,7 +43,6 @@ const PostSearch = props => {
 
 PostSearch.propTypes = {
   text: PropTypes.string.isRequired,
-  processTags: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired
 };

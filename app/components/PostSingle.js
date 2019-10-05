@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { setPosts, setSearch } from '../actions';
+import { setPosts, setSearch, setMenuTagsFromPosts } from '../actions';
 import axios from 'axios';
 
 const Single = props => {
@@ -26,7 +26,7 @@ const Single = props => {
     props.dispatch(setSearch(searchQuery));
     axios.get(url, { params: { searchQuery: searchQuery } }).then(res => {
       props.dispatch(setPosts(res.data));
-      props.processTags(res.data);
+      props.dispatch(setMenuTagsFromPosts(res.data));
       props.history.push('/posts');
     });
   };
@@ -51,8 +51,7 @@ const Single = props => {
 Single.propTypes = {
   dispatch: PropTypes.func.isRequired,
   match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired,
-  processTags: PropTypes.func.isRequired
+  history: PropTypes.object.isRequired
 };
 
 export default connect(() => {

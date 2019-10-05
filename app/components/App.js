@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { setPosts, setMenuTags } from '../actions';
+import { setPosts, setMenuTagsFromPosts } from '../actions';
 import axios from 'axios';
 import Header from './Header';
 import AdminDashboard from './AdminDashboard';
@@ -35,40 +35,16 @@ const App = props => {
     if (!props.posts.length) {
       axios.get('/api/post/list').then(res => {
         props.dispatch(setPosts(res.data.length ? res.data : [false]));
-        processTags(res.data);
+        props.dispatch(setMenuTagsFromPosts(res.data));
       });
     }
-  };
-
-  const processTags = posts => {
-    let newTags = [];
-    let exists;
-
-    for (var i = 0; i < posts.length; i++) {
-      for (var j = 0; j < posts[i].tag.length; j++) {
-        exists = false;
-        let tag = posts[i].tag[j];
-
-        for (var k = 0; k < newTags.length; k++) {
-          if (newTags[k].id === tag.id) {
-            exists = true;
-          }
-        }
-
-        tag.active = false;
-
-        if (!exists) newTags.push(tag);
-      }
-    }
-
-    props.dispatch(setMenuTags(newTags));
   };
 
   return (
     <Router>
       <div>
         <Header>
-          <PostSearch processTags={processTags} />
+          <PostSearch />
         </Header>
         <Switch>
           <Route
@@ -78,12 +54,7 @@ const App = props => {
               <PostList retrievePosts={retrievePosts} toggleTag={toggleTag} />
             )}
           />
-          <Route
-            path="/post/:id"
-            render={props => (
-              <PostSingle {...props} processTags={processTags} />
-            )}
-          />
+          <Route path="/post/:id" render={props => <PostSingle {...props} />} />
           <Route path="/account" exact component={AccountDashboard} />
           <Route
             path="/password-reset/:passwordResetToken"
