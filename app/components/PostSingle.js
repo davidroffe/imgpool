@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { setPosts, setSearch, setMenuTagsFromPosts } from '../actions';
 import axios from 'axios';
+import TagMenu from './TagMenu';
 
 const Single = props => {
   const [post, setPost] = useState({
@@ -19,30 +19,16 @@ const Single = props => {
         setPost(res.data);
       });
   }, []);
-  const handleTagClick = e => {
-    const searchQuery = e.target.innerText;
-    const url = '/api/post/search';
 
-    props.dispatch(setSearch(searchQuery));
-    axios.get(url, { params: { searchQuery: searchQuery } }).then(res => {
-      props.dispatch(setPosts(res.data));
-      props.dispatch(setMenuTagsFromPosts(res.data));
-      props.history.push('/posts');
-    });
+  const getTagsFromPosts = post => {
+    return post.tag;
   };
+
   return (
     <section id="post-single">
+      <TagMenu tags={getTagsFromPosts(post)} />
       <div className="image-container">
         <img src={post.url} />
-      </div>
-      <div className="tags">
-        {post.tag.map((tag, index) => {
-          return (
-            <button key={index} className="tag" onClick={handleTagClick}>
-              {tag.name}
-            </button>
-          );
-        })}
       </div>
     </section>
   );

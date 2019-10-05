@@ -5,10 +5,6 @@ import {
   Route,
   Redirect
 } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { setPosts, setMenuTagsFromPosts } from '../actions';
-import axios from 'axios';
 import Header from './Header';
 import AdminDashboard from './AdminDashboard';
 import AccountDashboard from './AccountDashboard';
@@ -19,23 +15,7 @@ import PostSingle from './PostSingle';
 import About from './About';
 import Login from './Login';
 
-const mapStateToProps = state => {
-  return {
-    posts: state.posts,
-    tags: state.tagMenu.tags
-  };
-};
-
-const App = props => {
-  const retrievePosts = () => {
-    if (!props.posts.length) {
-      axios.get('/api/post/list').then(res => {
-        props.dispatch(setPosts(res.data.length ? res.data : [false]));
-        props.dispatch(setMenuTagsFromPosts(res.data));
-      });
-    }
-  };
-
+const App = () => {
   return (
     <Router>
       <div>
@@ -43,11 +23,7 @@ const App = props => {
           <PostSearch />
         </Header>
         <Switch>
-          <Route
-            path="/posts"
-            exact
-            render={() => <PostList retrievePosts={retrievePosts} />}
-          />
+          <Route path="/posts" exact component={PostList} />
           <Route path="/post/:id" component={PostSingle} />
           <Route path="/account" exact component={AccountDashboard} />
           <Route
@@ -65,10 +41,4 @@ const App = props => {
   );
 };
 
-App.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  posts: PropTypes.array.isRequired,
-  tags: PropTypes.array.isRequired
-};
-
-export default connect(mapStateToProps)(App);
+export default App;

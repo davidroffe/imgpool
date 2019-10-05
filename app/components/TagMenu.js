@@ -2,14 +2,8 @@ import React, { useState } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { setPosts, setSearch, setMenuTagsFromPosts } from '../actions';
+import { setPosts, setSearch } from '../actions';
 import axios from 'axios';
-
-const mapStateToProps = state => {
-  return {
-    tags: state.tagMenu.tags
-  };
-};
 
 const TagMenu = props => {
   const [showMenu, setShowMenu] = useState(false);
@@ -28,7 +22,6 @@ const TagMenu = props => {
     props.dispatch(setSearch(searchQuery));
     axios.get(url, { params: { searchQuery: searchQuery } }).then(res => {
       props.dispatch(setPosts(res.data));
-      props.dispatch(setMenuTagsFromPosts(res.data));
       setShowMenu(!showMenu);
       props.history.push('/posts');
     });
@@ -71,4 +64,8 @@ TagMenu.propTypes = {
   tags: PropTypes.array.isRequired
 };
 
-export default withRouter(connect(mapStateToProps)(TagMenu));
+export default withRouter(
+  connect(() => {
+    return {};
+  })(TagMenu)
+);
