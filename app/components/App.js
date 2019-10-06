@@ -8,6 +8,7 @@ import {
 import Header from './Header';
 import AdminDashboard from './AdminDashboard';
 import AccountDashboard from './AccountDashboard';
+import UserProfile from './UserProfile';
 import PasswordReset from './PasswordReset';
 import PostSearch from './PostSearch';
 import PostList from './PostList';
@@ -32,6 +33,7 @@ const App = () => {
             component={PasswordReset}
           />
           <Route path="/admin" exact component={AdminDashboard} />
+          <Route path="/user/:id" exact component={UserProfile} />
           <Route path="/about" exact component={About} />
           <Route path="/login" exact component={Login} />
           <Redirect from="/" exact to="/posts" />
