@@ -104,6 +104,7 @@ module.exports = (Models, router) => {
     const field = ctx.query.editField;
     const email = ctx.query.email || '';
     const username = ctx.query.username || '';
+    const bio = ctx.query.bio || '';
     const password = ctx.query.password || '';
     const passwordConfirm = ctx.query.passwordConfirm || '';
     const emailRegEx = /[\w.]+@[\w.]+/;
@@ -123,6 +124,12 @@ module.exports = (Models, router) => {
           ctx.throw(401, 'Invalid username');
         } else {
           user.username = username;
+        }
+      } else if (field === 'edit-bio') {
+        if (typeof bio === undefined) {
+          ctx.throw(401, 'Invalid bio');
+        } else {
+          user.bio = bio;
         }
       } else if (field === 'edit-password') {
         if (
@@ -145,7 +152,8 @@ module.exports = (Models, router) => {
       ctx.body = {
         status: 'success',
         username: user.username,
-        email: user.email
+        email: user.email,
+        bio: user.bio
       };
     }
   });
@@ -193,6 +201,7 @@ module.exports = (Models, router) => {
           ctx.body = {
             username: user.username,
             email: user.email,
+            bio: user.bio,
             admin: user.admin,
             valid: true
           };
@@ -217,13 +226,43 @@ module.exports = (Models, router) => {
       });
 
       if (user && user.admin) {
-        const users = await Models.User.findAll();
+        const users = await Models.User.findAll({
+          attributes: ['id', 'username']
+        });
         ctx.body = users;
       } else {
         ctx.throw(401, 'Unauthorized request.');
       }
     } else {
       ctx.throw(401, 'Invalid password');
+    }
+    ctx.status = 200;
+  });
+  router.get('/user/get/:id', async ctx => {
+    const userId = ctx.params.id;
+    if (userId) {
+      const user = await Models.User.findOne({
+        where: { id: userId },
+        attributes: ['username', 'bio', ['createdAt', 'joinDate']]
+      });
+      if (user) {
+        ctx.body = {
+          ...user.dataValues,
+          valid: true
+        };
+      } else {
+        ctx.body = {
+          username: '',
+          email: '',
+          valid: false
+        };
+      }
+    } else {
+      ctx.body = {
+        username: '',
+        email: '',
+        valid: false
+      };
     }
     ctx.status = 200;
   });

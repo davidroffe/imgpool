@@ -11,7 +11,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: true
       },
-      bio: DataTypes.STRING,
+      bio: {
+        type: DataTypes.STRING,
+        defaultValue: ''
+      },
       sessionId: DataTypes.STRING,
       sessionExpDate: DataTypes.STRING,
       active: {
