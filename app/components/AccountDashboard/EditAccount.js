@@ -67,6 +67,16 @@ const EditAccount = props => {
             />
           </div>
         ) : null}
+        {props.data.field === 'edit-bio' ? (
+          <textarea
+            id="bio"
+            title={'Bio'}
+            name={'bio'}
+            value={props.data.bio}
+            placeholder={'BIO'}
+            onChange={props.handleChange.bind(null, 'editAccount', 'bio')}
+          />
+        ) : null}
         <div className="error-messages">
           {props.data.errorMessage.map((errorMessage, index) => {
             return (
@@ -91,6 +101,7 @@ EditAccount.propTypes = {
     field: PropTypes.string.isRequired,
     email: PropTypes.string.isRequired,
     username: PropTypes.string.isRequired,
+    bio: PropTypes.string.isRequired,
     password: PropTypes.string.isRequired,
     passwordConfirm: PropTypes.string.isRequired,
     errorMessage: PropTypes.array.isRequired

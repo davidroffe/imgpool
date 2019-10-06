@@ -12,6 +12,7 @@ const mapStateToProps = state => {
   return {
     email: state.user.email,
     username: state.user.username,
+    bio: state.user.bio,
     loggedIn: state.user.loggedIn
   };
 };
@@ -30,6 +31,7 @@ const Dashboard = props => {
     username: '',
     password: '',
     passwordConfirm: '',
+    bio: '',
     errorMessage: []
   });
   const [createPost, setCreatePost] = useState({
@@ -44,6 +46,7 @@ const Dashboard = props => {
       if (res.data.valid) {
         props.dispatch(setUser('username', res.data.username));
         props.dispatch(setUser('email', res.data.email));
+        props.dispatch(setUser('bio', res.data.bio));
         props.dispatch(setUser('loggedIn', !!Cookies.get('auth')));
         props.dispatch(setUser('admin', res.data.admin));
       } else if (!props.loggedIn) {
@@ -67,6 +70,7 @@ const Dashboard = props => {
       field: '',
       email: '',
       username: '',
+      bio: '',
       password: '',
       passwordConfirm: '',
       errorMessage: []
@@ -131,6 +135,11 @@ const Dashboard = props => {
         newErrorMessage.push('Please use a different username.');
       }
     }
+    if (editAccount.field === 'edit-bio') {
+      if (editAccount.bio === undefined) {
+        newErrorMessage.push('Error with bio.');
+      }
+    }
     if (editAccount.field === 'edit-password') {
       if (editAccount.password === undefined || editAccount.password === '') {
         newErrorMessage.push('Please enter a password.');
@@ -151,6 +160,7 @@ const Dashboard = props => {
           editField: editAccount.field,
           email: editAccount.email,
           username: editAccount.username,
+          bio: editAccount.bio,
           password: editAccount.password,
           passwordConfirm: editAccount.passwordConfirm
         }
@@ -159,12 +169,14 @@ const Dashboard = props => {
           if (res.data.status === 'success') {
             props.dispatch(setUser('email', res.data.email));
             props.dispatch(setUser('username', res.data.username));
+            props.dispatch(setUser('bio', res.data.bio));
 
             setEditAccount({
               show: false,
               field: '',
               email: '',
               username: '',
+              bio: '',
               password: '',
               passwordConfirm: '',
               errorMessage: []
@@ -308,6 +320,22 @@ const Dashboard = props => {
             edit
           </button>
         </div>
+        <h2>Bio</h2>
+        <div className="row">
+          {props.bio ? <p>{props.bio}</p> : null}
+          <button
+            id="edit-bio"
+            onClick={() =>
+              setEditAccount({
+                ...editAccount,
+                show: true,
+                field: 'edit-bio'
+              })
+            }
+          >
+            edit
+          </button>
+        </div>
       </div>
       <div className="right">
         <button
@@ -368,7 +396,8 @@ Dashboard.propTypes = {
   dispatch: PropTypes.func.isRequired,
   loggedIn: PropTypes.bool.isRequired,
   email: PropTypes.string.isRequired,
-  username: PropTypes.string.isRequired
+  username: PropTypes.string.isRequired,
+  bio: PropTypes.string.isRequired
 };
 
 export default connect(mapStateToProps)(Dashboard);

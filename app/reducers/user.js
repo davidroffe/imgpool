@@ -1,6 +1,7 @@
 const initialState = {
   email: '',
   username: '',
+  bio: '',
   password: '',
   passwordConfirm: '',
   loggedIn: false,
@@ -13,6 +14,8 @@ const user = (state = initialState, action) => {
       return { ...state, email: action.text };
     case 'SET_USERNAME':
       return { ...state, username: action.text };
+    case 'SET_BIO':
+      return { ...state, bio: action.text };
     case 'SET_PASSWORD':
       return { ...state, password: action.text };
     case 'SET_PASSWORDCONFIRM':

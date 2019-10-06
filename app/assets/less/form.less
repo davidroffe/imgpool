@@ -1,5 +1,6 @@
 input[type='text']:not(.search-field),
-input[type='password'] {
+input[type='password'],
+textarea {
   padding: 15px 10px;
   width: 300px;
   display: block;
@@ -11,20 +12,30 @@ input[type='password'] {
   font-weight: 600;
   background: none;
 }
+
 input[type='text']:focus,
-input[type='password']:focus {
+input[type='password']:focus,
+textarea:focus {
   outline: 0;
 }
+
 ::-webkit-input-placeholder {
   opacity: 1;
 }
+
 ::-moz-placeholder {
   /* Firefox 19+ */
   opacity: 1;
 }
+
 ::-ms-input-placeholder {
   opacity: 1;
 }
+
+textarea {
+  height: 125px;
+}
+
 input[type='submit'] {
   margin: auto;
 }
