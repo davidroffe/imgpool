@@ -3,6 +3,14 @@ module.exports = (sequelize, DataTypes) => {
   const Post = sequelize.define(
     'Post',
     {
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'User',
+          key: 'id'
+        }
+      },
       status: DataTypes.STRING,
       height: DataTypes.INTEGER,
       width: DataTypes.INTEGER,
@@ -16,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
     Post.belongsToMany(models.Tag, {
       through: 'TaggedPost',
       as: 'tag',
+      foreignKey: 'postId'
+    });
+    Post.belongsTo(models.User, {
+      as: 'user',
       foreignKey: 'postId'
     });
   };

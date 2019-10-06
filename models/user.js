@@ -15,6 +15,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: ''
       },
+      postId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Post',
+          key: 'id'
+        }
+      },
       sessionId: DataTypes.STRING,
       sessionExpDate: DataTypes.STRING,
       active: {
