@@ -23,8 +23,6 @@ const UserProfile = props => {
             day: 'numeric'
           })
         });
-      } else if (!props.loggedIn) {
-        props.history.push('/');
       }
     });
   }, []);
