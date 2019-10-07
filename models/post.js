@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     Post.belongsTo(models.User, {
       as: 'user',
-      foreignKey: 'postId'
+      foreignKey: 'userId'
     });
   };
   return Post;

@@ -26,10 +26,7 @@ module.exports = {
       bio: {
         type: Sequelize.STRING
       },
-      sessionId: {
-        type: Sequelize.STRING
-      },
-      sessionExpDate: {
+      sessionToken: {
         type: Sequelize.STRING
       },
       active: {

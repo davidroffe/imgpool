@@ -15,16 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: ''
       },
-      postId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'Post',
-          key: 'id'
-        }
-      },
-      sessionId: DataTypes.STRING,
-      sessionExpDate: DataTypes.STRING,
+      sessionToken: DataTypes.STRING,
       active: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
@@ -32,5 +23,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
+  User.associate = function(models) {
+    User.hasMany(models.Post, {
+      as: 'post',
+      foreignKey: 'userId'
+    });
+  };
   return User;
 };
