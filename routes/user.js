@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
-const auth = require('../utility/auth');
 require('dotenv').config();
 
 module.exports = (Models, router) => {
@@ -10,7 +9,7 @@ module.exports = (Models, router) => {
     const username = ctx.query.username || '';
     const password = ctx.query.password || '';
     const passwordConfirm = ctx.query.passwordConfirm || '';
-
+    const secret = process.env.JWT_SECRET;
     const emailRegEx = /[\w.]+@[\w.]+/;
 
     let errorRes = {
@@ -30,27 +29,35 @@ module.exports = (Models, router) => {
     if (errorRes.message.length > 0) {
       ctx.throw(401, 'Invalid email or password', errorRes);
     } else {
-      const sessionId = auth.genHash();
-      const sessionExpDate = auth.genExpDate();
       const user = await Models.User.findOrCreate({
         where: { email: email },
         defaults: {
           username: username,
           admin: false,
           active: true,
-          password: bcrypt.hashSync(password, bcrypt.genSaltSync(8), null),
-          sessionId: sessionId,
-          sessionExpDate: sessionExpDate
+          password: bcrypt.hashSync(password, bcrypt.genSaltSync(8), null)
         }
       });
       if (!user[1]) {
         ctx.throw(401, 'Sorry, that email is taken.');
       } else {
-        ctx.cookies.set('auth', sessionId, { httpOnly: false });
+        const payload = { id: user[0].id };
+        const options = { expiresIn: '1h' };
+        const sessionToken = jwt.sign(payload, secret, options);
+
+        user[0].sessionToken = bcrypt.hashSync(
+          sessionToken,
+          bcrypt.genSaltSync(8),
+          null
+        );
+        user[0].save();
+
+        ctx.cookies.set('auth', sessionToken, { httpOnly: false });
         ctx.status = 200;
         ctx.body = {
           username: user[0].username,
-          email: user[0].email
+          email: user[0].email,
+          admin: user[0].admin
         };
       }
     }
@@ -59,6 +66,7 @@ module.exports = (Models, router) => {
     const email = ctx.query.email || '';
     const password = ctx.query.password || '';
     const emailRegEx = /[\w.]+@[\w.]+/;
+    const secret = process.env.JWT_SECRET;
 
     if (email === '' || !emailRegEx.test(email) || password === '') {
       ctx.throw(401, 'Invalid email or password');
@@ -67,12 +75,18 @@ module.exports = (Models, router) => {
       if (!user) {
         ctx.throw(401, 'Invalid email or password');
       } else if (bcrypt.compareSync(password, user.password)) {
-        const sessionId = auth.genHash();
-        user.sessionId = sessionId;
-        user.sessionExpDate = auth.genExpDate();
+        const payload = { id: user.id };
+        const options = { expiresIn: '1h' };
+        const sessionToken = jwt.sign(payload, secret, options);
+
+        user.sessionToken = bcrypt.hashSync(
+          sessionToken,
+          bcrypt.genSaltSync(8),
+          null
+        );
         user.save();
 
-        ctx.cookies.set('auth', sessionId, { httpOnly: false });
+        ctx.cookies.set('auth', sessionToken, { httpOnly: false });
         ctx.status = 200;
         ctx.body = {
           username: user.username,
@@ -85,22 +99,26 @@ module.exports = (Models, router) => {
     }
   });
   router.post('/user/logout', async ctx => {
-    const sessionId = ctx.cookies.get('auth');
+    const sessionToken = ctx.cookies.get('auth');
+    const secret = process.env.JWT_SECRET;
+    const payload = jwt.verify(sessionToken, secret);
 
-    if (sessionId) {
+    if (payload) {
       const user = await Models.User.findOne({
-        where: { sessionId: sessionId }
+        where: { id: payload.id }
       });
-
-      ctx.cookies.set('auth');
-      user.sessionId = '';
-      user.sessionExpDate = '';
-      user.save();
+      if (bcrypt.compareSync(sessionToken, user.sessionToken)) {
+        ctx.cookies.set('auth');
+        user.sessionToken = '';
+        user.save();
+      }
     }
     ctx.status = 200;
   });
   router.post('/user/edit', async ctx => {
-    const sessionId = ctx.cookies.get('auth');
+    const sessionToken = ctx.cookies.get('auth');
+    const secret = process.env.JWT_SECRET;
+    const payload = jwt.verify(sessionToken, secret);
     const field = ctx.query.editField;
     const email = ctx.query.email || '';
     const username = ctx.query.username || '';
@@ -109,107 +127,123 @@ module.exports = (Models, router) => {
     const passwordConfirm = ctx.query.passwordConfirm || '';
     const emailRegEx = /[\w.]+@[\w.]+/;
 
-    const user = await Models.User.findOne({ where: { sessionId: sessionId } });
-    if (!user) {
-      ctx.throw(401, 'Invalid session');
-    } else {
-      if (field === 'edit-email') {
-        if (email === '' || !emailRegEx.test(email)) {
-          ctx.throw(401, 'Invalid email');
-        } else {
-          user.email = email;
+    if (payload) {
+      const user = await Models.User.findOne({ where: { id: payload.id } });
+      if (!user) {
+        ctx.throw(401, 'Invalid session');
+      } else {
+        if (field === 'edit-email') {
+          if (email === '' || !emailRegEx.test(email)) {
+            ctx.throw(401, 'Invalid email');
+          } else {
+            user.email = email;
+          }
+        } else if (field === 'edit-username') {
+          if (username === '') {
+            ctx.throw(401, 'Invalid username');
+          } else {
+            user.username = username;
+          }
+        } else if (field === 'edit-bio') {
+          if (typeof bio === undefined) {
+            ctx.throw(401, 'Invalid bio');
+          } else {
+            user.bio = bio;
+          }
+        } else if (field === 'edit-password') {
+          if (
+            password === '' ||
+            passwordConfirm === '' ||
+            password !== passwordConfirm
+          ) {
+            ctx.throw(401, 'Invalid password');
+          } else {
+            user.password = bcrypt.hashSync(
+              password,
+              bcrypt.genSaltSync(12),
+              null
+            );
+          }
         }
-      } else if (field === 'edit-username') {
-        if (username === '') {
-          ctx.throw(401, 'Invalid username');
-        } else {
-          user.username = username;
-        }
-      } else if (field === 'edit-bio') {
-        if (typeof bio === undefined) {
-          ctx.throw(401, 'Invalid bio');
-        } else {
-          user.bio = bio;
-        }
-      } else if (field === 'edit-password') {
-        if (
-          password === '' ||
-          passwordConfirm === '' ||
-          password !== passwordConfirm
-        ) {
-          ctx.throw(401, 'Invalid password');
-        } else {
-          user.password = bcrypt.hashSync(
-            password,
-            bcrypt.genSaltSync(12),
-            null
-          );
-        }
+        user.save();
+        ctx.status = 200;
+        ctx.body = {
+          status: 'success',
+          username: user.username,
+          email: user.email,
+          bio: user.bio
+        };
       }
-      user.sessionExpDate = auth.genExpDate();
-      user.save();
-      ctx.status = 200;
-      ctx.body = {
-        status: 'success',
-        username: user.username,
-        email: user.email,
-        bio: user.bio
-      };
+    } else {
+      ctx.throw(401, 'Invalid session');
     }
   });
   router.post('/user/delete/self', async ctx => {
-    const sessionId = ctx.cookies.get('auth');
+    const sessionToken = ctx.cookies.get('auth');
+    const secret = process.env.JWT_SECRET;
     const password = ctx.query.password || '';
-    const user = await Models.User.findOne({ where: { sessionId: sessionId } });
-    if (!user) {
-      ctx.throw(401, 'Invalid session');
-    } else {
-      if (password === '' || !bcrypt.compareSync(password, user.password)) {
-        ctx.throw(401, 'Invalid password');
+    const payload = jwt.verify(sessionToken, secret);
+
+    if (payload) {
+      const user = await Models.User.findOne({ where: { id: payload.id } });
+      if (!user || !bcrypt.compareSync(sessionToken, user.sessionToken)) {
+        ctx.throw(401, 'Invalid session');
       } else {
-        user.destroy();
-        ctx.cookies.set('auth');
-        ctx.status = 200;
+        if (password === '' || !bcrypt.compareSync(password, user.password)) {
+          ctx.throw(401, 'Invalid password');
+        } else {
+          user.destroy();
+          ctx.cookies.set('auth');
+          ctx.status = 200;
+        }
       }
+    } else {
+      ctx.throw(401, 'Invalid session');
     }
   });
   router.post('/user/validate', async ctx => {
-    const sessionId = ctx.cookies.get('auth');
+    const sessionToken = ctx.cookies.get('auth');
+    const secret = process.env.JWT_SECRET;
 
-    if (sessionId) {
-      const user = await Models.User.findOne({
-        where: { sessionId: sessionId }
-      });
+    if (sessionToken) {
+      try {
+        const payload = jwt.verify(sessionToken, secret);
+        if (payload) {
+          const user = await Models.User.findOne({ where: { id: payload.id } });
 
-      if (user) {
-        //Check for expiration
-        if (user.sessionExpDate <= Date.now()) {
-          ctx.cookies.set('auth');
-          user.sessionId = '';
-          user.sessionExpDate = '';
-          user.save();
-          ctx.body = {
-            username: '',
-            email: '',
-            admin: false,
-            valid: false
-          };
-        } else {
-          user.sessionExpDate = auth.genExpDate();
-          user.save();
+          console.log(
+            'Checking DB for user with session token: ' + sessionToken
+          );
+          if (user && bcrypt.compareSync(sessionToken, user.sessionToken)) {
+            console.log('User with that session ID found in DB...');
+            //Check for expiration
+            const payload = { id: user.id };
+            const options = { expiresIn: '1h' };
+            const sessionToken = jwt.sign(payload, secret, options);
 
-          ctx.body = {
-            username: user.username,
-            email: user.email,
-            bio: user.bio,
-            admin: user.admin,
-            valid: true
-          };
+            user.sessionToken = bcrypt.hashSync(
+              sessionToken,
+              bcrypt.genSaltSync(8),
+              null
+            );
+            user.save();
+
+            ctx.cookies.set('auth', sessionToken, { httpOnly: false });
+
+            ctx.body = {
+              username: user.username,
+              email: user.email,
+              bio: user.bio,
+              admin: user.admin,
+              valid: true
+            };
+          }
         }
-      } else {
+      } catch (error) {
         ctx.body = {
           username: '',
           email: '',
+          admin: false,
           valid: false
         };
         ctx.cookies.set('auth');
@@ -218,14 +252,20 @@ module.exports = (Models, router) => {
     ctx.status = 200;
   });
   router.get('/user/get', async ctx => {
-    const sessionId = ctx.cookies.get('auth');
+    const sessionToken = ctx.cookies.get('auth') || '';
+    const secret = process.env.JWT_SECRET;
+    const payload = jwt.verify(sessionToken, secret);
 
-    if (sessionId) {
+    if (payload) {
       const user = await Models.User.findOne({
-        where: { sessionId: sessionId }
+        where: { id: payload.id }
       });
 
-      if (user && user.admin) {
+      if (
+        user &&
+        bcrypt.compareSync(sessionToken, user.sessionToken) &&
+        user.admin
+      ) {
         const users = await Models.User.findAll({
           attributes: ['id', 'username']
         });
@@ -234,7 +274,7 @@ module.exports = (Models, router) => {
         ctx.throw(401, 'Unauthorized request.');
       }
     } else {
-      ctx.throw(401, 'Invalid password');
+      ctx.throw(401, 'Invalid session');
     }
     ctx.status = 200;
   });
@@ -243,7 +283,11 @@ module.exports = (Models, router) => {
     if (userId) {
       const user = await Models.User.findOne({
         where: { id: userId },
-        attributes: ['username', 'bio', ['createdAt', 'joinDate']]
+        attributes: ['username', 'bio', ['createdAt', 'joinDate']],
+        include: {
+          model: Models.Post,
+          as: 'post'
+        }
       });
       if (user) {
         ctx.body = {
@@ -294,13 +338,18 @@ module.exports = (Models, router) => {
                 null
               );
 
-              const sessionId = auth.genHash();
-              user.sessionId = sessionId;
-              user.sessionExpDate = auth.genExpDate();
-              user.passwordResetToken = null;
+              const payload = { id: user.id };
+              const options = { expiresIn: '1h' };
+              const sessionToken = jwt.sign(payload, secret, options);
+
+              user.sessionToken = bcrypt.hashSync(
+                sessionToken,
+                bcrypt.genSaltSync(8),
+                null
+              );
               user.save();
 
-              ctx.cookies.set('auth', sessionId, { httpOnly: false });
+              ctx.cookies.set('auth', sessionToken, { httpOnly: false });
               ctx.status = 200;
               ctx.body = {
                 username: user.username,

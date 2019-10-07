@@ -3,6 +3,8 @@ const rootPath = path.dirname(require.main.filename);
 const multer = require('@koa/multer');
 const sizeOf = require('image-size');
 const sharp = require('sharp');
+const jwt = require('jsonwebtoken');
+
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, rootPath + '/public/uploads');
@@ -43,18 +45,29 @@ module.exports = (Models, router) => {
     const postId = ctx.query.id;
     const post = await Models.Post.findOne({
       where: { id: postId },
-      include: {
-        model: Models.Tag,
-        as: 'tag',
-        required: false,
-        attributes: ['id', 'name']
-      }
+      include: [
+        {
+          model: Models.Tag,
+          as: 'tag',
+          required: false,
+          attributes: ['id', 'name']
+        },
+        {
+          model: Models.User,
+          as: 'user',
+          required: true,
+          attributes: ['id', 'username']
+        }
+      ]
     });
 
     ctx.body = post;
   });
 
   router.post('/post/create', upload.single('image'), async ctx => {
+    const sessionToken = ctx.cookies.get('auth');
+    const secret = process.env.JWT_SECRET;
+    const payload = jwt.verify(sessionToken, secret);
     const tags =
       typeof ctx.query.tags !== 'undefined' ? ctx.query.tags.split(' ') : [];
     const source =
@@ -77,6 +90,7 @@ module.exports = (Models, router) => {
     if (!errorRes.message.length) {
       const dimensions = sizeOf(ctx.file.path);
       const newPost = await Models.Post.create({
+        userId: payload.id,
         height: dimensions.height,
         width: dimensions.width,
         source: source,
