@@ -1,30 +1,36 @@
-const auth = require('../utility/auth');
 const Models = require('../models');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 module.exports = async (ctx, next) => {
-  const sessionId = ctx.cookies.get('auth');
-  const url = ctx.url;
+  const sessionToken = ctx.cookies.get('auth');
+  const secret = process.env.JWT_SECRET;
 
-  if (sessionId) {
-    const user = await Models.User.findOne({ where: { sessionId: sessionId } });
+  if (sessionToken) {
+    try {
+      const payload = jwt.verify(sessionToken, secret);
+      if (payload) {
+        const user = await Models.User.findOne({ where: { id: payload.id } });
 
-    console.log('Checking DB for user with session ID: ' + sessionId);
-    if (user) {
-      console.log('User with that session ID found in DB...');
-      //Check for expiration
-      if (user.sessionExpDate <= Date.now()) {
-        console.log('Session has expired, clearing session!');
-        ctx.cookies.set('auth');
-        user.sessionId = '';
-        user.sessionExpDate = '';
-        user.save();
-      } else {
-        user.sessionExpDate = auth.genExpDate();
-        user.save();
+        console.log('Checking DB for user with session token: ' + sessionToken);
+        if (user && bcrypt.compareSync(sessionToken, user.sessionToken)) {
+          console.log('User with that session ID found in DB...');
+          //Check for expiration
+          const payload = { id: user.id };
+          const options = { expiresIn: '1h' };
+          const sessionToken = jwt.sign(payload, secret, options);
+
+          user.sessionToken = bcrypt.hashSync(
+            sessionToken,
+            bcrypt.genSaltSync(8),
+            null
+          );
+          user.save();
+
+          ctx.cookies.set('auth', sessionToken, { httpOnly: false });
+        }
       }
-    } else {
-      console.log('No user found with that session ID; clearing session!');
-      console.log('url is: ' + url);
+    } catch (error) {
       ctx.cookies.set('auth');
     }
   }
