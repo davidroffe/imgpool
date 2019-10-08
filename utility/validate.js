@@ -12,10 +12,7 @@ module.exports = async (ctx, next) => {
       if (payload) {
         const user = await Models.User.findOne({ where: { id: payload.id } });
 
-        console.log('Checking DB for user with session token: ' + sessionToken);
         if (user && bcrypt.compareSync(sessionToken, user.sessionToken)) {
-          console.log('User with that session ID found in DB...');
-          //Check for expiration
           const payload = { id: user.id };
           const options = { expiresIn: '1h' };
           const sessionToken = jwt.sign(payload, secret, options);
