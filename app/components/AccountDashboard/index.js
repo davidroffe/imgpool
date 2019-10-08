@@ -42,7 +42,7 @@ const Dashboard = props => {
     errorMessage: []
   });
   useEffect(() => {
-    if (!Cookies.get('auth')) {
+    if (!props.loggedIn) {
       props.history.push('/login');
       window.location.reload();
     }

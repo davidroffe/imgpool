@@ -23,17 +23,15 @@ import Login from './Login';
 
 const App = props => {
   useEffect(() => {
-    if (Cookies.get('auth')) {
-      axios.post('/api/user/get/current').then(res => {
-        if (res.data.valid) {
-          props.dispatch(setUser('username', res.data.username));
-          props.dispatch(setUser('email', res.data.email));
-          props.dispatch(setUser('bio', res.data.bio));
-          props.dispatch(setUser('loggedIn', !!Cookies.get('auth')));
-          props.dispatch(setUser('admin', res.data.admin));
-        }
-      });
-    }
+    axios.post('/api/user/get/current').then(res => {
+      if (res.data.valid) {
+        props.dispatch(setUser('username', res.data.username));
+        props.dispatch(setUser('email', res.data.email));
+        props.dispatch(setUser('bio', res.data.bio));
+        props.dispatch(setUser('loggedIn', true));
+        props.dispatch(setUser('admin', res.data.admin));
+      }
+    });
   }, []);
   return (
     <Router>
