@@ -38,8 +38,97 @@
     margin: 5% auto 0;
     text-align: center;
 
-    img {
-      max-width: 100%;
+    .inner {
+      display: inline-block;
+      position: relative;
+
+      .post-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+
+        .toggle-options {
+          border: none;
+          padding: 0;
+          font-family: sans-serif;
+          font-size: 1.2rem;
+          text-transform: uppercase;
+          font-weight: 600;
+          color: @charcoal;
+          cursor: pointer;
+          outline: none;
+
+          span {
+            position: relative;
+            top: -1px;
+          }
+        }
+        .options {
+          display: none;
+          position: absolute;
+          left: -5px;
+          top: 18px;
+          width: 200px;
+          padding: 10px 15px;
+          background-color: @white;
+          box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+          text-align: left;
+
+          &.active {
+            display: block;
+          }
+          button {
+            padding: 5px 0;
+            font-family: sans-serif;
+            font-size: 1rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: @charcoal;
+            cursor: pointer;
+            outline: none;
+            border: none;
+            background: none;
+
+            .icon {
+              display: inline-block;
+              width: 15px;
+              font-size: 1.2rem;
+              color: @charcoal;
+
+              &.flag {
+                font-size: 1.6rem;
+              }
+            }
+            .text {
+              position: relative;
+              top: -1px;
+              border-bottom: 3px solid transparent;
+
+              &:hover {
+                border-bottom-color: @charcoal;
+              }
+            }
+          }
+        }
+        .poster {
+          color: @charcoal;
+
+          a {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: @charcoal;
+            border-bottom: 3px solid transparent;
+
+            &:hover {
+              border-bottom-color: @charcoal;
+            }
+          }
+        }
+      }
+      img {
+        max-width: 100%;
+      }
     }
   }
 
