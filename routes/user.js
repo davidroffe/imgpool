@@ -1,33 +1,27 @@
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
+const jwtSecret = process.env.JWT_SECRET;
+const sessionExp = process.env.SESSION_EXP;
 require('dotenv').config();
 
 module.exports = (Models, router) => {
   router.post('/user/signup', async ctx => {
-    const email = ctx.query.email || '';
-    const username = ctx.query.username || '';
-    const password = ctx.query.password || '';
-    const passwordConfirm = ctx.query.passwordConfirm || '';
-    const secret = process.env.JWT_SECRET;
+    const { email, username, password, passwordConfirm } = ctx.query;
     const emailRegEx = /[\w.]+@[\w.]+/;
-
-    let errorRes = {
-      status: 401,
-      message: []
-    };
+    let errorMessage = [];
 
     if (!emailRegEx.test(email)) {
-      errorRes.message.push('Please enter a valid email.');
+      errorMessage.push('Please enter a valid email.');
     }
     if (password === '') {
-      errorRes.message.push('Please enter a password.');
+      errorMessage.push('Please enter a password.');
     }
     if (password !== passwordConfirm) {
-      errorRes.message.push('Please enter a matching password confirmation.');
+      errorMessage.push('Please enter a matching password confirmation.');
     }
-    if (errorRes.message.length > 0) {
-      ctx.throw(401, 'Invalid email or password', errorRes);
+    if (errorMessage.length > 0) {
+      ctx.throw(401, errorMessage.join('\n'));
     } else {
       const user = await Models.User.findOrCreate({
         where: { email: email },
@@ -42,8 +36,8 @@ module.exports = (Models, router) => {
         ctx.throw(401, 'Sorry, that email is taken.');
       } else {
         const payload = { id: user[0].id };
-        const options = { expiresIn: '1h' };
-        const sessionToken = jwt.sign(payload, secret, options);
+        const options = { expiresIn: sessionExp };
+        const sessionToken = jwt.sign(payload, jwtSecret, options);
 
         user[0].sessionToken = bcrypt.hashSync(
           sessionToken,
@@ -63,10 +57,8 @@ module.exports = (Models, router) => {
     }
   });
   router.post('/user/login', async ctx => {
-    const email = ctx.query.email || '';
-    const password = ctx.query.password || '';
+    const { email, password } = ctx.query;
     const emailRegEx = /[\w.]+@[\w.]+/;
-    const secret = process.env.JWT_SECRET;
 
     if (email === '' || !emailRegEx.test(email) || password === '') {
       ctx.throw(401, 'Invalid email or password');
@@ -76,8 +68,8 @@ module.exports = (Models, router) => {
         ctx.throw(401, 'Invalid email or password');
       } else if (bcrypt.compareSync(password, user.password)) {
         const payload = { id: user.id };
-        const options = { expiresIn: '1h' };
-        const sessionToken = jwt.sign(payload, secret, options);
+        const options = { expiresIn: sessionExp };
+        const sessionToken = jwt.sign(payload, jwtSecret, options);
 
         user.sessionToken = bcrypt.hashSync(
           sessionToken,
@@ -100,8 +92,7 @@ module.exports = (Models, router) => {
   });
   router.post('/user/logout', async ctx => {
     const sessionToken = ctx.cookies.get('auth');
-    const secret = process.env.JWT_SECRET;
-    const payload = jwt.verify(sessionToken, secret);
+    const payload = jwt.verify(sessionToken, jwtSecret);
 
     if (payload) {
       const user = await Models.User.findOne({
@@ -116,15 +107,16 @@ module.exports = (Models, router) => {
     ctx.status = 200;
   });
   router.post('/user/edit', async ctx => {
+    const {
+      editField,
+      email,
+      username,
+      bio,
+      password,
+      passwordConfirm
+    } = ctx.query;
     const sessionToken = ctx.cookies.get('auth');
-    const secret = process.env.JWT_SECRET;
-    const payload = jwt.verify(sessionToken, secret);
-    const field = ctx.query.editField;
-    const email = ctx.query.email || '';
-    const username = ctx.query.username || '';
-    const bio = ctx.query.bio || '';
-    const password = ctx.query.password || '';
-    const passwordConfirm = ctx.query.passwordConfirm || '';
+    const payload = jwt.verify(sessionToken, jwtSecret);
     const emailRegEx = /[\w.]+@[\w.]+/;
 
     if (payload) {
@@ -132,25 +124,25 @@ module.exports = (Models, router) => {
       if (!user) {
         ctx.throw(401, 'Invalid session');
       } else {
-        if (field === 'edit-email') {
+        if (editField === 'edit-email') {
           if (email === '' || !emailRegEx.test(email)) {
             ctx.throw(401, 'Invalid email');
           } else {
             user.email = email;
           }
-        } else if (field === 'edit-username') {
+        } else if (editField === 'edit-username') {
           if (username === '') {
             ctx.throw(401, 'Invalid username');
           } else {
             user.username = username;
           }
-        } else if (field === 'edit-bio') {
+        } else if (editField === 'edit-bio') {
           if (typeof bio === undefined) {
             ctx.throw(401, 'Invalid bio');
           } else {
             user.bio = bio;
           }
-        } else if (field === 'edit-password') {
+        } else if (editField === 'edit-password') {
           if (
             password === '' ||
             passwordConfirm === '' ||
@@ -180,9 +172,8 @@ module.exports = (Models, router) => {
   });
   router.post('/user/delete/self', async ctx => {
     const sessionToken = ctx.cookies.get('auth');
-    const secret = process.env.JWT_SECRET;
     const password = ctx.query.password || '';
-    const payload = jwt.verify(sessionToken, secret);
+    const payload = jwt.verify(sessionToken, jwtSecret);
 
     if (payload) {
       const user = await Models.User.findOne({ where: { id: payload.id } });
@@ -201,35 +192,16 @@ module.exports = (Models, router) => {
       ctx.throw(401, 'Invalid session');
     }
   });
-  router.post('/user/validate', async ctx => {
+  router.post('/user/get/current', async ctx => {
     const sessionToken = ctx.cookies.get('auth');
-    const secret = process.env.JWT_SECRET;
 
     if (sessionToken) {
       try {
-        const payload = jwt.verify(sessionToken, secret);
+        const payload = jwt.verify(sessionToken, jwtSecret);
         if (payload) {
           const user = await Models.User.findOne({ where: { id: payload.id } });
 
-          console.log(
-            'Checking DB for user with session token: ' + sessionToken
-          );
           if (user && bcrypt.compareSync(sessionToken, user.sessionToken)) {
-            console.log('User with that session ID found in DB...');
-            //Check for expiration
-            const payload = { id: user.id };
-            const options = { expiresIn: '1h' };
-            const sessionToken = jwt.sign(payload, secret, options);
-
-            user.sessionToken = bcrypt.hashSync(
-              sessionToken,
-              bcrypt.genSaltSync(8),
-              null
-            );
-            user.save();
-
-            ctx.cookies.set('auth', sessionToken, { httpOnly: false });
-
             ctx.body = {
               username: user.username,
               email: user.email,
@@ -253,8 +225,7 @@ module.exports = (Models, router) => {
   });
   router.get('/user/get', async ctx => {
     const sessionToken = ctx.cookies.get('auth') || '';
-    const secret = process.env.JWT_SECRET;
-    const payload = jwt.verify(sessionToken, secret);
+    const payload = jwt.verify(sessionToken, jwtSecret);
 
     if (payload) {
       const user = await Models.User.findOne({
@@ -314,11 +285,10 @@ module.exports = (Models, router) => {
     const email = ctx.query.email || '';
     const password = ctx.query.password || '';
     const passwordResetToken = ctx.query.passwordResetToken;
-    const secret = process.env.JWT_SECRET;
 
     if (passwordResetToken) {
       try {
-        const payload = jwt.verify(passwordResetToken, secret);
+        const payload = jwt.verify(passwordResetToken, jwtSecret);
 
         if (payload) {
           const user = await Models.User.findOne({
@@ -339,8 +309,8 @@ module.exports = (Models, router) => {
               );
 
               const payload = { id: user.id };
-              const options = { expiresIn: '1h' };
-              const sessionToken = jwt.sign(payload, secret, options);
+              const options = { expiresIn: sessionExp };
+              const sessionToken = jwt.sign(payload, jwtSecret, options);
 
               user.sessionToken = bcrypt.hashSync(
                 sessionToken,
@@ -370,8 +340,8 @@ module.exports = (Models, router) => {
 
       if (user) {
         const payload = { email };
-        const options = { expiresIn: '1h' };
-        const token = jwt.sign(payload, secret, options);
+        const options = { expiresIn: sessionExp };
+        const token = jwt.sign(payload, jwtSecret, options);
 
         user.passwordResetToken = bcrypt.hashSync(
           token,
