@@ -30,6 +30,7 @@ const App = props => {
         props.dispatch(setUser('loggedIn', true));
         props.dispatch(setUser('init', true));
         props.dispatch(setUser('admin', res.data.admin));
+        props.dispatch(setUser('favorites', res.data.favorites));
       } else {
         props.dispatch(setUser('init', true));
       }

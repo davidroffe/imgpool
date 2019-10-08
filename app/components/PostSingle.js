@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { setUser } from 'react-redux';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import TagMenu from './TagMenu';
+
+const mapStateToProps = state => {
+  return {
+    userFavories: state.user.favorites
+  };
+};
 
 const Single = props => {
   const [post, setPost] = useState({
@@ -30,6 +37,20 @@ const Single = props => {
     return post.tag;
   };
 
+  const toggleFavorite = e => {
+    e.preventDefault();
+
+    axios({
+      url: '/api/post/favorite',
+      method: 'post',
+      params: {
+        postId: post.id
+      }
+    }).then(res => {
+      props.dispatch(setUser('favorites', res.data.favorites));
+    });
+  };
+
   return (
     <section id="post-single">
       <TagMenu tags={getTagsFromPosts(post)} />
@@ -43,7 +64,7 @@ const Single = props => {
               options <span>+</span>
             </button>
             <div className={`options${optionsMenu ? ' active' : ''}`}>
-              <button className="toggle-fav">
+              <button className="toggle-fav" onClick={toggleFavorite}>
                 <span className="icon">&hearts;</span>
                 <span className="text">add to favorites</span>
               </button>
@@ -70,6 +91,4 @@ Single.propTypes = {
   history: PropTypes.object.isRequired
 };
 
-export default connect(() => {
-  return {};
-})(Single);
+export default connect(mapStateToProps)(Single);

@@ -185,7 +185,14 @@ module.exports = (Models, router) => {
       try {
         const payload = jwt.verify(sessionToken, jwtSecret);
         if (payload) {
-          const user = await Models.User.findOne({ where: { id: payload.id } });
+          const user = await Models.User.findOne({
+            where: { id: payload.id },
+            include: {
+              model: Models.Post,
+              as: 'favoritedPosts',
+              required: false
+            }
+          });
 
           if (user) {
             ctx.body = {
@@ -193,11 +200,14 @@ module.exports = (Models, router) => {
               email: user.email,
               bio: user.bio,
               admin: user.admin,
+              favorites: user.favoritedPosts,
               valid: true
             };
           }
         }
       } catch (error) {
+        console.log(error);
+
         ctx.body = {
           username: '',
           email: '',
@@ -206,6 +216,13 @@ module.exports = (Models, router) => {
         };
         ctx.cookies.set('auth');
       }
+    } else {
+      ctx.body = {
+        username: '',
+        email: '',
+        admin: false,
+        valid: false
+      };
     }
     ctx.status = 200;
   });

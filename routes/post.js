@@ -64,6 +64,40 @@ module.exports = (Models, router) => {
     ctx.body = post;
   });
 
+  router.post('/post/favorite', upload.single('image'), async ctx => {
+    const sessionToken = ctx.cookies.get('auth');
+    const postId = ctx.query.postId;
+    const secret = process.env.JWT_SECRET;
+
+    if (sessionToken) {
+      const payload = jwt.verify(sessionToken, secret);
+      const post = await Models.FavoritedPost.findOrCreate({
+        where: { postId, userId: payload.id },
+        defaults: {
+          postId,
+          userId: payload.id
+        }
+      });
+      if (!post[1]) {
+        post[0].destroy();
+      }
+      post[0].save();
+      const user = await Models.User.findOne({
+        where: { id: payload.id },
+        include: {
+          model: Models.Post,
+          as: 'favoritedPosts',
+          required: false
+        }
+      });
+      ctx.body = {
+        favorites: user.favoritedPosts
+      };
+    } else {
+      ctx.throw(401, 'Invalid session');
+    }
+  });
+
   router.post('/post/create', upload.single('image'), async ctx => {
     const sessionToken = ctx.cookies.get('auth');
     const secret = process.env.JWT_SECRET;
