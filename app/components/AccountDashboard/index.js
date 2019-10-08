@@ -2,18 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { setUser, setPosts } from '../../actions';
 import PropTypes from 'prop-types';
-import Cookies from 'js-cookie';
 import axios from 'axios';
 import CreatePost from './CreatePost';
 import EditAccount from './EditAccount';
 import DeleteAccount from './DeleteAccount';
+import Loader from '../Utility/Loader';
 
 const mapStateToProps = state => {
   return {
     email: state.user.email,
     username: state.user.username,
     bio: state.user.bio,
-    loggedIn: state.user.loggedIn
+    loggedIn: state.user.loggedIn,
+    userInit: state.user.init
   };
 };
 
@@ -42,16 +43,17 @@ const Dashboard = props => {
     errorMessage: []
   });
   useEffect(() => {
-    if (!props.loggedIn) {
-      props.history.push('/login');
-      window.location.reload();
+    if (props.userInit) {
+      if (!props.loggedIn) {
+        props.history.push('/login');
+        window.location.reload();
+      }
     }
-  }, []);
+  });
   const logout = e => {
     e.preventDefault();
 
     axios.post('/api/user/logout').then(() => {
-      Cookies.remove('auth');
       window.location.reload();
     });
   };
@@ -207,7 +209,6 @@ const Dashboard = props => {
           props.dispatch(setUser('username', ''));
           props.dispatch(setUser('email', ''));
           props.dispatch(setUser('loggedIn', false));
-          Cookies.remove('auth');
           window.location.reload();
         })
         .catch(error => {
@@ -259,125 +260,130 @@ const Dashboard = props => {
   };
   return (
     <section id="account-dashboard">
-      <h1>
-        <span>Account</span>
-      </h1>
-      <div className="left">
-        <h2>Username</h2>
-        <div className="row">
-          <p>{props.username}</p>
-          <button
-            id="edit-username"
-            onClick={() =>
-              setEditAccount({
-                ...editAccount,
-                show: true,
-                field: 'edit-username'
-              })
-            }
-          >
-            edit
-          </button>
+      {props.userInit ? (
+        <div className="inner">
+          <h1>
+            <span>Account</span>
+          </h1>
+          <div className="left">
+            <h2>Username</h2>
+            <div className="row">
+              <p>{props.username}</p>
+              <button
+                id="edit-username"
+                onClick={() =>
+                  setEditAccount({
+                    ...editAccount,
+                    show: true,
+                    field: 'edit-username'
+                  })
+                }
+              >
+                edit
+              </button>
+            </div>
+            <h2>Email</h2>
+            <div className="row">
+              <p>{props.email}</p>
+              <button
+                id="edit-email"
+                onClick={() =>
+                  setEditAccount({
+                    ...editAccount,
+                    show: true,
+                    field: 'edit-email'
+                  })
+                }
+              >
+                edit
+              </button>
+            </div>
+            <h2>Password</h2>
+            <div className="row">
+              <p>hidden</p>
+              <button
+                id="edit-password"
+                onClick={() =>
+                  setEditAccount({
+                    ...editAccount,
+                    show: true,
+                    field: 'edit-password'
+                  })
+                }
+              >
+                edit
+              </button>
+            </div>
+            <h2>Bio</h2>
+            <div className="row">
+              {props.bio ? <p>{props.bio}</p> : null}
+              <button
+                id="edit-bio"
+                onClick={() =>
+                  setEditAccount({
+                    ...editAccount,
+                    show: true,
+                    field: 'edit-bio'
+                  })
+                }
+              >
+                edit
+              </button>
+            </div>
+          </div>
+          <div className="right">
+            <button
+              className="border-button"
+              id="create-post"
+              onClick={() =>
+                setCreatePost({
+                  ...createPost,
+                  show: true
+                })
+              }
+            >
+              Create Post
+            </button>
+            <button className="border-button" id="logout" onClick={logout}>
+              Log Out
+            </button>
+            <button
+              className="border-button-red"
+              id="delete-account"
+              onClick={() =>
+                setDeleteAccount({
+                  ...deleteAccount,
+                  show: true
+                })
+              }
+            >
+              Delete Account
+            </button>
+          </div>
+          <EditAccount
+            handleSubmit={handleEditSubmit}
+            handleChange={handleChange}
+            clearValues={clearValues}
+            setData={setEditAccount}
+            data={editAccount}
+          />
+          <DeleteAccount
+            handleSubmit={handleDeleteAccountSubmit}
+            handleChange={handleChange}
+            clearValues={clearValues}
+            setData={setDeleteAccount}
+            data={deleteAccount}
+          />
+          <CreatePost
+            handleSubmit={handleCreatePostSubmit}
+            handleChange={handleChange}
+            clearValues={clearValues}
+            setData={setCreatePost}
+            data={createPost}
+          />
         </div>
-        <h2>Email</h2>
-        <div className="row">
-          <p>{props.email}</p>
-          <button
-            id="edit-email"
-            onClick={() =>
-              setEditAccount({
-                ...editAccount,
-                show: true,
-                field: 'edit-email'
-              })
-            }
-          >
-            edit
-          </button>
-        </div>
-        <h2>Password</h2>
-        <div className="row">
-          <p>hidden</p>
-          <button
-            id="edit-password"
-            onClick={() =>
-              setEditAccount({
-                ...editAccount,
-                show: true,
-                field: 'edit-password'
-              })
-            }
-          >
-            edit
-          </button>
-        </div>
-        <h2>Bio</h2>
-        <div className="row">
-          {props.bio ? <p>{props.bio}</p> : null}
-          <button
-            id="edit-bio"
-            onClick={() =>
-              setEditAccount({
-                ...editAccount,
-                show: true,
-                field: 'edit-bio'
-              })
-            }
-          >
-            edit
-          </button>
-        </div>
-      </div>
-      <div className="right">
-        <button
-          className="border-button"
-          id="create-post"
-          onClick={() =>
-            setCreatePost({
-              ...createPost,
-              show: true
-            })
-          }
-        >
-          Create Post
-        </button>
-        <button className="border-button" id="logout" onClick={logout}>
-          Log Out
-        </button>
-        <button
-          className="border-button-red"
-          id="delete-account"
-          onClick={() =>
-            setDeleteAccount({
-              ...deleteAccount,
-              show: true
-            })
-          }
-        >
-          Delete Account
-        </button>
-      </div>
-      <EditAccount
-        handleSubmit={handleEditSubmit}
-        handleChange={handleChange}
-        clearValues={clearValues}
-        setData={setEditAccount}
-        data={editAccount}
-      />
-      <DeleteAccount
-        handleSubmit={handleDeleteAccountSubmit}
-        handleChange={handleChange}
-        clearValues={clearValues}
-        setData={setDeleteAccount}
-        data={deleteAccount}
-      />
-      <CreatePost
-        handleSubmit={handleCreatePostSubmit}
-        handleChange={handleChange}
-        clearValues={clearValues}
-        setData={setCreatePost}
-        data={createPost}
-      />
+      ) : null}
+      <Loader show={!props.userInit} />
     </section>
   );
 };
@@ -386,6 +392,7 @@ Dashboard.propTypes = {
   history: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   loggedIn: PropTypes.bool.isRequired,
+  userInit: PropTypes.bool.isRequired,
   email: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
   bio: PropTypes.string.isRequired

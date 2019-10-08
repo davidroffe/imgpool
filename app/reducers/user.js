@@ -5,7 +5,8 @@ const initialState = {
   password: '',
   passwordConfirm: '',
   loggedIn: false,
-  admin: false
+  admin: false,
+  init: false
 };
 
 const user = (state = initialState, action) => {
@@ -24,6 +25,8 @@ const user = (state = initialState, action) => {
       return { ...state, loggedIn: action.text };
     case 'SET_ADMIN':
       return { ...state, admin: action.text };
+    case 'SET_INIT':
+      return { ...state, init: true };
     default:
       return state;
   }

@@ -5,6 +5,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import TagForm from './TagForm';
 import UserSelectForm from './UserSelectForm';
+import Loader from '../Utility/Loader';
 
 const mapStateToProps = state => {
   return {
@@ -12,7 +13,8 @@ const mapStateToProps = state => {
     admin: state.user.admin,
     tags: state.tags,
     users: state.users,
-    flags: state.flags
+    flags: state.flags,
+    userInit: state.user.init
   };
 };
 
@@ -23,17 +25,19 @@ const Dashboard = props => {
   const [errorMessage, setErrorMessage] = useState([]);
 
   useEffect(() => {
-    if (!props.loggedIn || !props.admin) {
-      props.history.push('/account');
-    } else {
-      if (!props.tags.length) {
-        retrieveTags();
-      }
-      if (!props.users.length) {
-        retrieveUsers();
-      }
-      if (!props.flags.length) {
-        retrieveflags();
+    if (props.userInit) {
+      if (!props.loggedIn || !props.admin) {
+        props.history.push('/account');
+      } else {
+        if (!props.tags.length) {
+          retrieveTags();
+        }
+        if (!props.users.length) {
+          retrieveUsers();
+        }
+        if (!props.flags.length) {
+          retrieveflags();
+        }
       }
     }
   });
@@ -104,76 +108,81 @@ const Dashboard = props => {
 
   return (
     <section id="account-dashboard">
-      <h1>
-        <span>Admin</span>
-      </h1>
-      <div className="left">
-        <h2>Flags</h2>
-        <div className="row">
-          <p>({props.flags[0] ? props.flags.length : '0'})</p>
-          {props.flags[0] ? (
+      {props.userInit ? (
+        <div className="inner">
+          <h1>
+            <span>Admin</span>
+          </h1>
+          <div className="left">
+            <h2>Flags</h2>
+            <div className="row">
+              <p>({props.flags[0] ? props.flags.length : '0'})</p>
+              {props.flags[0] ? (
+                <button
+                  id="show-flags"
+                  onClick={() => {
+                    setShowFlagForm(!showFlagForm);
+                  }}
+                >
+                  manage
+                </button>
+              ) : null}
+            </div>
+            <h2>Users</h2>
+            <div className="row">
+              <p>({props.users[0] ? props.users.length : '0'})</p>
+              {props.users[0] ? (
+                <button
+                  id="show-users"
+                  onClick={() => {
+                    setShowUserForm(!showUserForm);
+                  }}
+                >
+                  manage
+                </button>
+              ) : null}
+            </div>
+            <h2>Tags</h2>
+            <div className="row">
+              <p>({props.tags[0] ? props.tags.length : '0'})</p>
+              {props.tags[0] ? (
+                <button
+                  id="show-tags"
+                  onClick={() => {
+                    setShowTagForm(!showTagForm);
+                  }}
+                >
+                  manage
+                </button>
+              ) : null}
+            </div>
+          </div>
+          <div className="right">
             <button
-              id="show-flags"
-              onClick={() => {
-                setShowFlagForm(!showFlagForm);
-              }}
+              className="border-button"
+              id="toggle-signup"
+              onClick={toggleSignup}
             >
-              manage
+              Toggle Signups
             </button>
-          ) : null}
+          </div>
+          <TagForm
+            show={showTagForm}
+            toggleShow={setShowTagForm}
+            handleSubmit={handleTagSubmit}
+            tags={props.tags}
+            errorMessage={errorMessage}
+          />
+          <UserSelectForm
+            show={showUserForm}
+            toggleShow={setShowUserForm}
+            handleSubmit={handleUserSubmit}
+            users={props.users}
+            errorMessage={errorMessage}
+          />
         </div>
-        <h2>Users</h2>
-        <div className="row">
-          <p>({props.users[0] ? props.users.length : '0'})</p>
-          {props.users[0] ? (
-            <button
-              id="show-users"
-              onClick={() => {
-                setShowUserForm(!showUserForm);
-              }}
-            >
-              manage
-            </button>
-          ) : null}
-        </div>
-        <h2>Tags</h2>
-        <div className="row">
-          <p>({props.tags[0] ? props.tags.length : '0'})</p>
-          {props.tags[0] ? (
-            <button
-              id="show-tags"
-              onClick={() => {
-                setShowTagForm(!showTagForm);
-              }}
-            >
-              manage
-            </button>
-          ) : null}
-        </div>
-      </div>
-      <div className="right">
-        <button
-          className="border-button"
-          id="toggle-signup"
-          onClick={toggleSignup}
-        >
-          Toggle Signups
-        </button>
-      </div>
-      <TagForm
-        show={showTagForm}
-        toggleShow={setShowTagForm}
-        handleSubmit={handleTagSubmit}
-        tags={props.tags}
-        errorMessage={errorMessage}
-      />
-      <UserSelectForm
-        show={showUserForm}
-        toggleShow={setShowUserForm}
-        handleSubmit={handleUserSubmit}
-        users={props.users}
-        errorMessage={errorMessage}
-      />
+      ) : null}
+      <Loader show={!props.userInit} />
     </section>
   );
 };
@@ -181,6 +190,7 @@ const Dashboard = props => {
 Dashboard.propTypes = {
   dispatch: PropTypes.func.isRequired,
   loggedIn: PropTypes.bool.isRequired,
+  userInit: PropTypes.bool.isRequired,
   admin: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
   tags: PropTypes.array.isRequired,

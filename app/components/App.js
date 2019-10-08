@@ -9,7 +9,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { setUser } from '../actions';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 import Header from './Header';
 import AdminDashboard from './AdminDashboard';
 import AccountDashboard from './AccountDashboard';
@@ -29,6 +28,7 @@ const App = props => {
         props.dispatch(setUser('email', res.data.email));
         props.dispatch(setUser('bio', res.data.bio));
         props.dispatch(setUser('loggedIn', true));
+        props.dispatch(setUser('init', true));
         props.dispatch(setUser('admin', res.data.admin));
       }
     });
