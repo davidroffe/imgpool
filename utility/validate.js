@@ -1,6 +1,5 @@
 const Models = require('../models');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 
 module.exports = async (ctx, next) => {
   const sessionToken = ctx.cookies.get('auth');
@@ -12,19 +11,12 @@ module.exports = async (ctx, next) => {
       if (payload) {
         const user = await Models.User.findOne({ where: { id: payload.id } });
 
-        if (user && bcrypt.compareSync(sessionToken, user.sessionToken)) {
+        if (user) {
           const payload = { id: user.id };
           const options = { expiresIn: '1h' };
           const sessionToken = jwt.sign(payload, secret, options);
 
-          user.sessionToken = bcrypt.hashSync(
-            sessionToken,
-            bcrypt.genSaltSync(8),
-            null
-          );
-          user.save();
-
-          ctx.cookies.set('auth', sessionToken, { httpOnly: false });
+          ctx.cookies.set('auth', sessionToken, { httpOnly: true });
         }
       }
     } catch (error) {

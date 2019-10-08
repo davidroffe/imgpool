@@ -39,14 +39,9 @@ module.exports = (Models, router) => {
         const options = { expiresIn: sessionExp };
         const sessionToken = jwt.sign(payload, jwtSecret, options);
 
-        user[0].sessionToken = bcrypt.hashSync(
-          sessionToken,
-          bcrypt.genSaltSync(8),
-          null
-        );
         user[0].save();
 
-        ctx.cookies.set('auth', sessionToken, { httpOnly: false });
+        ctx.cookies.set('auth', sessionToken, { httpOnly: true });
         ctx.status = 200;
         ctx.body = {
           username: user[0].username,
@@ -71,14 +66,7 @@ module.exports = (Models, router) => {
         const options = { expiresIn: sessionExp };
         const sessionToken = jwt.sign(payload, jwtSecret, options);
 
-        user.sessionToken = bcrypt.hashSync(
-          sessionToken,
-          bcrypt.genSaltSync(8),
-          null
-        );
-        user.save();
-
-        ctx.cookies.set('auth', sessionToken, { httpOnly: false });
+        ctx.cookies.set('auth', sessionToken, { httpOnly: true });
         ctx.status = 200;
         ctx.body = {
           username: user.username,
@@ -98,10 +86,8 @@ module.exports = (Models, router) => {
       const user = await Models.User.findOne({
         where: { id: payload.id }
       });
-      if (bcrypt.compareSync(sessionToken, user.sessionToken)) {
+      if (user) {
         ctx.cookies.set('auth');
-        user.sessionToken = '';
-        user.save();
       }
     }
     ctx.status = 200;
@@ -177,7 +163,7 @@ module.exports = (Models, router) => {
 
     if (payload) {
       const user = await Models.User.findOne({ where: { id: payload.id } });
-      if (!user || !bcrypt.compareSync(sessionToken, user.sessionToken)) {
+      if (!user) {
         ctx.throw(401, 'Invalid session');
       } else {
         if (password === '' || !bcrypt.compareSync(password, user.password)) {
@@ -201,7 +187,7 @@ module.exports = (Models, router) => {
         if (payload) {
           const user = await Models.User.findOne({ where: { id: payload.id } });
 
-          if (user && bcrypt.compareSync(sessionToken, user.sessionToken)) {
+          if (user) {
             ctx.body = {
               username: user.username,
               email: user.email,
@@ -232,11 +218,7 @@ module.exports = (Models, router) => {
         where: { id: payload.id }
       });
 
-      if (
-        user &&
-        bcrypt.compareSync(sessionToken, user.sessionToken) &&
-        user.admin
-      ) {
+      if (user && user.admin) {
         const users = await Models.User.findAll({
           attributes: ['id', 'username']
         });
@@ -307,19 +289,13 @@ module.exports = (Models, router) => {
                 bcrypt.genSaltSync(12),
                 null
               );
+              user.save();
 
               const payload = { id: user.id };
               const options = { expiresIn: sessionExp };
               const sessionToken = jwt.sign(payload, jwtSecret, options);
 
-              user.sessionToken = bcrypt.hashSync(
-                sessionToken,
-                bcrypt.genSaltSync(8),
-                null
-              );
-              user.save();
-
-              ctx.cookies.set('auth', sessionToken, { httpOnly: false });
+              ctx.cookies.set('auth', sessionToken, { httpOnly: true });
               ctx.status = 200;
               ctx.body = {
                 username: user.username,
