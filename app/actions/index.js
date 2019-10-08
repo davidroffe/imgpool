@@ -30,5 +30,5 @@ export const setSearch = text => ({
 
 export const setUser = (field, value) => ({
   type: `SET_${field.toUpperCase()}`,
-  text: value
+  value
 });
