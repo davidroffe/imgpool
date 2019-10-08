@@ -42,19 +42,10 @@ const Dashboard = props => {
     errorMessage: []
   });
   useEffect(() => {
-    axios.post('/api/user/validate').then(res => {
-      if (res.data.valid) {
-        props.dispatch(setUser('username', res.data.username));
-        props.dispatch(setUser('email', res.data.email));
-        props.dispatch(setUser('bio', res.data.bio));
-        props.dispatch(setUser('loggedIn', !!Cookies.get('auth')));
-        props.dispatch(setUser('admin', res.data.admin));
-      } else if (!props.loggedIn) {
-        Cookies.remove('auth');
-        props.history.push('/login');
-        window.location.reload();
-      }
-    });
+    if (!Cookies.get('auth')) {
+      props.history.push('/login');
+      window.location.reload();
+    }
   }, []);
   const logout = e => {
     e.preventDefault();

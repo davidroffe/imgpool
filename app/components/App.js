@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect
 } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { setUser } from '../actions';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 import Header from './Header';
 import AdminDashboard from './AdminDashboard';
 import AccountDashboard from './AccountDashboard';
@@ -16,7 +21,20 @@ import PostSingle from './PostSingle';
 import About from './About';
 import Login from './Login';
 
-const App = () => {
+const App = props => {
+  useEffect(() => {
+    if (Cookies.get('auth')) {
+      axios.post('/api/user/get/current').then(res => {
+        if (res.data.valid) {
+          props.dispatch(setUser('username', res.data.username));
+          props.dispatch(setUser('email', res.data.email));
+          props.dispatch(setUser('bio', res.data.bio));
+          props.dispatch(setUser('loggedIn', !!Cookies.get('auth')));
+          props.dispatch(setUser('admin', res.data.admin));
+        }
+      });
+    }
+  }, []);
   return (
     <Router>
       <div>
@@ -43,4 +61,10 @@ const App = () => {
   );
 };
 
-export default App;
+App.propTypes = {
+  dispatch: PropTypes.func.isRequired
+};
+
+export default connect(() => {
+  return {};
+})(App);
