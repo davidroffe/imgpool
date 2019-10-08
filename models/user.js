@@ -27,6 +27,13 @@ module.exports = (sequelize, DataTypes) => {
       as: 'post',
       foreignKey: 'userId'
     });
+    User.belongsToMany(models.Post, {
+      through: 'FavoritedPost',
+      as: 'favoritedPosts',
+      foreignKey: 'userId',
+      onDelete: 'cascade',
+      hooks: true
+    });
   };
   return User;
 };
