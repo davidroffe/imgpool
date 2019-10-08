@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { setUser } from 'react-redux';
+import { setUser } from '../actions';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import TagMenu from './TagMenu';
@@ -51,6 +51,13 @@ const Single = props => {
     });
   };
 
+  const isFavorited = () => {
+    for (let i = 0; i < props.userFavories.length; i++) {
+      if (props.userFavories[i].id === post.id) return true;
+    }
+    return false;
+  };
+
   return (
     <section id="post-single">
       <TagMenu tags={getTagsFromPosts(post)} />
@@ -64,9 +71,13 @@ const Single = props => {
               options <span>+</span>
             </button>
             <div className={`options${optionsMenu ? ' active' : ''}`}>
-              <button className="toggle-fav" onClick={toggleFavorite}>
+              <button
+                className={`toggle-fav${isFavorited() ? ' favorited' : ''}`}
+                onClick={toggleFavorite}
+              >
                 <span className="icon">&hearts;</span>
-                <span className="text">add to favorites</span>
+                <span className="text add">add to favorites</span>
+                <span className="text remove">remove from favorites</span>
               </button>
               <button className="flag-post">
                 <span className="icon flag">&#9873;</span>
@@ -88,7 +99,8 @@ const Single = props => {
 Single.propTypes = {
   dispatch: PropTypes.func.isRequired,
   match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
+  userFavories: PropTypes.array.isRequired
 };
 
 export default connect(mapStateToProps)(Single);

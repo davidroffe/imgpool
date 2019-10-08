@@ -79,9 +79,9 @@ module.exports = (Models, router) => {
         }
       });
       if (!post[1]) {
-        post[0].destroy();
+        await post[0].destroy();
       }
-      post[0].save();
+      await post[0].save();
       const user = await Models.User.findOne({
         where: { id: payload.id },
         include: {
