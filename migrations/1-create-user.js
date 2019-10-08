@@ -26,9 +26,6 @@ module.exports = {
       bio: {
         type: Sequelize.STRING
       },
-      sessionToken: {
-        type: Sequelize.STRING
-      },
       active: {
         type: Sequelize.BOOLEAN
       },

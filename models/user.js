@@ -15,7 +15,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: ''
       },
-      sessionToken: DataTypes.STRING,
       active: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
