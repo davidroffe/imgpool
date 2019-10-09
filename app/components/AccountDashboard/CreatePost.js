@@ -10,7 +10,6 @@ const CreatePost = props => {
       <form id="post-form" className="form-light" onSubmit={props.handleSubmit}>
         <FileInput
           id="file"
-          type={'file'}
           title={'Post'}
           name={'post'}
           value={props.data.file.name}

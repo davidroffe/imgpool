@@ -22,13 +22,15 @@ const FileInput = props => {
   };
   return (
     <div className="upload-container">
-      <button onClick={handleClick}>{placeholder}</button>
+      <button type="button" onClick={handleClick}>
+        {placeholder}
+      </button>
       <input
         style={{ display: 'none' }}
         className={props.className}
         id={props.id}
         name={props.name}
-        type={props.type}
+        type="file"
         value={props.value}
         onChange={handleChange}
       />
@@ -42,7 +44,6 @@ FileInput.propTypes = {
   className: PropTypes.string,
   id: PropTypes.string,
   name: PropTypes.string,
-  type: PropTypes.string.isRequired,
   value: PropTypes.string
 };
 
