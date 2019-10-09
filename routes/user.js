@@ -306,17 +306,26 @@ module.exports = (Models, router) => {
     const sessionToken = ctx.cookies.get('auth') || '';
     const payload = sessionToken ? jwt.verify(sessionToken, jwtSecret) : false;
     const userId = ctx.params.id;
-    const attributes =
-      payload && payload.admin
-        ? [
-            'id',
-            'username',
-            'bio',
-            'email',
-            'active',
-            ['createdAt', 'joinDate']
-          ]
-        : ['id', 'username', 'bio', 'active', ['createdAt', 'joinDate']];
+    let attributes;
+
+    if (payload && payload.admin) {
+      attributes = [
+        'id',
+        'username',
+        'bio',
+        'email',
+        'active',
+        ['createdAt', 'joinDate']
+      ];
+    } else {
+      attributes = [
+        'id',
+        'username',
+        'bio',
+        'active',
+        ['createdAt', 'joinDate']
+      ];
+    }
 
     if (userId) {
       const user = await Models.User.findOne({
