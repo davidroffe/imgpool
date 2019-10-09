@@ -4,6 +4,7 @@ const multer = require('@koa/multer');
 const sizeOf = require('image-size');
 const sharp = require('sharp');
 const jwt = require('jsonwebtoken');
+const jwtSecret = process.env.JWT_SECRET;
 
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
@@ -187,10 +188,24 @@ module.exports = (Models, router) => {
     ctx.body = posts.map(x => x.post);
   });
 
-  router.post('/post/delete', async ctx => {
-    const allPosts = await Models.Post.findAll();
+  router.post('/post/delete/:id', async ctx => {
+    const id = ctx.params.id;
+    const sessionToken = ctx.cookies.get('auth');
+    const payload = sessionToken ? jwt.verify(sessionToken, jwtSecret) : false;
 
-    ctx.body = allPosts;
+    if (payload) {
+      const post = await Models.Post.findOne({ where: { id } });
+      if (payload.admin || post.userId === payload.id) {
+        const posts = await Models.TaggedPost.findAll({
+          where: { postId: id }
+        });
+        for (let i = 0; i < posts.length; i++) {
+          await posts[i].destroy();
+        }
+        await post.destroy();
+      }
+    }
+    ctx.body = { status: 'success' };
   });
   router.post('/post/addTag', async ctx => {
     const allPosts = await Models.Post.findAll();

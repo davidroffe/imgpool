@@ -153,16 +153,12 @@ const Dashboard = props => {
     axios({
       url: url,
       method: 'post'
-    })
-      .then(res => {
-        setUser({
-          ...user,
-          active: res.data.active
-        });
-      })
-      .catch(error => {
-        //setToggleAccount({ ...toggleAccount, errorMessage: [error.data] });
+    }).then(res => {
+      setUser({
+        ...user,
+        active: res.data.active
       });
+    });
   };
 
   return (
