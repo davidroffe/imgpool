@@ -35,38 +35,6 @@ const EditAccount = props => {
             handleChange={props.handleChange.bind(null, 'editAccount', 'email')}
           />
         ) : null}
-        {props.data.field === 'edit-password' ? (
-          <div>
-            <Input
-              id="password"
-              autoComplete={'off'}
-              type={'password'}
-              title={'Password'}
-              name={'password'}
-              value={props.data.password}
-              placeholder={'PASSWORD'}
-              handleChange={props.handleChange.bind(
-                null,
-                'editAccount',
-                'password'
-              )}
-            />
-            <Input
-              id="passwordConfirm"
-              autoComplete={'off'}
-              type={'password'}
-              title={'Password Confirm'}
-              name={'password-confirm'}
-              value={props.data.passwordConfirm}
-              placeholder={'CONFIRM PASSWORD'}
-              handleChange={props.handleChange.bind(
-                null,
-                'editAccount',
-                'passwordConfirm'
-              )}
-            />
-          </div>
-        ) : null}
         {props.data.field === 'edit-bio' ? (
           <textarea
             id="bio"
@@ -102,8 +70,6 @@ EditAccount.propTypes = {
     email: PropTypes.string.isRequired,
     username: PropTypes.string.isRequired,
     bio: PropTypes.string.isRequired,
-    password: PropTypes.string.isRequired,
-    passwordConfirm: PropTypes.string.isRequired,
     errorMessage: PropTypes.array.isRequired
   })
 };
