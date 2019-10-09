@@ -222,6 +222,26 @@ module.exports = (Models, router) => {
       ctx.throw(401, 'Invalid session');
     }
   });
+  router.post(['/user/disable/:id', '/user/enable/:id'], async ctx => {
+    const id = ctx.params.id;
+    const action = ctx.url.split('/')[3];
+    const sessionToken = ctx.cookies.get('auth');
+    const payload = sessionToken ? jwt.verify(sessionToken, jwtSecret) : false;
+
+    if (payload && payload.admin) {
+      const user = await Models.User.findOne({ where: { id } });
+      if (user) {
+        user.active = action === 'disable' ? false : true;
+        await user.save();
+        ctx.body = { active: user.active };
+        ctx.status = 200;
+      } else {
+        ctx.throw(401, 'Invalid user');
+      }
+    } else {
+      ctx.throw(401, 'Invalid session.');
+    }
+  });
   router.post('/user/get/current', async ctx => {
     const sessionToken = ctx.cookies.get('auth');
 
@@ -288,8 +308,15 @@ module.exports = (Models, router) => {
     const userId = ctx.params.id;
     const attributes =
       payload && payload.admin
-        ? ['id', 'username', 'bio', 'email', ['createdAt', 'joinDate']]
-        : ['id', 'username', 'bio', ['createdAt', 'joinDate']];
+        ? [
+            'id',
+            'username',
+            'bio',
+            'email',
+            'active',
+            ['createdAt', 'joinDate']
+          ]
+        : ['id', 'username', 'bio', 'active', ['createdAt', 'joinDate']];
 
     if (userId) {
       const user = await Models.User.findOne({

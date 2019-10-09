@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import EditAccount from './EditAccount';
-import DeleteAccount from './DeleteAccount';
 import Loader from '../Utility/Loader';
 
 const mapStateToProps = state => {
@@ -15,19 +14,11 @@ const mapStateToProps = state => {
 };
 
 const Dashboard = props => {
-  const [deleteAccount, setDeleteAccount] = useState({
-    show: false,
-    password: '',
-    passwordConfirm: '',
-    errorMessage: []
-  });
   const [editAccount, setEditAccount] = useState({
     show: false,
     field: '',
     email: '',
     username: '',
-    password: '',
-    passwordConfirm: '',
     bio: '',
     errorMessage: []
   });
@@ -65,12 +56,6 @@ const Dashboard = props => {
       passwordConfirm: '',
       errorMessage: []
     });
-    setDeleteAccount({
-      show: false,
-      password: '',
-      passwordConfirm: '',
-      errorMessage: []
-    });
   };
   const handleChange = (form, field, e) => {
     let newObject;
@@ -80,11 +65,6 @@ const Dashboard = props => {
         newObject = { ...editAccount };
         newObject[field] = e.target.value;
         setEditAccount(newObject);
-        break;
-      case 'deleteAccount':
-        newObject = { ...deleteAccount };
-        newObject[field] = e.target.value;
-        setDeleteAccount(newObject);
         break;
     }
   };
@@ -157,31 +137,31 @@ const Dashboard = props => {
     }
   };
 
-  const resetPassword = e => {
+  const resetPassword = () => {
     const url = `/api/user/password-reset/${user.id}`;
     axios({
       url: url,
       method: 'post'
     }).then(() => {});
-    // .catch(error => {
-    //   setDeleteAccount({ ...deleteAccount, errorMessage: [error.data] });
-    // });
   };
 
-  const handleDeleteAccountSubmit = e => {
+  const handleToggleAccountSubmit = e => {
     e.preventDefault();
 
-    const url = `/api/user/delete/${user.id}`;
+    const url = `/api/user/${user.active ? 'disable' : 'enable'}/${user.id}`;
 
     axios({
       url: url,
       method: 'post'
     })
-      .then(() => {
-        props.history.push('/admin');
+      .then(res => {
+        setUser({
+          ...user,
+          active: res.data.active
+        });
       })
       .catch(error => {
-        setDeleteAccount({ ...deleteAccount, errorMessage: [error.data] });
+        //setToggleAccount({ ...toggleAccount, errorMessage: [error.data] });
       });
   };
 
@@ -269,16 +249,13 @@ const Dashboard = props => {
           {props.admin ? (
             <div className="right">
               <button
-                className="border-button-red"
-                id="delete-account"
-                onClick={() =>
-                  setDeleteAccount({
-                    ...deleteAccount,
-                    show: true
-                  })
+                className={
+                  user.active ? 'border-button-red' : 'border-button-green'
                 }
+                id="toggle-account"
+                onClick={handleToggleAccountSubmit}
               >
-                Delete Account
+                {user.active ? 'Disable' : 'Enable'} Account
               </button>
             </div>
           ) : null}
@@ -289,15 +266,6 @@ const Dashboard = props => {
               clearValues={clearValues}
               setData={setEditAccount}
               data={editAccount}
-            />
-          ) : null}
-          {props.admin ? (
-            <DeleteAccount
-              handleSubmit={handleDeleteAccountSubmit}
-              handleChange={handleChange}
-              clearValues={clearValues}
-              setData={setDeleteAccount}
-              data={deleteAccount}
             />
           ) : null}
         </div>
