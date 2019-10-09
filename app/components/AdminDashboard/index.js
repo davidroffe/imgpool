@@ -176,7 +176,7 @@ const Dashboard = props => {
           <UserSelectForm
             show={showUserForm}
             toggleShow={setShowUserForm}
-            handleSubmit={handleUserSubmit}
+            history={props.history}
             users={props.users}
             errorMessage={errorMessage}
           />

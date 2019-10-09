@@ -4,22 +4,17 @@ import PropTypes from 'prop-types';
 import Modal from '../Utility/Modal';
 
 const UserSelectForm = props => {
-  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState({});
 
-  const handleChange = selectedUsers => {
-    setSelectedUsers(selectedUsers);
+  const handleChange = selectedUser => {
+    setSelectedUser(selectedUser);
   };
 
   const handleSubmit = e => {
     e.preventDefault();
-    const userIds = selectedUsers.map(user => {
-      return user.id;
-    });
-    const url =
-      e.target.id === 'toggle-state' ? '/api/user/toggle' : 'api/user/delete';
 
-    props.handleSubmit(url, userIds);
-    setSelectedUsers([]);
+    if (selectedUser.hasOwnProperty('id'))
+      props.history.push(`/user/${selectedUser.id}`);
   };
 
   return (
@@ -27,7 +22,6 @@ const UserSelectForm = props => {
       <form id="admin-manage-form" className="form-light">
         <Select
           classNamePrefix="admin-manage-select"
-          closeMenuOnSelect={false}
           options={props.users.map(user => {
             return {
               value: user.username,
@@ -59,7 +53,7 @@ const UserSelectForm = props => {
 };
 
 UserSelectForm.propTypes = {
-  handleSubmit: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
   users: PropTypes.array.isRequired,
   show: PropTypes.bool.isRequired,
   toggleShow: PropTypes.func.isRequired,
