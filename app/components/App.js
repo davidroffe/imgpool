@@ -28,9 +28,9 @@ const App = props => {
         props.dispatch(setUser('email', res.data.email));
         props.dispatch(setUser('bio', res.data.bio));
         props.dispatch(setUser('loggedIn', true));
-        props.dispatch(setUser('init', true));
         props.dispatch(setUser('admin', res.data.admin));
         props.dispatch(setUser('favorites', res.data.favorites));
+        props.dispatch(setUser('init', true));
       } else {
         props.dispatch(setUser('init', true));
       }
