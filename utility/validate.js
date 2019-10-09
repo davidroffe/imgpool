@@ -1,4 +1,3 @@
-const Models = require('../models');
 const jwt = require('jsonwebtoken');
 
 module.exports = async (ctx, next) => {
@@ -9,15 +8,11 @@ module.exports = async (ctx, next) => {
     try {
       const payload = jwt.verify(sessionToken, secret);
       if (payload) {
-        const user = await Models.User.findOne({ where: { id: payload.id } });
+        const payload = { id: payload.id, admin: payload.admin };
+        const options = { expiresIn: '1h' };
+        const sessionToken = jwt.sign(payload, secret, options);
 
-        if (user) {
-          const payload = { id: user.id, admin: user.admin };
-          const options = { expiresIn: '1h' };
-          const sessionToken = jwt.sign(payload, secret, options);
-
-          ctx.cookies.set('auth', sessionToken, { httpOnly: true });
-        }
+        ctx.cookies.set('auth', sessionToken, { httpOnly: true });
       }
     } catch (error) {
       ctx.cookies.set('auth');
