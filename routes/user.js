@@ -59,7 +59,7 @@ module.exports = (Models, router) => {
       ctx.throw(401, 'Invalid email or password');
     } else {
       const user = await Models.User.findOne({ where: { email: email } });
-      if (!user) {
+      if (!user || user.active) {
         ctx.throw(401, 'Invalid email or password');
       } else if (bcrypt.compareSync(password, user.password)) {
         const payload = { id: user.id, admin: user.admin };
@@ -258,7 +258,7 @@ module.exports = (Models, router) => {
             }
           });
 
-          if (user) {
+          if (user && user.active) {
             ctx.body = {
               username: user.username,
               email: user.email,
@@ -267,6 +267,14 @@ module.exports = (Models, router) => {
               favorites: user.favoritedPosts,
               valid: true
             };
+          } else {
+            ctx.body = {
+              username: '',
+              email: '',
+              admin: false,
+              valid: false
+            };
+            ctx.cookies.set('auth');
           }
         }
       } catch (error) {
