@@ -1,4 +1,5 @@
 const initialState = {
+  id: 0,
   email: '',
   username: '',
   bio: '',
@@ -12,6 +13,8 @@ const initialState = {
 
 const user = (state = initialState, action) => {
   switch (action.type) {
+    case 'SET_ID':
+      return { ...state, id: action.value };
     case 'SET_EMAIL':
       return { ...state, email: action.value };
     case 'SET_USERNAME':

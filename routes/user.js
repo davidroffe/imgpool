@@ -260,6 +260,7 @@ module.exports = (Models, router) => {
 
           if (user && user.active) {
             ctx.body = {
+              id: user.id,
               username: user.username,
               email: user.email,
               bio: user.bio,

@@ -24,6 +24,7 @@ const App = props => {
   useEffect(() => {
     axios.post('/api/user/get/current').then(res => {
       if (res.data.valid) {
+        props.dispatch(setUser('id', res.data.id));
         props.dispatch(setUser('username', res.data.username));
         props.dispatch(setUser('email', res.data.email));
         props.dispatch(setUser('bio', res.data.bio));
