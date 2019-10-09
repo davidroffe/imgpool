@@ -85,27 +85,6 @@ const Dashboard = props => {
     }
   };
 
-  const handleUserSubmit = (url, userIds) => {
-    if (userIds.length) {
-      axios({
-        url: url,
-        method: 'post',
-        params: {
-          tagIds: userIds
-        }
-      })
-        .then(() => {
-          retrieveUsers();
-          setShowUserForm(!showUserForm);
-        })
-        .catch(error => {
-          setErrorMessage([error.response.data]);
-        });
-    } else {
-      setErrorMessage(['Please select one or more users.']);
-    }
-  };
-
   return (
     <section id="account-dashboard">
       {props.userInit ? (
