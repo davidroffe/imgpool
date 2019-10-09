@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 const FileInput = props => {
-  console.log(props.value);
   const [placeholder, setPlaceholder] = useState(
     props.placeholder || 'CHOOSE FILE'
   );
