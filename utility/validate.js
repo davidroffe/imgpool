@@ -8,13 +8,15 @@ module.exports = async (ctx, next) => {
     try {
       const payload = jwt.verify(sessionToken, secret);
       if (payload) {
-        const payload = { id: payload.id, admin: payload.admin };
+        const newPayload = { id: payload.id, admin: payload.admin };
         const options = { expiresIn: '1h' };
-        const sessionToken = jwt.sign(payload, secret, options);
+        const sessionToken = jwt.sign(newPayload, secret, options);
 
         ctx.cookies.set('auth', sessionToken, { httpOnly: true });
       }
     } catch (error) {
+      console.log(error);
+
       ctx.cookies.set('auth');
     }
   }

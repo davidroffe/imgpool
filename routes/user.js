@@ -59,7 +59,7 @@ module.exports = (Models, router) => {
       ctx.throw(401, 'Invalid email or password');
     } else {
       const user = await Models.User.findOne({ where: { email: email } });
-      if (!user || user.active) {
+      if (!user || !user.active) {
         ctx.throw(401, 'Invalid email or password');
       } else if (bcrypt.compareSync(password, user.password)) {
         const payload = { id: user.id, admin: user.admin };
