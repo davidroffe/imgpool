@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import CreatePost from './CreatePost';
 import EditAccount from './EditAccount';
-import DeleteAccount from './DeleteAccount';
 import Loader from '../Utility/Loader';
 
 const mapStateToProps = state => {
@@ -19,12 +18,6 @@ const mapStateToProps = state => {
 };
 
 const Dashboard = props => {
-  const [deleteAccount, setDeleteAccount] = useState({
-    show: false,
-    password: '',
-    passwordConfirm: '',
-    errorMessage: []
-  });
   const [editAccount, setEditAccount] = useState({
     show: false,
     field: '',
@@ -68,12 +61,6 @@ const Dashboard = props => {
       passwordConfirm: '',
       errorMessage: []
     });
-    setDeleteAccount({
-      show: false,
-      password: '',
-      passwordConfirm: '',
-      errorMessage: []
-    });
     setCreatePost({
       show: false,
       file: { value: {}, name: '' },
@@ -90,11 +77,6 @@ const Dashboard = props => {
         newObject = { ...editAccount };
         newObject[field] = e.target.value;
         setEditAccount(newObject);
-        break;
-      case 'deleteAccount':
-        newObject = { ...deleteAccount };
-        newObject[field] = e.target.value;
-        setDeleteAccount(newObject);
         break;
       case 'createPost':
         newObject = { ...createPost };
@@ -178,41 +160,6 @@ const Dashboard = props => {
         })
         .catch(error => {
           setEditAccount({ ...editAccount, errorMessage: [error.data] });
-        });
-    }
-  };
-  const handleDeleteAccountSubmit = e => {
-    e.preventDefault();
-
-    const url = '/api/user/delete/self';
-    let newErrorMessage = [];
-
-    if (deleteAccount.password === undefined || deleteAccount.password === '') {
-      newErrorMessage.push('Please enter a password.');
-    } else if (deleteAccount.password.length < 8) {
-      newErrorMessage.push('Password must be at least 8 characters.');
-    } else if (deleteAccount.passwordConfirm !== deleteAccount.password) {
-      newErrorMessage.push('Passwords do not match.');
-    }
-
-    if (newErrorMessage.length > 0) {
-      setDeleteAccount({ ...deleteAccount, errorMessage: newErrorMessage });
-    } else {
-      axios({
-        url: url,
-        method: 'post',
-        params: {
-          password: deleteAccount.password
-        }
-      })
-        .then(() => {
-          props.dispatch(setUser('username', ''));
-          props.dispatch(setUser('email', ''));
-          props.dispatch(setUser('loggedIn', false));
-          window.location.reload();
-        })
-        .catch(error => {
-          setDeleteAccount({ ...deleteAccount, errorMessage: [error.data] });
         });
     }
   };
@@ -347,18 +294,6 @@ const Dashboard = props => {
             <button className="border-button" id="logout" onClick={logout}>
               Log Out
             </button>
-            <button
-              className="border-button-red"
-              id="delete-account"
-              onClick={() =>
-                setDeleteAccount({
-                  ...deleteAccount,
-                  show: true
-                })
-              }
-            >
-              Delete Account
-            </button>
           </div>
           <EditAccount
             handleSubmit={handleEditSubmit}
@@ -366,13 +301,6 @@ const Dashboard = props => {
             clearValues={clearValues}
             setData={setEditAccount}
             data={editAccount}
-          />
-          <DeleteAccount
-            handleSubmit={handleDeleteAccountSubmit}
-            handleChange={handleChange}
-            clearValues={clearValues}
-            setData={setDeleteAccount}
-            data={deleteAccount}
           />
           <CreatePost
             handleSubmit={handleCreatePostSubmit}
