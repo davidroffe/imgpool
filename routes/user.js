@@ -35,7 +35,7 @@ module.exports = (Models, router) => {
       if (!user[1]) {
         ctx.throw(401, 'Sorry, that email is taken.');
       } else {
-        const payload = { id: user[0].id };
+        const payload = { id: user[0].id, admin: user[0].admin };
         const options = { expiresIn: sessionExp };
         const sessionToken = jwt.sign(payload, jwtSecret, options);
 
@@ -62,7 +62,7 @@ module.exports = (Models, router) => {
       if (!user) {
         ctx.throw(401, 'Invalid email or password');
       } else if (bcrypt.compareSync(password, user.password)) {
-        const payload = { id: user.id };
+        const payload = { id: user.id, admin: user.admin };
         const options = { expiresIn: sessionExp };
         const sessionToken = jwt.sign(payload, jwtSecret, options);
 
@@ -237,7 +237,7 @@ module.exports = (Models, router) => {
 
       if (user && user.admin) {
         const users = await Models.User.findAll({
-          attributes: ['id', 'username']
+          attributes: ['id', 'username', 'active']
         });
         ctx.body = users;
       } else {
@@ -249,11 +249,18 @@ module.exports = (Models, router) => {
     ctx.status = 200;
   });
   router.get('/user/get/:id', async ctx => {
+    const sessionToken = ctx.cookies.get('auth') || '';
+    const payload = sessionToken ? jwt.verify(sessionToken, jwtSecret) : false;
     const userId = ctx.params.id;
+    const attributes =
+      payload && payload.admin
+        ? ['username', 'bio', 'email', ['createdAt', 'joinDate']]
+        : ['username', 'bio', ['createdAt', 'joinDate']];
+
     if (userId) {
       const user = await Models.User.findOne({
         where: { id: userId },
-        attributes: ['username', 'bio', ['createdAt', 'joinDate']],
+        attributes,
         include: {
           model: Models.Post,
           as: 'post'
@@ -308,7 +315,7 @@ module.exports = (Models, router) => {
               );
               user.save();
 
-              const payload = { id: user.id };
+              const payload = { id: user.id, admin: user.admin };
               const options = { expiresIn: sessionExp };
               const sessionToken = jwt.sign(payload, jwtSecret, options);
 

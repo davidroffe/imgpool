@@ -12,7 +12,7 @@ module.exports = async (ctx, next) => {
         const user = await Models.User.findOne({ where: { id: payload.id } });
 
         if (user) {
-          const payload = { id: user.id };
+          const payload = { id: user.id, admin: user.admin };
           const options = { expiresIn: '1h' };
           const sessionToken = jwt.sign(payload, secret, options);
 
