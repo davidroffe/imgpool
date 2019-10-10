@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 import EditAccount from './EditAccount';
 import Loader from '../Utility/Loader';
 
@@ -19,16 +20,14 @@ const Dashboard = props => {
     field: '',
     email: '',
     username: '',
-    bio: '',
-    errorMessage: []
+    bio: ''
   });
   const [user, setUser] = useState({
     username: '',
     email: '',
     joinDate: '',
     favorites: '',
-    bio: '',
-    errorMessage: []
+    bio: ''
   });
   useEffect(() => {
     axios.get(`/api/user/get/${props.match.params.id}`).then(res => {
@@ -53,8 +52,7 @@ const Dashboard = props => {
       username: '',
       bio: '',
       password: '',
-      passwordConfirm: '',
-      errorMessage: []
+      passwordConfirm: ''
     });
   };
   const handleChange = (form, field, e) => {
@@ -94,7 +92,9 @@ const Dashboard = props => {
       }
     }
     if (newErrorMessage.length > 0) {
-      setEditAccount({ ...editAccount, errorMessage: newErrorMessage });
+      newErrorMessage.forEach(error => {
+        toast.error(error);
+      });
     } else {
       axios({
         url: url,
@@ -123,16 +123,12 @@ const Dashboard = props => {
               username: '',
               bio: '',
               password: '',
-              passwordConfirm: '',
-              errorMessage: []
+              passwordConfirm: ''
             });
           }
         })
         .catch(error => {
-          setEditAccount({
-            ...editAccount,
-            errorMessage: [error.response.data]
-          });
+          toast.error(error.response.data);
         });
     }
   };
@@ -153,16 +149,21 @@ const Dashboard = props => {
     axios({
       url: url,
       method: 'post'
-    }).then(res => {
-      setUser({
-        ...user,
-        active: res.data.active
+    })
+      .then(res => {
+        setUser({
+          ...user,
+          active: res.data.active
+        });
+      })
+      .catch(error => {
+        toast.error(error.response.data);
       });
-    });
   };
 
   return (
     <section id="account-dashboard">
+      <ToastContainer />
       {props.userInit ? (
         <div className="inner">
           <h1>

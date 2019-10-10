@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import { setUser } from '../actions';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 import Input from './Utility/Input';
 
 const PasswordReset = props => {
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
-  const [errorMessage, setErrorMessage] = useState([]);
   const handlePasswordResetSubmit = e => {
     e.preventDefault();
 
@@ -22,7 +22,9 @@ const PasswordReset = props => {
       newErrorMessage.push('Password must be at least 8 characters.');
     }
     if (newErrorMessage.length > 0) {
-      setErrorMessage(newErrorMessage);
+      newErrorMessage.forEach(error => {
+        toast.error(error);
+      });
     } else {
       axios({
         url: url,
@@ -39,42 +41,36 @@ const PasswordReset = props => {
           props.history.push('/account');
         })
         .catch(error => {
-          setErrorMessage([error.response.data]);
+          toast.error(error.response.data);
         });
     }
   };
   return (
     <div id="account-center">
+      <ToastContainer />
       <div id="center-box">
         <form className="form-dark" onSubmit={handlePasswordResetSubmit}>
-          <Input
-            id="password"
-            autoComplete={'off'}
-            type={'password'}
-            title={'Password'}
-            name={'password'}
-            value={password}
-            placeholder={'PASSWORD'}
-            handleChange={e => setPassword(e.target.value)}
-          />
-          <Input
-            id="passwordConfirm"
-            autoComplete={'off'}
-            type={'password'}
-            title={'password-confirm'}
-            name={'password-confirm'}
-            value={passwordConfirm}
-            placeholder={'CONFIRM PASSWORD'}
-            handleChange={e => setPasswordConfirm(e.target.value)}
-          />
-          <div className="error-messages">
-            {errorMessage.map((errorMessage, index) => {
-              return (
-                <p key={index} className="error">
-                  {errorMessage}
-                </p>
-              );
-            })}
+          <div className="field-container">
+            <Input
+              id="password"
+              autoComplete={'off'}
+              type={'password'}
+              title={'Password'}
+              name={'password'}
+              value={password}
+              placeholder={'PASSWORD'}
+              handleChange={e => setPassword(e.target.value)}
+            />
+            <Input
+              id="passwordConfirm"
+              autoComplete={'off'}
+              type={'password'}
+              title={'password-confirm'}
+              name={'password-confirm'}
+              value={passwordConfirm}
+              placeholder={'CONFIRM PASSWORD'}
+              handleChange={e => setPasswordConfirm(e.target.value)}
+            />
           </div>
           <Input
             className="border-button"

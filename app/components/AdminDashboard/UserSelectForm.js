@@ -1,18 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Select from 'react-select';
 import PropTypes from 'prop-types';
 import Modal from '../Utility/Modal';
 
 const UserSelectForm = props => {
-  const [selectedUser, setSelectedUser] = useState({});
-
   const handleChange = selectedUser => {
-    setSelectedUser(selectedUser);
-  };
-
-  const handleSubmit = e => {
-    e.preventDefault();
-
     if (selectedUser.hasOwnProperty('id'))
       props.history.push(`/user/${selectedUser.id}`);
   };
@@ -31,22 +23,6 @@ const UserSelectForm = props => {
           })}
           onChange={handleChange}
         />
-        <div className="error-messages">
-          {props.errorMessage.map((errorMessage, index) => {
-            return (
-              <p key={index} className="error">
-                {errorMessage}
-              </p>
-            );
-          })}
-        </div>
-        <button
-          id="manage-user"
-          className="border-button"
-          onClick={handleSubmit}
-        >
-          Manage
-        </button>
       </form>
     </Modal>
   );
@@ -56,8 +32,7 @@ UserSelectForm.propTypes = {
   history: PropTypes.object.isRequired,
   users: PropTypes.array.isRequired,
   show: PropTypes.bool.isRequired,
-  toggleShow: PropTypes.func.isRequired,
-  errorMessage: PropTypes.array.isRequired
+  toggleShow: PropTypes.func.isRequired
 };
 
 export default UserSelectForm;

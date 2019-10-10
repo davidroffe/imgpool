@@ -25,28 +25,21 @@ const TagForm = props => {
   return (
     <Modal show={props.show} toggleModal={() => props.toggleShow(!props.show)}>
       <form id="admin-manage-form" className="form-light">
-        <Select
-          id="admin-manage-select"
-          classNamePrefix="admin-manage-select"
-          isMulti
-          closeMenuOnSelect={false}
-          options={props.tags.map(tag => {
-            return {
-              value: tag.name,
-              label: `${tag.name} ${tag.active ? '' : '(Disabled)'}`,
-              id: tag.id
-            };
-          })}
-          onChange={handleChange}
-        />
-        <div className="error-messages">
-          {props.errorMessage.map((errorMessage, index) => {
-            return (
-              <p key={index} className="error">
-                {errorMessage}
-              </p>
-            );
-          })}
+        <div className="field-container">
+          <Select
+            id="admin-manage-select"
+            classNamePrefix="admin-manage-select"
+            isMulti
+            closeMenuOnSelect={false}
+            options={props.tags.map(tag => {
+              return {
+                value: tag.name,
+                label: `${tag.name} ${tag.active ? '' : '(Disabled)'}`,
+                id: tag.id
+              };
+            })}
+            onChange={handleChange}
+          />
         </div>
         <button
           id="toggle-state"
@@ -71,8 +64,7 @@ TagForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   tags: PropTypes.array.isRequired,
   show: PropTypes.bool.isRequired,
-  toggleShow: PropTypes.func.isRequired,
-  errorMessage: PropTypes.array.isRequired
+  toggleShow: PropTypes.func.isRequired
 };
 
 export default TagForm;

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { setUser, setPosts } from '../../actions';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 import CreatePost from './CreatePost';
 import EditAccount from './EditAccount';
 import Loader from '../Utility/Loader';
@@ -25,15 +26,13 @@ const Dashboard = props => {
     username: '',
     password: '',
     passwordConfirm: '',
-    bio: '',
-    errorMessage: []
+    bio: ''
   });
   const [createPost, setCreatePost] = useState({
     show: false,
     file: { value: {}, name: '' },
     source: '',
-    tags: '',
-    errorMessage: []
+    tags: ''
   });
   useEffect(() => {
     if (props.userInit) {
@@ -58,15 +57,13 @@ const Dashboard = props => {
       username: '',
       bio: '',
       password: '',
-      passwordConfirm: '',
-      errorMessage: []
+      passwordConfirm: ''
     });
     setCreatePost({
       show: false,
       file: { value: {}, name: '' },
       source: '',
-      tags: '',
-      errorMessage: []
+      tags: ''
     });
   };
   const handleChange = (form, field, e) => {
@@ -125,7 +122,9 @@ const Dashboard = props => {
       }
     }
     if (newErrorMessage.length > 0) {
-      setEditAccount({ ...editAccount, errorMessage: newErrorMessage });
+      newErrorMessage.forEach(error => {
+        toast.error(error);
+      });
     } else {
       axios({
         url: url,
@@ -153,13 +152,12 @@ const Dashboard = props => {
               username: '',
               bio: '',
               password: '',
-              passwordConfirm: '',
-              errorMessage: []
+              passwordConfirm: ''
             });
           }
         })
         .catch(error => {
-          setEditAccount({ ...editAccount, errorMessage: [error.data] });
+          toast.error(error.data);
         });
     }
   };
@@ -176,7 +174,7 @@ const Dashboard = props => {
     };
     let newErrorMessage = [];
 
-    if (createPost.file === undefined || createPost.file === '') {
+    if (createPost.file.name === undefined || createPost.file.name === '') {
       newErrorMessage.push('Please select a file.');
     }
     if (createPost.tags.split(' ').length < 4) {
@@ -185,7 +183,9 @@ const Dashboard = props => {
       );
     }
     if (newErrorMessage.length > 0) {
-      setCreatePost({ ...createPost, errorMessage: newErrorMessage });
+      newErrorMessage.forEach(error => {
+        toast.error(error);
+      });
     } else {
       config.params = {
         source: createPost.source,
@@ -201,12 +201,13 @@ const Dashboard = props => {
           }
         })
         .catch(error => {
-          setCreatePost({ ...createPost, errorMessage: [error.data] });
+          toast.error(error.data);
         });
     }
   };
   return (
     <section id="account-dashboard">
+      <ToastContainer />
       {props.userInit ? (
         <div className="inner">
           <h1>

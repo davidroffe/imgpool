@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { setTags, setUsers, setFlags } from '../../actions';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import TagForm from './TagForm';
 import UserSelectForm from './UserSelectForm';
@@ -22,7 +23,6 @@ const Dashboard = props => {
   const [showFlagForm, setShowFlagForm] = useState(false);
   const [showUserForm, setShowUserForm] = useState(false);
   const [showTagForm, setShowTagForm] = useState(false);
-  const [errorMessage, setErrorMessage] = useState([]);
 
   useEffect(() => {
     if (props.userInit) {
@@ -78,15 +78,16 @@ const Dashboard = props => {
           setShowTagForm(!showTagForm);
         })
         .catch(error => {
-          setErrorMessage([error.response.data]);
+          toast.error(error.response.data);
         });
     } else {
-      setErrorMessage(['Please select one or more tags.']);
+      toast.error('Please select one or more tags.');
     }
   };
 
   return (
     <section id="account-dashboard">
+      <ToastContainer />
       {props.userInit ? (
         <div className="inner">
           <h1>
@@ -150,14 +151,12 @@ const Dashboard = props => {
             toggleShow={setShowTagForm}
             handleSubmit={handleTagSubmit}
             tags={props.tags}
-            errorMessage={errorMessage}
           />
           <UserSelectForm
             show={showUserForm}
             toggleShow={setShowUserForm}
             history={props.history}
             users={props.users}
-            errorMessage={errorMessage}
           />
         </div>
       ) : null}

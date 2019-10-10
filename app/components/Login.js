@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { setUser } from '../actions';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 import Input from './Utility/Input';
 
 const mapStateToProps = state => {
@@ -15,7 +16,6 @@ const mapStateToProps = state => {
 };
 
 const Login = props => {
-  const [errorMessage, setErrorMessage] = useState([]);
   const [form, setForm] = useState('login');
 
   const handleSubmit = e => {
@@ -55,7 +55,9 @@ const Login = props => {
       }
     }
     if (newErrorMessage.length > 0) {
-      setErrorMessage(newErrorMessage);
+      newErrorMessage.forEach(error => {
+        toast.error(error);
+      });
     } else {
       axios({
         url: url,
@@ -69,7 +71,7 @@ const Login = props => {
       })
         .then(res => {
           if (form === 'forgotPassword') {
-            setErrorMessage(['An email has been sent.']);
+            toast.success('An email has been sent.');
           } else {
             props.dispatch(setUser('email', res.data.email));
             props.dispatch(setUser('username', res.data.username));
@@ -79,7 +81,7 @@ const Login = props => {
           }
         })
         .catch(error => {
-          setErrorMessage([error.response.data]);
+          toast.error(error.response.data);
         });
     }
   };
@@ -103,62 +105,56 @@ const Login = props => {
 
   return (
     <div id="account-center">
+      <ToastContainer />
       <div id="center-box">
         <form className="form-dark" onSubmit={handleSubmit}>
-          <Input
-            id="email"
-            autoComplete={'off'}
-            type={'text'}
-            title={'Full Name'}
-            name={'email'}
-            value={props.email}
-            placeholder={'EMAIL'}
-            handleChange={handleChange}
-          />
-          {form === 'signUp' ? (
+          <div className="field-container">
             <Input
-              id="username"
+              id="email"
               autoComplete={'off'}
               type={'text'}
-              title={'Username'}
-              name={'username'}
-              value={props.username}
-              placeholder={'USERNAME'}
+              title={'Full Name'}
+              name={'email'}
+              value={props.email}
+              placeholder={'EMAIL'}
               handleChange={handleChange}
             />
-          ) : null}
-          {form === 'signUp' || form === 'login' ? (
-            <Input
-              id="password"
-              autoComplete={'off'}
-              type={'password'}
-              title={'Password'}
-              name={'password'}
-              value={props.password}
-              placeholder={'PASSWORD'}
-              handleChange={handleChange}
-            />
-          ) : null}
-          {form === 'signUp' ? (
-            <Input
-              id="passwordConfirm"
-              autoComplete={'off'}
-              type={'password'}
-              title={'password-confirm'}
-              name={'password-confirm'}
-              value={props.passwordConfirm}
-              placeholder={'CONFIRM PASSWORD'}
-              handleChange={handleChange}
-            />
-          ) : null}
-          <div className="error-messages">
-            {errorMessage.map((errorMessage, index) => {
-              return (
-                <p key={index} className="error">
-                  {errorMessage}
-                </p>
-              );
-            })}
+            {form === 'signUp' ? (
+              <Input
+                id="username"
+                autoComplete={'off'}
+                type={'text'}
+                title={'Username'}
+                name={'username'}
+                value={props.username}
+                placeholder={'USERNAME'}
+                handleChange={handleChange}
+              />
+            ) : null}
+            {form === 'signUp' || form === 'login' ? (
+              <Input
+                id="password"
+                autoComplete={'off'}
+                type={'password'}
+                title={'Password'}
+                name={'password'}
+                value={props.password}
+                placeholder={'PASSWORD'}
+                handleChange={handleChange}
+              />
+            ) : null}
+            {form === 'signUp' ? (
+              <Input
+                id="passwordConfirm"
+                autoComplete={'off'}
+                type={'password'}
+                title={'password-confirm'}
+                name={'password-confirm'}
+                value={props.passwordConfirm}
+                placeholder={'CONFIRM PASSWORD'}
+                handleChange={handleChange}
+              />
+            ) : null}
           </div>
           <Input
             className="border-button"

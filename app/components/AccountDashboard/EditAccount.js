@@ -7,84 +7,81 @@ const EditAccount = props => {
   return (
     <Modal show={props.data.show} toggleModal={props.clearValues}>
       <form id="edit-form" className="form-light" onSubmit={props.handleSubmit}>
-        {props.data.field === 'edit-username' ? (
-          <Input
-            id="username"
-            autoComplete={'off'}
-            type={'text'}
-            title={'Username'}
-            name={'username'}
-            value={props.data.username}
-            placeholder={'USERNAME'}
-            handleChange={props.handleChange.bind(
-              null,
-              'editAccount',
-              'username'
-            )}
-          />
-        ) : null}
-        {props.data.field === 'edit-email' ? (
-          <Input
-            id="email"
-            autoComplete={'off'}
-            type={'text'}
-            title={'Email'}
-            name={'email'}
-            value={props.data.email}
-            placeholder={'EMAIL'}
-            handleChange={props.handleChange.bind(null, 'editAccount', 'email')}
-          />
-        ) : null}
-        {props.data.field === 'edit-password' ? (
-          <div>
+        <div className="field-container">
+          {props.data.field === 'edit-username' ? (
             <Input
-              id="password"
+              id="username"
               autoComplete={'off'}
-              type={'password'}
-              title={'Password'}
-              name={'password'}
-              value={props.data.password}
-              placeholder={'PASSWORD'}
+              type={'text'}
+              title={'Username'}
+              name={'username'}
+              value={props.data.username}
+              placeholder={'USERNAME'}
               handleChange={props.handleChange.bind(
                 null,
                 'editAccount',
-                'password'
+                'username'
               )}
             />
+          ) : null}
+          {props.data.field === 'edit-email' ? (
             <Input
-              id="passwordConfirm"
+              id="email"
               autoComplete={'off'}
-              type={'password'}
-              title={'Password Confirm'}
-              name={'password-confirm'}
-              value={props.data.passwordConfirm}
-              placeholder={'CONFIRM PASSWORD'}
+              type={'text'}
+              title={'Email'}
+              name={'email'}
+              value={props.data.email}
+              placeholder={'EMAIL'}
               handleChange={props.handleChange.bind(
                 null,
                 'editAccount',
-                'passwordConfirm'
+                'email'
               )}
             />
-          </div>
-        ) : null}
-        {props.data.field === 'edit-bio' ? (
-          <textarea
-            id="bio"
-            title={'Bio'}
-            name={'bio'}
-            value={props.data.bio}
-            placeholder={'BIO'}
-            onChange={props.handleChange.bind(null, 'editAccount', 'bio')}
-          />
-        ) : null}
-        <div className="error-messages">
-          {props.data.errorMessage.map((errorMessage, index) => {
-            return (
-              <p key={index} className="error">
-                {errorMessage}
-              </p>
-            );
-          })}
+          ) : null}
+          {props.data.field === 'edit-password' ? (
+            <div>
+              <Input
+                id="password"
+                autoComplete={'off'}
+                type={'password'}
+                title={'Password'}
+                name={'password'}
+                value={props.data.password}
+                placeholder={'PASSWORD'}
+                handleChange={props.handleChange.bind(
+                  null,
+                  'editAccount',
+                  'password'
+                )}
+              />
+              <Input
+                id="passwordConfirm"
+                autoComplete={'off'}
+                type={'password'}
+                title={'Password Confirm'}
+                name={'password-confirm'}
+                value={props.data.passwordConfirm}
+                placeholder={'CONFIRM PASSWORD'}
+                handleChange={props.handleChange.bind(
+                  null,
+                  'editAccount',
+                  'passwordConfirm'
+                )}
+              />
+            </div>
+          ) : null}
+          {props.data.field === 'edit-bio' ? (
+            <textarea
+              id="bio"
+              title={'Bio'}
+              name={'bio'}
+              value={props.data.bio}
+              placeholder={'BIO'}
+              onChange={props.handleChange.bind(null, 'editAccount', 'bio')}
+            />
+          ) : null}
         </div>
         <Input className="border-button" type="submit" />
       </form>
@@ -103,8 +100,7 @@ EditAccount.propTypes = {
     username: PropTypes.string.isRequired,
     bio: PropTypes.string.isRequired,
     password: PropTypes.string.isRequired,
-    passwordConfirm: PropTypes.string.isRequired,
-    errorMessage: PropTypes.array.isRequired
+    passwordConfirm: PropTypes.string.isRequired
   })
 };
 

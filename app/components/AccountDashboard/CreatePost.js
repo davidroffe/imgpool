@@ -8,41 +8,34 @@ const CreatePost = props => {
   return (
     <Modal show={props.data.show} toggleModal={props.clearValues}>
       <form id="post-form" className="form-light" onSubmit={props.handleSubmit}>
-        <FileInput
-          id="file"
-          title={'Post'}
-          name={'post'}
-          value={props.data.file.name}
-          handleChange={props.handleChange.bind(null, 'createPost', 'file')}
-        />
-        <Input
-          id="source"
-          autoComplete={'off'}
-          type={'text'}
-          title={'Source'}
-          name={'source'}
-          value={props.data.source}
-          placeholder={'SOURCE URL'}
-          handleChange={props.handleChange.bind(null, 'createPost', 'source')}
-        />
-        <Input
-          id="tags"
-          autoComplete={'off'}
-          type={'text'}
-          title={'Tags'}
-          name={'tags'}
-          value={props.data.tags}
-          placeholder={'TAGS'}
-          handleChange={props.handleChange.bind(null, 'createPost', 'tags')}
-        />
-        <div className="error-messages">
-          {props.data.errorMessage.map((errorMessage, index) => {
-            return (
-              <p key={index} className="error">
-                {errorMessage}
-              </p>
-            );
-          })}
+        <div className="field-container">
+          <FileInput
+            id="file"
+            title={'Post'}
+            name={'post'}
+            value={props.data.file.name}
+            handleChange={props.handleChange.bind(null, 'createPost', 'file')}
+          />
+          <Input
+            id="source"
+            autoComplete={'off'}
+            type={'text'}
+            title={'Source'}
+            name={'source'}
+            value={props.data.source}
+            placeholder={'SOURCE URL'}
+            handleChange={props.handleChange.bind(null, 'createPost', 'source')}
+          />
+          <Input
+            id="tags"
+            autoComplete={'off'}
+            type={'text'}
+            title={'Tags'}
+            name={'tags'}
+            value={props.data.tags}
+            placeholder={'TAGS'}
+            handleChange={props.handleChange.bind(null, 'createPost', 'tags')}
+          />
         </div>
         <Input className="border-button" type="submit" />
       </form>
@@ -61,8 +54,7 @@ CreatePost.propTypes = {
       name: PropTypes.string.isRequired
     }),
     source: PropTypes.string.isRequired,
-    tags: PropTypes.string.isRequired,
-    errorMessage: PropTypes.array.isRequired
+    tags: PropTypes.string.isRequired
   })
 };
 
