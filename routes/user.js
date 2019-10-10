@@ -114,7 +114,14 @@ module.exports = (Models, router) => {
           if (email === '' || !emailRegEx.test(email)) {
             ctx.throw(401, 'Invalid email');
           } else {
-            user.email = email;
+            const userWithEmail = await Models.User.findOne({
+              where: { email }
+            });
+            if (userWithEmail) {
+              ctx.throw(401, 'Sorry, that email is taken.');
+            } else {
+              user.email = email;
+            }
           }
         } else if (editField === 'edit-username') {
           if (username === '') {
@@ -172,7 +179,14 @@ module.exports = (Models, router) => {
           if (email === '' || !emailRegEx.test(email)) {
             ctx.throw(401, 'Invalid email');
           } else {
-            user.email = email;
+            const userWithEmail = await Models.User.findOne({
+              where: { email }
+            });
+            if (userWithEmail) {
+              ctx.throw(401, 'Sorry, that email is taken.');
+            } else {
+              user.email = email;
+            }
           }
         } else if (editField === 'edit-username') {
           if (username === '') {
