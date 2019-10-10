@@ -157,7 +157,7 @@ const Dashboard = props => {
           }
         })
         .catch(error => {
-          toast.error(error.data);
+          toast.error(error.reponse.data);
         });
     }
   };
@@ -201,7 +201,7 @@ const Dashboard = props => {
           }
         })
         .catch(error => {
-          toast.error(error.data);
+          toast.error(error.response.data);
         });
     }
   };
