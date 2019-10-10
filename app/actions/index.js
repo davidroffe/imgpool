@@ -32,3 +32,16 @@ export const setUser = (field, value) => ({
   type: `SET_${field.toUpperCase()}`,
   value
 });
+
+export const setNotificationMessage = text => ({
+  type: 'SET_NOTIFICATION_MESSAGE',
+  text
+});
+
+export const hideNotification = () => ({
+  type: 'HIDE_NOTIFICATION'
+});
+
+export const showNotification = () => ({
+  type: 'SHOW_NOTIFICATION'
+});
