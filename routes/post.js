@@ -65,7 +65,7 @@ module.exports = (Models, router) => {
     ctx.body = post;
   });
 
-  router.post('/post/favorite', upload.single('image'), async ctx => {
+  router.post('/post/favorite', async ctx => {
     const sessionToken = ctx.cookies.get('auth');
     const postId = ctx.query.postId;
     const secret = process.env.JWT_SECRET;
