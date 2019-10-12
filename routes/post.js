@@ -99,6 +99,26 @@ module.exports = (Models, router) => {
     }
   });
 
+  router.post('/post/flag/create', async ctx => {
+    const sessionToken = ctx.cookies.get('auth');
+    const { postId, reason } = ctx.query;
+    const secret = process.env.JWT_SECRET;
+
+    if (sessionToken) {
+      const payload = jwt.verify(sessionToken, secret);
+      const flag = await Models.Flag.create({
+        postId,
+        userId: payload.id,
+        reason
+      });
+
+      await flag.save();
+      ctx.body = { status: 'success' };
+    } else {
+      ctx.throw(401, 'Invalid session');
+    }
+  });
+
   router.post('/post/create', upload.single('image'), async ctx => {
     const sessionToken = ctx.cookies.get('auth');
     const secret = process.env.JWT_SECRET;

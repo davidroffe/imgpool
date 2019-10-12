@@ -4,7 +4,9 @@ import { connect } from 'react-redux';
 import { setUser, setPosts } from '../actions';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 import TagMenu from './TagMenu';
+import FlagPost from './FlagPost';
 
 const mapStateToProps = state => {
   return {
@@ -24,7 +26,10 @@ const Single = props => {
     }
   });
   const [optionsMenu, setOptionsMenu] = useState(false);
-
+  const [flagPost, setFlagPost] = useState({
+    show: false,
+    reason: ''
+  });
   useEffect(() => {
     axios
       .get('/api/post/single', {
@@ -72,8 +77,56 @@ const Single = props => {
     });
   };
 
+  const handleFlagPostChange = e => {
+    let newObject;
+
+    newObject = { ...flagPost, reason: e.target.value };
+    setFlagPost(newObject);
+  };
+
+  const handleFlagPostSubmit = e => {
+    e.preventDefault();
+
+    let newErrorMessage = [];
+
+    if (flagPost.reason === undefined || flagPost.reason === '') {
+      newErrorMessage.push('Please enter a reason to flag this post.');
+    }
+    if (newErrorMessage.length > 0) {
+      newErrorMessage.forEach(error => {
+        toast.error(error);
+      });
+    } else {
+      axios({
+        url: '/api/post/flag/create',
+        method: 'post',
+        params: {
+          postId: post.id,
+          reason: flagPost.reason
+        }
+      })
+        .then(res => {
+          if (res.data.status === 'success') {
+            setFlagPost({
+              show: false,
+              reason: ''
+            });
+            toast.success('Post flagged.');
+          }
+        })
+        .catch(error => {
+          toast.error(error.response.data);
+        });
+    }
+  };
+
+  const clearFlagPost = () => {
+    setFlagPost({ show: false, reason: '' });
+  };
+
   return (
     <section id="post-single">
+      <ToastContainer />
       <TagMenu tags={getTagsFromPosts(post)} />
       <div className="image-container">
         <div className="inner">
@@ -95,20 +148,27 @@ const Single = props => {
                   <span className="text remove">remove from favorites</span>
                 </button>
               </li>
-              <li>
-                <button className="flag-post">
-                  <span className="icon flag">&#9873;</span>
-                  <span className="text">flag post</span>
-                </button>
-              </li>
-              <li>
-                {post.userId === props.userId || props.isAdmin ? (
+              {props.userId ? (
+                <li>
+                  <button
+                    className="flag-post"
+                    onClick={() => {
+                      setFlagPost({ ...flagPost, show: true });
+                    }}
+                  >
+                    <span className="icon flag">&#9873;</span>
+                    <span className="text">flag post</span>
+                  </button>
+                </li>
+              ) : null}
+              {post.userId === props.userId || props.isAdmin ? (
+                <li>
                   <button className="delete-post" onClick={deletePost}>
                     <span className="icon x">×</span>
                     <span className="text">delete post</span>
                   </button>
-                ) : null}
-              </li>
+                </li>
+              ) : null}
             </ul>
             <p className="poster">
               posted by:{' '}
@@ -118,6 +178,12 @@ const Single = props => {
           <img src={post.url} />
         </div>
       </div>
+      <FlagPost
+        handleSubmit={handleFlagPostSubmit}
+        handleChange={handleFlagPostChange}
+        clearValues={clearFlagPost}
+        data={flagPost}
+      />
     </section>
   );
 };
