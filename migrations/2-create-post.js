@@ -16,8 +16,9 @@ module.exports = {
           key: 'id'
         }
       },
-      status: {
-        type: Sequelize.STRING
+      active: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false
       },
       height: {
         type: Sequelize.INTEGER

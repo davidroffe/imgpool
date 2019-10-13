@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
           key: 'id'
         }
       },
-      status: DataTypes.STRING,
+      active: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
       height: DataTypes.INTEGER,
       width: DataTypes.INTEGER,
       source: DataTypes.STRING,
