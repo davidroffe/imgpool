@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { setFlags } from '../actions';
@@ -352,13 +353,15 @@ const FlagList = props => {
                           scope="row"
                           padding="none"
                         >
-                          {row.postId}
+                          <Link to={`/post/${row.postId}`}>{row.postId}</Link>
                         </TableCell>
                         <TableCell className={classes.tablecell} align="right">
                           {row.date}
                         </TableCell>
                         <TableCell className={classes.tablecell} align="right">
-                          {row.user.username}
+                          <Link to={`/user/${row.user.id}`}>
+                            {row.user.username}
+                          </Link>
                         </TableCell>
                         <TableCell className={classes.tablecell} align="right">
                           {row.active ? 'Active' : 'Deleted'}
