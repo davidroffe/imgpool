@@ -163,11 +163,7 @@ const EnhancedTableToolbar = props => {
           <Typography color="inherit" variant="subtitle1">
             {numSelected} selected
           </Typography>
-        ) : (
-          <Typography variant="h6" id="tableTitle">
-            Nutrition
-          </Typography>
-        )}
+        ) : null}
       </div>
       <div className={classes.spacer} />
       <div className={classes.actions}>
