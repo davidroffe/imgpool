@@ -32,12 +32,20 @@ module.exports = (Models, router) => {
 
     ctx.body = allPosts;
   });
-  router.get('/post/flag/get', async ctx => {
+  router.get('/post/flag/list', async ctx => {
     const allFlags = await Models.Flag.findAll({
-      include: {
-        model: Models.Post,
-        as: 'post'
-      }
+      include: [
+        {
+          model: Models.Post,
+          as: 'post',
+          attributes: ['active']
+        },
+        {
+          model: Models.User,
+          as: 'user',
+          attributes: ['username']
+        }
+      ]
     });
 
     ctx.body = allFlags;

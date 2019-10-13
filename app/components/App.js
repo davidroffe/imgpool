@@ -17,6 +17,7 @@ import PasswordReset from './PasswordReset';
 import PostSearch from './PostSearch';
 import PostList from './PostList';
 import PostSingle from './PostSingle';
+import FlagList from './FlagList';
 import About from './About';
 import Login from './Login';
 
@@ -54,6 +55,7 @@ const App = props => {
           />
           <Route path="/admin" exact component={AdminDashboard} />
           <Route path="/user/:id" exact component={UserProfile} />
+          <Route path="/flags" exact component={FlagList} />
           <Route path="/about" exact component={About} />
           <Route path="/login" exact component={Login} />
           <Redirect from="/" exact to="/posts" />
