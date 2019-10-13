@@ -194,7 +194,8 @@ const useStyles = makeStyles(theme => ({
   },
   paper: {
     width: '100%',
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
+    boxShadow: 'none'
   },
   table: {
     minWidth: 750
@@ -298,12 +299,11 @@ const FlagList = props => {
 
   const isSelected = name => selected.indexOf(name) !== -1;
 
-  const emptyRows =
-    rowsPerPage -
-    Math.min(rowsPerPage, props.flags.length - page * rowsPerPage);
-
   return (
     <section id="flag-list">
+      <h1>
+        <span>Flags</span>
+      </h1>
       <div className={classes.root}>
         <Paper className={classes.paper}>
           <EnhancedTableToolbar numSelected={selected.length} />
