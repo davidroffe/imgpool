@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { setFlags } from '../actions';
+import { ToastContainer, toast } from 'react-toastify';
+import { setFlags, setPosts } from '../actions';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -124,7 +125,10 @@ const useToolbarStyles = makeStyles(theme => ({
   },
   title: {
     flex: '0 0 auto'
-  },
+  }
+}));
+
+const useTooltipStyles = makeStyles(() => ({
   tooltip: {
     fontSize: '1rem'
   }
@@ -132,6 +136,7 @@ const useToolbarStyles = makeStyles(theme => ({
 
 const EnhancedTableToolbar = props => {
   const classes = useToolbarStyles();
+  const tooltipClasses = useTooltipStyles();
   const { numSelected } = props;
 
   return (
@@ -150,7 +155,11 @@ const EnhancedTableToolbar = props => {
       <div className={classes.spacer} />
       <div className={classes.actions}>
         {numSelected > 0 ? (
-          <Tooltip classes={classes} title="Delete">
+          <Tooltip
+            classes={tooltipClasses}
+            title="Delete"
+            onClick={props.handlePostDelete}
+          >
             <IconButton aria-label="delete">
               <DeleteIcon />
             </IconButton>
@@ -162,7 +171,8 @@ const EnhancedTableToolbar = props => {
 };
 
 EnhancedTableToolbar.propTypes = {
-  numSelected: PropTypes.number.isRequired
+  numSelected: PropTypes.number.isRequired,
+  handlePostDelete: PropTypes.func.isRequired
 };
 
 const useStyles = makeStyles(theme => ({
@@ -236,6 +246,25 @@ const FlagList = props => {
     });
   };
 
+  const handlePostDelete = e => {
+    e.preventDefault();
+    const selectedFlag = props.flags[selected - 1];
+
+    axios({
+      url: `/api/post/delete/${selectedFlag.postId}`,
+      method: 'post'
+    })
+      .then(() => {
+        toast.success('Post deleted.');
+        props.dispatch(setPosts([]));
+        setSelected([]);
+        retrieveFlags();
+      })
+      .catch(error => {
+        toast.error(error.response.data);
+      });
+  };
+
   const handleRequestSort = (event, property) => {
     const isDesc = orderBy === property && order === 'desc';
     setOrder(isDesc ? 'asc' : 'desc');
@@ -275,12 +304,16 @@ const FlagList = props => {
 
   return (
     <section id="flag-list">
+      <ToastContainer />
       <h1>
         <span>Flags</span>
       </h1>
       <div className={classes.root}>
         <Paper className={classes.paper}>
-          <EnhancedTableToolbar numSelected={selected.length} />
+          <EnhancedTableToolbar
+            numSelected={selected.length}
+            handlePostDelete={handlePostDelete}
+          />
           <div className={classes.tableWrapper}>
             <Table
               className={classes.table}
