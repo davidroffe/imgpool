@@ -22,6 +22,7 @@ const upload = multer({ storage: storage });
 module.exports = (Models, router) => {
   router.get('/post/list', async ctx => {
     const allPosts = await Models.Post.findAll({
+      where: { active: true },
       include: {
         model: Models.Tag,
         as: 'tag',
@@ -224,13 +225,8 @@ module.exports = (Models, router) => {
     if (payload) {
       const post = await Models.Post.findOne({ where: { id } });
       if (payload.admin || post.userId === payload.id) {
-        const posts = await Models.TaggedPost.findAll({
-          where: { postId: id }
-        });
-        for (let i = 0; i < posts.length; i++) {
-          await posts[i].destroy();
-        }
-        await post.destroy();
+        post.active = false;
+        await post.save();
       }
     }
     ctx.body = { status: 'success' };
