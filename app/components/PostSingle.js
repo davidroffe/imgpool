@@ -12,7 +12,7 @@ const mapStateToProps = state => {
   return {
     userId: state.user.id,
     isAdmin: state.user.admin,
-    userFavories: state.user.favorites
+    userFavorites: state.user.favorites
   };
 };
 
@@ -65,8 +65,8 @@ const Single = props => {
   };
 
   const isFavorited = () => {
-    for (let i = 0; i < props.userFavories.length; i++) {
-      if (props.userFavories[i].id === post.id) return true;
+    for (let i = 0; i < props.userFavorites.length; i++) {
+      if (props.userFavorites[i].id === post.id) return true;
     }
     return false;
   };
@@ -202,7 +202,7 @@ Single.propTypes = {
   history: PropTypes.object.isRequired,
   userId: PropTypes.number.isRequired,
   isAdmin: PropTypes.bool.isRequired,
-  userFavories: PropTypes.array.isRequired
+  userFavorites: PropTypes.array.isRequired
 };
 
 export default connect(mapStateToProps)(Single);
