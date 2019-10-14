@@ -211,7 +211,8 @@ const mapStateToProps = state => {
   console.log(state.flags);
 
   return {
-    flags: state.flags
+    flags: state.flags,
+    isAdmin: state.user.admin
   };
 };
 
@@ -272,6 +273,7 @@ const FlagList = props => {
   };
 
   const handleClick = (event, name) => {
+    if (!props.isAdmin) return;
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
 
@@ -339,11 +341,13 @@ const FlagList = props => {
                         selected={isItemSelected}
                       >
                         <TableCell padding="checkbox">
-                          <Checkbox
-                            style={{ color: '#757575' }}
-                            checked={isItemSelected}
-                            inputProps={{ 'aria-labelledby': labelId }}
-                          />
+                          {props.isAdmin ? (
+                            <Checkbox
+                              style={{ color: '#757575' }}
+                              checked={isItemSelected}
+                              inputProps={{ 'aria-labelledby': labelId }}
+                            />
+                          ) : null}
                         </TableCell>
                         <TableCell
                           className={classes.tablecell}
@@ -432,7 +436,8 @@ const FlagList = props => {
 
 FlagList.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  flags: PropTypes.array.isRequired
+  flags: PropTypes.array.isRequired,
+  isAdmin: PropTypes.bool.isRequired
 };
 
 export default connect(mapStateToProps)(FlagList);
