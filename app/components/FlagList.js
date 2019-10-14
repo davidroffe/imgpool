@@ -61,15 +61,7 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const {
-    classes,
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort
-  } = props;
+  const { classes, order, orderBy, onRequestSort } = props;
   const createSortHandler = property => event => {
     onRequestSort(event, property);
   };
@@ -77,14 +69,7 @@ function EnhancedTableHead(props) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all desserts' }}
-          />
-        </TableCell>
+        <TableCell padding="checkbox"></TableCell>
         {headCells.map(headCell => (
           <TableCell
             className={classes.tablecell}
@@ -127,24 +112,21 @@ const useToolbarStyles = makeStyles(theme => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(1)
   },
-  highlight:
-    theme.palette.type === 'light'
-      ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85)
-        }
-      : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark
-        },
+  highlight: {
+    color: '#757575',
+    backgroundColor: lighten('#757575', 0.85)
+  },
   spacer: {
     flex: '1 1 100%'
   },
   actions: {
-    color: theme.palette.text.secondary
+    color: '#757575'
   },
   title: {
     flex: '0 0 auto'
+  },
+  tooltip: {
+    fontSize: '1rem'
   }
 }));
 
@@ -168,7 +150,7 @@ const EnhancedTableToolbar = props => {
       <div className={classes.spacer} />
       <div className={classes.actions}>
         {numSelected > 0 ? (
-          <Tooltip title="Delete">
+          <Tooltip classes={classes} title="Delete">
             <IconButton aria-label="delete">
               <DeleteIcon />
             </IconButton>
@@ -274,11 +256,7 @@ const FlagList = props => {
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
+      newSelected.push(name);
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
@@ -338,6 +316,7 @@ const FlagList = props => {
                       >
                         <TableCell padding="checkbox">
                           <Checkbox
+                            style={{ color: '#757575' }}
                             checked={isItemSelected}
                             inputProps={{ 'aria-labelledby': labelId }}
                           />
