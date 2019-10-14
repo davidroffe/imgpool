@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { setTags, setUsers, setFlags } from '../../actions';
 import axios from 'axios';
@@ -20,7 +21,6 @@ const mapStateToProps = state => {
 };
 
 const Dashboard = props => {
-  const [showFlagForm, setShowFlagForm] = useState(false);
   const [showUserForm, setShowUserForm] = useState(false);
   const [showTagForm, setShowTagForm] = useState(false);
 
@@ -98,14 +98,9 @@ const Dashboard = props => {
             <div className="row">
               <p>({props.flags[0] ? props.flags.length : '0'})</p>
               {props.flags[0] ? (
-                <button
-                  id="show-flags"
-                  onClick={() => {
-                    setShowFlagForm(!showFlagForm);
-                  }}
-                >
+                <Link to="/flags" id="show-flags">
                   manage
-                </button>
+                </Link>
               ) : null}
             </div>
             <h2>Users</h2>
