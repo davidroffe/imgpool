@@ -14,15 +14,15 @@ const mapStateToProps = state => {
 
 const List = props => {
   useEffect(() => {
-    retrievePosts();
+    if (!props.posts.length) {
+      retrievePosts();
+    }
   });
 
   const retrievePosts = () => {
-    if (!props.posts.length) {
-      axios.get('/api/post/list').then(res => {
-        props.dispatch(setPosts(res.data.length ? res.data : [false]));
-      });
-    }
+    axios.get('/api/post/list').then(res => {
+      props.dispatch(setPosts(res.data.length ? res.data : [false]));
+    });
   };
 
   const getTagsFromPosts = posts => {
@@ -49,7 +49,7 @@ const List = props => {
     return newTags;
   };
 
-  if (props.posts[0] === false) {
+  if (!props.posts.length) {
     return (
       <section id="splash">
         <div id="splash-center">
@@ -74,6 +74,7 @@ const List = props => {
 };
 
 List.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   posts: PropTypes.array.isRequired
 };
 

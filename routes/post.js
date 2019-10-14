@@ -189,7 +189,35 @@ module.exports = (Models, router) => {
 
   router.get('/post/search', async ctx => {
     const searchQuery = ctx.query.searchQuery.split(' ').map(x => `'${x}'`);
+    let userId = false;
+    let favoritedPostIds = [];
+
+    for (let i = 0; i < searchQuery.length; i++) {
+      if (searchQuery[i].indexOf('fp:') > -1) {
+        userId = searchQuery[i].split(':')[1].slice(0, 1);
+        searchQuery.splice(i, 1);
+        break;
+      }
+    }
+
+    if (userId) {
+      const user = await Models.User.findOne({
+        where: { id: userId },
+        include: {
+          model: Models.Post,
+          as: 'favoritedPosts',
+          required: false,
+          attributes: ['id']
+        }
+      });
+
+      favoritedPostIds = user.favoritedPosts.map(post => {
+        return post.id;
+      });
+    }
+
     const posts = await Models.TaggedPost.findAll({
+      where: userId ? { postId: favoritedPostIds } : null,
       attributes: ['postId'],
       group: [
         'TaggedPost.postId',

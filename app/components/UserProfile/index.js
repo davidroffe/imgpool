@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import { setPosts, setSearch } from '../../actions';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
@@ -161,6 +162,20 @@ const Dashboard = props => {
       });
   };
 
+  const handleFavoritesClick = e => {
+    e.preventDefault();
+
+    const userId = user.id;
+    const searchQuery = `fp:${userId}`;
+    const url = '/api/post/search';
+
+    props.dispatch(setSearch(searchQuery));
+    axios.get(url, { params: { searchQuery: searchQuery } }).then(res => {
+      props.dispatch(setPosts(res.data));
+      props.history.push('/posts');
+    });
+  };
+
   return (
     <section id="account-dashboard">
       <ToastContainer />
@@ -222,7 +237,7 @@ const Dashboard = props => {
             <div className="row">
               <h2>Favorites</h2>
               <p>{user.favorites.length} favorites</p>
-              <button>view</button>
+              <button onClick={handleFavoritesClick}>view</button>
             </div>
             <div className="row">
               <h2>Bio</h2>
@@ -275,6 +290,7 @@ const Dashboard = props => {
 Dashboard.propTypes = {
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
   loggedIn: PropTypes.bool.isRequired,
   userInit: PropTypes.bool.isRequired,
   admin: PropTypes.bool.isRequired
