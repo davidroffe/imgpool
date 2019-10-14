@@ -54,6 +54,9 @@ const Single = props => {
         postId: post.id
       }
     }).then(res => {
+      toast.success(
+        `Post ${isFavorited() ? 'removed from' : 'added to'} favorites.`
+      );
       props.dispatch(setUser('favorites', res.data.favorites));
     });
   };
