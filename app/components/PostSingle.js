@@ -58,6 +58,12 @@ const Single = props => {
     });
   };
 
+  const toggleOptionsMenu = e => {
+    e.stopPropagation();
+
+    setOptionsMenu(!optionsMenu);
+  };
+
   const isFavorited = () => {
     for (let i = 0; i < props.userFavories.length; i++) {
       if (props.userFavories[i].id === post.id) return true;
@@ -130,16 +136,13 @@ const Single = props => {
   };
 
   return (
-    <section id="post-single">
+    <section id="post-single" onClick={() => setOptionsMenu(false)}>
       <ToastContainer />
       <TagMenu tags={getTagsFromPosts(post)} />
       <div className="image-container">
         <div className="inner">
           <div className="post-info">
-            <button
-              className="toggle-options"
-              onClick={() => setOptionsMenu(!optionsMenu)}
-            >
+            <button className="toggle-options" onClick={toggleOptionsMenu}>
               options <span>+</span>
             </button>
             <ul className={`options${optionsMenu ? ' active' : ''}`}>
