@@ -71,10 +71,15 @@ const Single = props => {
     axios({
       url: `/api/post/delete/${post.id}`,
       method: 'post'
-    }).then(() => {
-      props.dispatch(setPosts([]));
-      props.history.push('/posts');
-    });
+    })
+      .then(() => {
+        toast.success('Post deleted.');
+        props.dispatch(setPosts([]));
+        props.history.push('/posts');
+      })
+      .catch(error => {
+        toast.error(error.response.data);
+      });
   };
 
   const handleFlagPostChange = e => {
