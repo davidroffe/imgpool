@@ -248,7 +248,7 @@ const FlagList = props => {
 
   const handlePostDelete = e => {
     e.preventDefault();
-    const selectedFlag = props.flags[selected - 1];
+    const selectedFlag = props.flags[selected];
 
     axios({
       url: `/api/post/delete/${selectedFlag.postId}`,
@@ -269,15 +269,6 @@ const FlagList = props => {
     const isDesc = orderBy === property && order === 'desc';
     setOrder(isDesc ? 'asc' : 'desc');
     setOrderBy(property);
-  };
-
-  const handleSelectAllClick = event => {
-    if (event.target.checked) {
-      const newSelecteds = props.flags.map(n => n.id);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
   };
 
   const handleClick = (event, name) => {
@@ -326,7 +317,7 @@ const FlagList = props => {
                 numSelected={selected.length}
                 order={order}
                 orderBy={orderBy}
-                onSelectAllClick={handleSelectAllClick}
+                onSelectAllClick={() => {}}
                 onRequestSort={handleRequestSort}
                 rowCount={props.flags.length}
               />
@@ -334,17 +325,17 @@ const FlagList = props => {
                 {stableSort(props.flags, getSorting(order, orderBy))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
-                    const isItemSelected = isSelected(row.id);
+                    const isItemSelected = isSelected(index);
                     const labelId = `enhanced-table-checkbox-${index}`;
 
                     return (
                       <TableRow
                         hover
-                        onClick={event => handleClick(event, row.id)}
+                        onClick={event => handleClick(event, index)}
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
-                        key={row.id}
+                        key={index}
                         selected={isItemSelected}
                       >
                         <TableCell padding="checkbox">
