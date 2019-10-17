@@ -23,6 +23,11 @@ const mapStateToProps = state => {
 const Dashboard = props => {
   const [showUserForm, setShowUserForm] = useState(false);
   const [showTagForm, setShowTagForm] = useState(false);
+  const [canSignUp, setCanSignUp] = useState(true);
+
+  useEffect(() => {
+    retrieveSignUpStatus();
+  }, []);
 
   useEffect(() => {
     if (props.userInit) {
@@ -60,8 +65,28 @@ const Dashboard = props => {
     });
   };
 
+  const retrieveSignUpStatus = () => {
+    axios.get('/api/setting/signup/').then(res => {
+      setCanSignUp(res.data.signUp);
+    });
+  };
+
   const toggleSignup = e => {
     e.preventDefault();
+
+    const url = '/api/setting/signup/toggle';
+
+    axios({
+      url: url,
+      method: 'post'
+    })
+      .then(res => {
+        retrieveTags();
+        setCanSignUp(res.data.signUp);
+      })
+      .catch(error => {
+        toast.error(error.response.data);
+      });
   };
 
   const handleTagSubmit = (url, tagIds) => {
@@ -138,7 +163,7 @@ const Dashboard = props => {
               id="toggle-signup"
               onClick={toggleSignup}
             >
-              Toggle Signups
+              {canSignUp ? 'Disable' : 'Enable'} Signups
             </button>
           </div>
           <TagForm
