@@ -13,7 +13,7 @@ if (!fs.existsSync(thumbDir)) {
   fs.mkdirSync(thumbDir);
 }
 
-new Promise((resolve, reject) => {
+const sequelizeMigration = new Promise((resolve, reject) => {
   const migrate = exec(
     'sequelize db:migrate',
     { env: process.env },
@@ -29,4 +29,10 @@ new Promise((resolve, reject) => {
   // Forward stdout+stderr to this process
   migrate.stdout.pipe(process.stdout);
   migrate.stderr.pipe(process.stderr);
+});
+
+sequelizeMigration.then(() => {
+  const Models = require('./models');
+
+  Models.Setting.findOrCreate({ where: {} });
 });
