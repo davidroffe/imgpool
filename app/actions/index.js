@@ -32,3 +32,7 @@ export const setUser = (field, value) => ({
   type: `SET_${field.toUpperCase()}`,
   value
 });
+
+export const clearUser = () => ({
+  type: 'CLEAR_USER'
+});

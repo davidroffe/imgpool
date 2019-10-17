@@ -38,7 +38,6 @@ const Dashboard = props => {
     if (props.userInit) {
       if (!props.loggedIn) {
         props.history.push('/login');
-        window.location.reload();
       }
     }
   });

@@ -29,6 +29,8 @@ const user = (state = initialState, action) => {
       return { ...state, loggedIn: action.value };
     case 'SET_ADMIN':
       return { ...state, admin: action.value };
+    case 'CLEAR_USER':
+      return { ...initialState, init: true };
     case 'SET_INIT':
       return { ...state, init: true };
     case 'SET_FAVORITES':
