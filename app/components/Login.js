@@ -19,6 +19,15 @@ const mapStateToProps = state => {
 
 const Login = props => {
   const [form, setForm] = useState('login');
+  const [canSignUp, setCanSignUp] = useState(true);
+
+  useEffect(() => {
+    axios.get('/api/setting/signup').then(res => {
+      if (res.data) {
+        setCanSignUp(res.data.signUp);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (props.userInit && props.isLoggedIn) {
@@ -179,10 +188,14 @@ const Login = props => {
             })()}
           />
           <p>
-            <button className="switch-form" onClick={switchForm}>
-              {form === 'login' ? 'Sign Up' : 'Login'}
-            </button>
-            <span> | </span>
+            {canSignUp ? (
+              <span>
+                <button className="switch-form" onClick={switchForm}>
+                  {form === 'login' ? 'Sign Up' : 'Login'}
+                </button>
+                <span> | </span>
+              </span>
+            ) : null}
             <button
               id="forgot-password"
               className="switch-form"
