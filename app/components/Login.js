@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { setUser } from '../actions';
@@ -11,12 +11,20 @@ const mapStateToProps = state => {
     email: state.user.email,
     username: state.user.username,
     password: state.user.password,
-    passwordConfirm: state.user.passwordConfirm
+    passwordConfirm: state.user.passwordConfirm,
+    userInit: state.user.init,
+    isLoggedIn: state.user.loggedIn
   };
 };
 
 const Login = props => {
   const [form, setForm] = useState('login');
+
+  useEffect(() => {
+    if (props.userInit && props.isLoggedIn) {
+      props.history.push('/account');
+    }
+  });
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -195,7 +203,9 @@ Login.propTypes = {
   email: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
   password: PropTypes.string.isRequired,
-  passwordConfirm: PropTypes.string.isRequired
+  passwordConfirm: PropTypes.string.isRequired,
+  userInit: PropTypes.bool.isRequired,
+  isLoggedIn: PropTypes.bool.isRequired
 };
 
 export default connect(mapStateToProps)(Login);
