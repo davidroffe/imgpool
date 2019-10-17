@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -7,8 +7,6 @@ import {
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { setUser } from '../actions';
-import axios from 'axios';
 import Header from './Header';
 import AdminDashboard from './AdminDashboard';
 import AccountDashboard from './AccountDashboard';
@@ -22,7 +20,7 @@ import About from './About';
 import Login from './Login';
 import Auth from './Utility/Auth';
 
-const App = props => {
+const App = () => {
   return (
     <Router>
       <Auth>
