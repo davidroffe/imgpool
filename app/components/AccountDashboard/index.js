@@ -196,7 +196,7 @@ const Dashboard = props => {
         .then(res => {
           if (res.data.status === 'success') {
             clearValues();
-            props.dispatch(setPosts([]));
+            props.dispatch(setPosts({ list: [], offset: 0 }));
           }
         })
         .catch(error => {

@@ -14,15 +14,23 @@ const mapStateToProps = state => {
 
 const List = props => {
   useEffect(() => {
-    if (!props.posts.length) {
+    if (!props.posts.list.length) {
       retrievePosts();
     }
   });
 
   const retrievePosts = () => {
-    axios.get('/api/post/list').then(res => {
-      props.dispatch(setPosts(res.data.length ? res.data : [false]));
-    });
+    axios
+      .get('/api/post/list', { params: { offset: props.posts.offset } })
+      .then(res => {
+        props.dispatch(
+          setPosts(
+            res.data.length
+              ? { list: res.data, offset: props.posts.offset + res.data.length }
+              : { list: [false], offset: props.posts.offset + res.data.length }
+          )
+        );
+      });
   };
 
   const getTagsFromPosts = posts => {
@@ -49,7 +57,7 @@ const List = props => {
     return newTags;
   };
 
-  if (!props.posts.length) {
+  if (!props.posts.list.length) {
     return (
       <section id="splash">
         <div id="splash-center">
@@ -60,8 +68,8 @@ const List = props => {
   } else {
     return (
       <section id="post-list">
-        <TagMenu tags={getTagsFromPosts(props.posts)} />
-        {props.posts.map((post, index) => {
+        <TagMenu tags={getTagsFromPosts(props.posts.list)} />
+        {props.posts.list.map((post, index) => {
           return (
             <Link key={index} to={'/post/' + post.id} className="post-item">
               <img src={post.thumbUrl} />
@@ -75,7 +83,7 @@ const List = props => {
 
 List.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  posts: PropTypes.array.isRequired
+  posts: PropTypes.object.isRequired
 };
 
 export default connect(mapStateToProps)(List);

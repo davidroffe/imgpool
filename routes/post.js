@@ -21,8 +21,11 @@ const upload = multer({ storage: storage });
 
 module.exports = (Models, router) => {
   router.get('/post/list', async ctx => {
+    const offset = ctx.query.offset;
     const allPosts = await Models.Post.findAll({
       where: { active: true },
+      offset,
+      limit: 18,
       include: {
         model: Models.Tag,
         as: 'tag',
