@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import axios from 'axios';
@@ -13,6 +13,7 @@ const mapStateToProps = state => {
 };
 
 const List = props => {
+  const [showLoadMore, setShowLoadMore] = useState(false);
   useEffect(() => {
     if (!props.posts.list.length) {
       retrievePosts();
@@ -23,10 +24,14 @@ const List = props => {
     axios
       .get('/api/post/list', { params: { offset: props.posts.offset } })
       .then(res => {
+        setShowLoadMore(res.data.length < 18 ? false : true);
         props.dispatch(
           setPosts(
             res.data.length
-              ? { list: res.data, offset: props.posts.offset + res.data.length }
+              ? {
+                  list: [...props.posts.list, ...res.data],
+                  offset: props.posts.offset + res.data.length
+                }
               : { list: [false], offset: props.posts.offset + res.data.length }
           )
         );
@@ -57,6 +62,12 @@ const List = props => {
     return newTags;
   };
 
+  const loadMorePosts = e => {
+    e.preventDefault();
+
+    retrievePosts();
+  };
+
   if (!props.posts.list.length) {
     return (
       <section id="splash">
@@ -76,6 +87,17 @@ const List = props => {
             </Link>
           );
         })}
+        <div id="load-more-container">
+          {showLoadMore ? (
+            <button
+              className="border-button"
+              id="load-more"
+              onClick={loadMorePosts}
+            >
+              Load More
+            </button>
+          ) : null}
+        </div>
       </section>
     );
   }
