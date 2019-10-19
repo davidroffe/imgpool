@@ -398,42 +398,6 @@ const FlagList = props => {
   );
 };
 
-// const FlagList = props => {
-//   useEffect(() => {
-//     retrieveFlags();
-//   });
-
-//   const retrieveFlags = () => {
-//     if (!props.flags.length) {
-//       axios.get('/api/post/flag/list').then(res => {
-//         props.dispatch(setFlags(res.data.length ? res.data : [false]));
-//       });
-//     }
-//   };
-
-//   if (props.posts[0] === false) {
-//     return (
-//       <section id="splash">
-//         <div id="splash-center">
-//           <h1>IMGPOOL</h1>
-//         </div>
-//       </section>
-//     );
-//   } else {
-//     return (
-//       <section id="flag-list">
-//         {props.flags.map((post, index) => {
-//           return (
-//             <Link key={index} to={'/post/' + post.id} className="post-item">
-//               <img src={post.thumbUrl} />
-//             </Link>
-//           );
-//         })}
-//       </section>
-//     );
-//   }
-// };
-
 FlagList.propTypes = {
   dispatch: PropTypes.func.isRequired,
   flags: PropTypes.array.isRequired,
