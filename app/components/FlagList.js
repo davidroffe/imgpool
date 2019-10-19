@@ -208,8 +208,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const mapStateToProps = state => {
-  console.log(state.flags);
-
   return {
     flags: state.flags,
     isAdmin: state.user.admin
