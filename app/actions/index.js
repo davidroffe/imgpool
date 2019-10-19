@@ -3,6 +3,11 @@ export const setPosts = posts => ({
   posts
 });
 
+export const setPostsList = posts => ({
+  type: 'SET_POSTS_LIST',
+  posts
+});
+
 export const setTags = tags => ({
   type: 'SET_TAGS',
   tags

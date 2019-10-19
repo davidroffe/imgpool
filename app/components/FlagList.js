@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
-import { setFlags, setPosts } from '../actions';
+import { setFlags, setPostsList } from '../actions';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -255,7 +255,7 @@ const FlagList = props => {
     })
       .then(() => {
         toast.success('Post deleted.');
-        props.dispatch(setPosts([]));
+        props.dispatch(setPostsList([]));
         setSelected([]);
         retrieveFlags();
       })

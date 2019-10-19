@@ -2,7 +2,7 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { setSearch, setPosts } from '../actions';
+import { setSearch, setPostsList } from '../actions';
 import axios from 'axios';
 
 const mapStateToProps = state => {
@@ -18,7 +18,7 @@ const PostSearch = props => {
     const url = searchQuery.length ? '/api/post/search' : '/api/post/list';
 
     axios.get(url, { params: { searchQuery } }).then(res => {
-      props.dispatch(setPosts(res.data));
+      props.dispatch(setPostsList(res.data));
       props.history.push('/posts');
     });
   };

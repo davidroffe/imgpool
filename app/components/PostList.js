@@ -15,6 +15,7 @@ const mapStateToProps = state => {
 const List = props => {
   const [showLoadMore, setShowLoadMore] = useState(false);
   useEffect(() => {
+    setShowLoadMore(props.posts.list.length % 18 !== 0 ? false : true);
     if (!props.posts.list.length) {
       retrievePosts();
     }
@@ -24,7 +25,6 @@ const List = props => {
     axios
       .get('/api/post/list', { params: { offset: props.posts.offset } })
       .then(res => {
-        setShowLoadMore(res.data.length < 18 ? false : true);
         props.dispatch(
           setPosts(
             res.data.length

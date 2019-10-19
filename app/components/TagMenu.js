@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { setPosts, setSearch } from '../actions';
+import { setPostsList, setSearch } from '../actions';
 import axios from 'axios';
 
 const TagMenu = props => {
@@ -21,7 +21,7 @@ const TagMenu = props => {
 
     props.dispatch(setSearch(searchQuery));
     axios.get(url, { params: { searchQuery: searchQuery } }).then(res => {
-      props.dispatch(setPosts(res.data));
+      props.dispatch(setPostsList(res.data));
       setShowMenu(!showMenu);
       props.history.push('/posts');
     });
