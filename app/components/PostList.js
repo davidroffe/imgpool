@@ -42,23 +42,24 @@ const List = props => {
     let newTags = [];
     let exists;
 
-    for (var i = 0; i < posts.length; i++) {
-      for (var j = 0; j < posts[i].tag.length; j++) {
-        exists = false;
-        let tag = posts[i].tag[j];
+    if (posts[0]) {
+      for (var i = 0; i < posts.length; i++) {
+        for (var j = 0; j < posts[i].tag.length; j++) {
+          exists = false;
+          let tag = posts[i].tag[j];
 
-        for (var k = 0; k < newTags.length; k++) {
-          if (newTags[k].id === tag.id) {
-            exists = true;
+          for (var k = 0; k < newTags.length; k++) {
+            if (newTags[k].id === tag.id) {
+              exists = true;
+            }
           }
+
+          tag.active = false;
+
+          if (!exists) newTags.push(tag);
         }
-
-        tag.active = false;
-
-        if (!exists) newTags.push(tag);
       }
     }
-
     return newTags;
   };
 
@@ -68,7 +69,7 @@ const List = props => {
     retrievePosts();
   };
 
-  if (!props.posts.list.length) {
+  if (!props.posts.list[0]) {
     return (
       <section id="splash">
         <div id="splash-center">
