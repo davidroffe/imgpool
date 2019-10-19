@@ -101,6 +101,7 @@ node_modules
 
 testApp
 coverage
+/testing
 
 ############################
 # Config/Env
