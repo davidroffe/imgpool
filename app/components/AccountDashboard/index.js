@@ -207,7 +207,7 @@ const Dashboard = props => {
   return (
     <section id="account-dashboard">
       <ToastContainer />
-      {props.userInit ? (
+      {props.userInit && props.loggedIn ? (
         <div className="inner">
           <h1>
             <span>Account</span>
@@ -311,7 +311,7 @@ const Dashboard = props => {
           />
         </div>
       ) : null}
-      <Loader show={!props.userInit} />
+      <Loader show={!props.userInit && !props.loggedIn} />
     </section>
   );
 };
