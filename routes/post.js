@@ -26,6 +26,7 @@ module.exports = (Models, router) => {
       where: { active: true },
       offset,
       limit: 18,
+      order: [['createdAt', 'DESC']],
       include: {
         model: Models.Tag,
         as: 'tag',
@@ -38,6 +39,7 @@ module.exports = (Models, router) => {
   });
   router.get('/post/flag/list', async ctx => {
     const allFlags = await Models.Flag.findAll({
+      order: [['createdAt', 'DESC']],
       include: [
         {
           model: Models.Post,
@@ -221,9 +223,11 @@ module.exports = (Models, router) => {
 
     const posts = await Models.TaggedPost.findAll({
       where: userId ? { postId: favoritedPostIds } : null,
+      order: [['createdAt', 'DESC']],
       attributes: ['postId'],
       group: [
         'TaggedPost.postId',
+        'TaggedPost.createdAt',
         'post.id',
         'post->tag.id',
         'post->tag->TaggedPost.postId',
@@ -263,7 +267,9 @@ module.exports = (Models, router) => {
     ctx.body = { status: 'success' };
   });
   router.post('/post/addTag', async ctx => {
-    const allPosts = await Models.Post.findAll();
+    const allPosts = await Models.Post.findAll({
+      order: [['createdAt', 'DESC']]
+    });
 
     ctx.body = allPosts;
   });
