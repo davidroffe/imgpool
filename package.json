@@ -11,8 +11,7 @@
   },
   "scripts": {
     "init": "node init.js",
-    "test": "jest --watchAll",
-    "dev": "node app.js"
+    "app": "node app.js"
   },
   "author": "David Roffe <davidroffe@gmail.com>",
   "license": "MIT",
