@@ -38,9 +38,11 @@ const Dashboard = props => {
     if (props.userInit) {
       if (!props.loggedIn) {
         props.history.push('/login');
+      } else {
+        clearValues();
       }
     }
-  });
+  }, [props]);
   const logout = e => {
     e.preventDefault();
 
@@ -54,7 +56,7 @@ const Dashboard = props => {
       field: '',
       email: '',
       username: '',
-      bio: '',
+      bio: props.bio,
       password: '',
       passwordConfirm: ''
     });
@@ -149,7 +151,7 @@ const Dashboard = props => {
               field: '',
               email: '',
               username: '',
-              bio: '',
+              bio: res.data.bio,
               password: '',
               passwordConfirm: ''
             });
