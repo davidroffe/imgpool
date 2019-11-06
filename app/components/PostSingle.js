@@ -37,7 +37,8 @@ const Single = props => {
       })
       .then(res => {
         setPost(res.data);
-      });
+      })
+      .catch(() => props.history.push('/404'));
   }, []);
 
   const getTagsFromPosts = post => {

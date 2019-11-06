@@ -76,7 +76,11 @@ module.exports = (Models, router) => {
       ]
     });
 
-    ctx.body = post;
+    if (post) {
+      ctx.body = post;
+    } else {
+      ctx.throw(404, 'Post not found.');
+    }
   });
 
   router.post('/post/favorite', async ctx => {
