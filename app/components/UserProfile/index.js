@@ -177,7 +177,7 @@ const Dashboard = props => {
   };
 
   return (
-    <section id="account-dashboard">
+    <section className="container dashboard" id="account-dashboard">
       <ToastContainer />
       {props.userInit ? (
         <div className="inner">

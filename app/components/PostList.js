@@ -84,7 +84,12 @@ const List = props => {
         {props.posts.list.map((post, index) => {
           return (
             <Link key={index} to={'/post/' + post.id} className="post-item">
-              <img src={post.thumbUrl} />
+              <img
+                src={post.thumbUrl}
+                alt={post.tag.map(tag => {
+                  return tag.name;
+                })}
+              />
             </Link>
           );
         })}

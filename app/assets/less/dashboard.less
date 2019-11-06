@@ -1,21 +1,16 @@
-#account-dashboard {
-  max-width: 75%;
-  margin: 5% auto 0;
-  padding: 60px;
+.dashboard {
   @media (max-width: @tablet) {
-    max-width: 90%;
-  }
-  @media (max-width: @mobile) {
     max-width: none;
-    margin: 0;
-    padding: 45px;
-    flex-direction: column;
   }
 
   .inner {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+
+    @media (max-width: @mobile) {
+      flex-direction: column;
+    }
   }
 
   h1 {

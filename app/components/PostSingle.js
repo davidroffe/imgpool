@@ -139,7 +139,11 @@ const Single = props => {
   };
 
   return (
-    <section id="post-single" onClick={() => setOptionsMenu(false)}>
+    <section
+      className="container"
+      id="post-single"
+      onClick={() => setOptionsMenu(false)}
+    >
       <ToastContainer />
       <TagMenu tags={getTagsFromPosts(post)} />
       <div className="image-container">
