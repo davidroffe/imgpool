@@ -19,6 +19,7 @@ import FlagList from './FlagList';
 import About from './About';
 import Login from './Login';
 import Auth from './Utility/Auth';
+import NotFound from './NotFound';
 
 const App = () => {
   return (
@@ -42,6 +43,7 @@ const App = () => {
           <Route path="/about" exact component={About} />
           <Route path="/login" exact component={Login} />
           <Redirect from="/" exact to="/posts" />
+          <Route component={NotFound} />
         </Switch>
       </Auth>
     </Router>
