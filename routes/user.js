@@ -371,18 +371,10 @@ module.exports = (Models, router) => {
           valid: true
         };
       } else {
-        ctx.body = {
-          username: '',
-          email: '',
-          valid: false
-        };
+        ctx.throw(404, 'User not found.');
       }
     } else {
-      ctx.body = {
-        username: '',
-        email: '',
-        valid: false
-      };
+      ctx.throw(404, 'User not found.');
     }
     ctx.status = 200;
   });

@@ -31,19 +31,22 @@ const Dashboard = props => {
     bio: ''
   });
   useEffect(() => {
-    axios.get(`/api/user/get/${props.match.params.id}`).then(res => {
-      if (res.data.valid) {
-        setUser({
-          ...res.data,
-          favorites: res.data.favoritedPosts,
-          joinDate: new Date(res.data.joinDate).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })
-        });
-      }
-    });
+    axios
+      .get(`/api/user/get/${props.match.params.id}`)
+      .then(res => {
+        if (res.data.valid) {
+          setUser({
+            ...res.data,
+            favorites: res.data.favoritedPosts,
+            joinDate: new Date(res.data.joinDate).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })
+          });
+        }
+      })
+      .catch(() => props.history.push('/404'));
   }, []);
   const clearValues = () => {
     setEditAccount({
