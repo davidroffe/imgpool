@@ -158,7 +158,7 @@ const Dashboard = props => {
           }
         })
         .catch(error => {
-          toast.error(error.reponse.data);
+          toast.error(error.response.data);
         });
     }
   };
