@@ -35,9 +35,19 @@ const Login = props => {
     }
   });
 
+  useEffect(() => {
+    if (form === 'signUp') {
+      window.grecaptcha.render('recaptcha', {
+        sitekey: process.env.RECAPTCHA_SITE_KEY,
+        theme: 'dark'
+      });
+    }
+  }, [form]);
+
   const handleSubmit = e => {
     e.preventDefault();
 
+    let recaptchaResponse = window.grecaptcha.getResponse();
     let newErrorMessage = [];
     let url;
 
@@ -173,6 +183,7 @@ const Login = props => {
               />
             ) : null}
           </div>
+          {form === 'signUp' ? <div id="recaptcha"></div> : null}
           <Input
             className="border-button"
             type="submit"
