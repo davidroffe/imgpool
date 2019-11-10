@@ -1,13 +1,22 @@
+const axios = require('axios');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const jwtSecret = process.env.JWT_SECRET;
 const sessionExp = process.env.SESSION_EXP;
+const recaptchaSecret = process.env.RECAPTCHA_SECRET;
 require('dotenv').config();
 
 module.exports = (Models, router) => {
   router.post('/user/signup', async ctx => {
-    const { email, username, password, passwordConfirm } = ctx.query;
+    const {
+      email,
+      username,
+      password,
+      passwordConfirm,
+      recaptchaResponse
+    } = ctx.query;
+    const recaptchaUrl = 'https://www.google.com/recaptcha/api/siteverify';
     const emailRegEx = /[\w.]+@[\w.]+/;
     let errorMessage = [];
 
@@ -20,34 +29,51 @@ module.exports = (Models, router) => {
     if (password !== passwordConfirm) {
       errorMessage.push('Please enter a matching password confirmation.');
     }
+    if (!recaptchaResponse) {
+      errorMessage.push('Invalid reCAPTCHA token.');
+    }
     if (errorMessage.length > 0) {
       ctx.throw(401, errorMessage.join('\n'));
     } else {
-      const user = await Models.User.findOrCreate({
-        where: { email: email },
-        defaults: {
-          username: username,
-          admin: false,
-          active: true,
-          password: bcrypt.hashSync(password, bcrypt.genSaltSync(8), null)
+      const response = await axios({
+        url: recaptchaUrl,
+        method: 'post',
+        params: {
+          secret: recaptchaSecret,
+          response: recaptchaResponse
         }
       });
-      if (!user[1]) {
-        ctx.throw(401, 'Sorry, that email is taken.');
+      console.log(response.data);
+
+      if (response.data.success) {
+        const user = await Models.User.findOrCreate({
+          where: { email: email },
+          defaults: {
+            username: username,
+            admin: false,
+            active: true,
+            password: bcrypt.hashSync(password, bcrypt.genSaltSync(8), null)
+          }
+        });
+        if (!user[1]) {
+          ctx.throw(401, 'Sorry, that email is taken.');
+        } else {
+          const payload = { id: user[0].id, admin: user[0].admin };
+          const options = { expiresIn: sessionExp };
+          const sessionToken = jwt.sign(payload, jwtSecret, options);
+
+          user[0].save();
+
+          ctx.cookies.set('auth', sessionToken, { httpOnly: true });
+          ctx.status = 200;
+          ctx.body = {
+            username: user[0].username,
+            email: user[0].email,
+            admin: user[0].admin
+          };
+        }
       } else {
-        const payload = { id: user[0].id, admin: user[0].admin };
-        const options = { expiresIn: sessionExp };
-        const sessionToken = jwt.sign(payload, jwtSecret, options);
-
-        user[0].save();
-
-        ctx.cookies.set('auth', sessionToken, { httpOnly: true });
-        ctx.status = 200;
-        ctx.body = {
-          username: user[0].username,
-          email: user[0].email,
-          admin: user[0].admin
-        };
+        ctx.throw(400, 'Failed to verify reCAPTCHA.');
       }
     }
   });

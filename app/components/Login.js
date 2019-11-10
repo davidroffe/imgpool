@@ -38,7 +38,7 @@ const Login = props => {
   useEffect(() => {
     if (form === 'signUp') {
       window.grecaptcha.render('recaptcha', {
-        sitekey: process.env.RECAPTCHA_SITE_KEY,
+        sitekey: process.env.RECAPTCHA_KEY,
         theme: 'dark'
       });
     }
@@ -47,7 +47,7 @@ const Login = props => {
   const handleSubmit = e => {
     e.preventDefault();
 
-    let recaptchaResponse = window.grecaptcha.getResponse();
+    const recaptchaResponse = window.grecaptcha.getResponse() || '';
     let newErrorMessage = [];
     let url;
 
@@ -93,7 +93,8 @@ const Login = props => {
           email: email,
           username: username,
           password: password,
-          passwordConfirm: passwordConfirm
+          passwordConfirm: passwordConfirm,
+          recaptchaResponse
         }
       })
         .then(res => {
