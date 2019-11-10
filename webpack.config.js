@@ -1,6 +1,6 @@
-var path = require('path');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var Dotenv = require('dotenv-webpack');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   entry: './app/index.js',

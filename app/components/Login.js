@@ -35,9 +35,19 @@ const Login = props => {
     }
   });
 
+  useEffect(() => {
+    if (form === 'signUp') {
+      window.grecaptcha.render('recaptcha', {
+        sitekey: process.env.RECAPTCHA_KEY,
+        theme: 'dark'
+      });
+    }
+  }, [form]);
+
   const handleSubmit = e => {
     e.preventDefault();
 
+    const recaptchaResponse = window.grecaptcha.getResponse() || '';
     let newErrorMessage = [];
     let url;
 
@@ -83,7 +93,8 @@ const Login = props => {
           email: email,
           username: username,
           password: password,
-          passwordConfirm: passwordConfirm
+          passwordConfirm: passwordConfirm,
+          recaptchaResponse
         }
       })
         .then(res => {
@@ -173,6 +184,7 @@ const Login = props => {
               />
             ) : null}
           </div>
+          {form === 'signUp' ? <div id="recaptcha"></div> : null}
           <Input
             className="border-button"
             type="submit"
