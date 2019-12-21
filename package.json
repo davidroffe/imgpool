@@ -72,6 +72,7 @@
     "less-loader": "^5.0.0",
     "prettier": "^1.18.2",
     "prop-types": "^15.7.2",
+    "redux-mock-store": "^1.5.4",
     "sequelize-cli": "^5.5.0",
     "style-loader": "^0.23.1",
     "url-loader": "^2.1.0",

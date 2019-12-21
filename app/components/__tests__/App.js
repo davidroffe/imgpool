@@ -1,11 +1,17 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import configureStore from 'redux-mock-store';
 import App from '../App';
 
-//Unfortunately wrapping the connect HOF from redux returns an object and breaks the shallow rendering
+const mockStore = configureStore();
+const initialState = {};
+const store = mockStore(initialState);
+
 describe('App', () => {
   it('should render a <div />', () => {
-    const wrapper = shallow(<App />);
-    expect(wrapper.find('div').length).toEqual(1);
+    const wrapper = shallow(<App.type store={store} />)
+      .dive()
+      .dive();
+    expect(wrapper.find('BrowserRouter').length).toEqual(1);
   });
 });
