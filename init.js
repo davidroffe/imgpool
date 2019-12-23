@@ -1,23 +1,4 @@
 const { exec } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const rootPath = path.dirname(require.main.filename);
-const publicDir = rootPath + '/public';
-const uploadsDir = rootPath + '/public/uploads';
-const thumbDir = uploadsDir + '/thumbnails';
-
-if (!fs.existsSync(publicDir)) {
-  fs.mkdirSync(publicDir);
-}
-
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir);
-}
-
-if (!fs.existsSync(thumbDir)) {
-  fs.mkdirSync(thumbDir);
-}
-
 const sequelizeMigration = new Promise((resolve, reject) => {
   const migrate = exec(
     'sequelize db:migrate',
