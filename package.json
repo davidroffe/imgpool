@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "init": "node init.js",
-    "app": "node app.js"
+    "build": "webpack --env.environment=production && ln -s ../uploads ./public/uploads",
+    "dev": "webpack --env.environment=development && ln -s ../uploads ./public/uploads"
   },
   "author": "David Roffe <davidroffe@gmail.com>",
   "license": "MIT",
@@ -47,6 +48,7 @@
     "@babel/preset-react": "^7.0.0",
     "babel-eslint": "^10.0.2",
     "babel-loader": "^8.0.6",
+    "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.1.0",
     "dotenv-webpack": "^1.7.0",
     "eslint-config-airbnb": "^17.1.1",
