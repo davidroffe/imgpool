@@ -22,8 +22,8 @@ $ yarn
 # run init script
 $ yarn run init
 
-# run bundler
-$ webpack
+# run build script
+$ yarn run build
 
 # run the app
 $ yarn run app
