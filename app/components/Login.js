@@ -47,7 +47,7 @@ const Login = props => {
   const handleSubmit = e => {
     e.preventDefault();
 
-    const recaptchaResponse = window.grecaptcha.getResponse() || '';
+    let recaptchaResponse = '';
     let newErrorMessage = [];
     let url;
 
@@ -59,6 +59,7 @@ const Login = props => {
         break;
       case 'signUp':
         url = '/api/user/signup';
+        recaptchaResponse = window.grecaptcha.getResponse();
         break;
       case 'forgotPassword':
         url = '/api/user/password-reset';
