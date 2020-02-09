@@ -3,6 +3,12 @@
   "version": "0.0.0",
   "description": "Lightweight image board",
   "main": "app.js",
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ]
+  },
   "scripts": {
     "init": "node init.js",
     "build": "webpack --env.environment=production && ln -s ../uploads ./public/uploads",
